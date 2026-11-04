@@ -328,7 +328,7 @@ The database was reset first. Ticket **102** (the rent notice) then ran through 
 
 - **The model name in replies is `gpt-6-luna-global`.** That's the name Portkey reports for `gpt-6-luna`. Our code asks only for `gpt-6-luna` (`backend/config.py` refuses anything else), and no other model was called.
 - **A grammar rule was too strict.** It flagged the comma after a greeting, so Customer Service wrote "Dear Elm City Properties." with a period instead. **Fixed:** a comma now ends a greeting or sign-off correctly, and all 41 tool checks still pass.
-- **A request was filed under the wrong ticket.** Accounting filed the invoice 501 request under ticket 102, the rent ticket, though invoice 501 belongs to ticket 101. Paying it first is sensible cash planning, but it should be filed under 101. Lou's decision is pending.
+- **A request was filed under the wrong ticket.** Accounting filed the invoice 501 request under ticket 102, the rent ticket, though invoice 501 belongs to ticket 101. **Fixed (Lou approved):** `request_payment` now files an invoice or rent request under the ticket that links that invoice (`tickets.invoice_id`) or lease (`tickets.lease_id`), and records which ticket it was raised from. A new check proves it: raised from ticket 102, filed under ticket 101. All 41 checks pass.
 
 ## Safety
 
@@ -343,6 +343,7 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | **The amount comes from the database, not the AI** | A model could mistype or be tricked about an amount | `request_payment` takes the invoice amount, the lease rent or qty × unit cost from the tables, never from the agent |
 | **All or nothing** | A half-recorded payment corrupts the books | `approve_and_pay` does the payment row, the cash, the invoice or lease, and the request status in one database transaction |
 | **No double payments** | Paying the same bill twice | `request_payment` refuses a duplicate pending request; `approve_and_pay` only pays a request that is still pending |
+| **Every request on the right ticket** | Approvers need to see each bill where it belongs | `request_payment` files invoice and rent requests under the ticket that links that invoice or lease, noting where it was raised |
 | **Blocked vendors stay blocked** | A vendor with an unpaid bill won't ship | `request_payment` refuses a purchase order to a vendor with an open invoice |
 | **No real contact with customers or vendors** | A wrong or premature message can't be taken back | There is no send tool at all. `save_customer_draft` stores drafts on the board, where the `drafts.status` check allows only `draft`. When the vibe coder was tested, the `outlook-mail` server was excluded (Problem 4) |
 | **Correct spelling and grammar in every customer message** | Sloppy messages hurt the brand | `save_customer_draft` refuses any draft that fails `check_spelling_grammar` (an offline dictionary plus grammar rules, with the shop's own names and products accepted). A human still reads every draft on the board, because no checker can promise 100% |

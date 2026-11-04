@@ -350,7 +350,15 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 - **53 audit entries** were appended. The run took 19 model calls: 60,039 input tokens (75% cached) and 2,514 output tokens. Details are in harness Table 16 and `output/test_run_102.json`.
 - **Found and fixed:** a grammar rule had flagged the comma after a greeting.
 - **Noted:** Portkey reports the model as `gpt-6-luna-global`.
-- **Pending my decision:** the invoice 501 request was filed under ticket 102 instead of ticket 101.
+- The invoice 501 request had been filed under ticket 102 instead of ticket 101.
+
+**Follow-up prompt (the ticket mix-up):**
+
+> Yes, fix it
+
+**What was lacking after the first:** a payment request could land on whichever ticket the agent was working, not the ticket the bill belongs to.
+
+**Outcome:** `request_payment` now files every invoice or rent request under the ticket that links that invoice or lease, and notes the ticket it was raised from. The tool check proves it (raised from ticket 102, filed under 101), with 41 of 41 checks passing, and the Safety table gained a row for it.
 
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 

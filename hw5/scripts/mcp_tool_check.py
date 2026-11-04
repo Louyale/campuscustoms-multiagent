@@ -119,9 +119,11 @@ async def main() -> None:
                        reason="restock 12 hoodies", requested_by="accounting")
         check("request_payment", {"kind": "purchase_order", "vendor_id": 1, "sku": "CC-HOOD-NAVY", "size": "M", "qty": 12}, r,
               r["filed"] is False and "blocked" in r["message"], "REFUSED: vendor blocked by open invoice 501")
-        r = await call("request_payment", kind="invoice", ticket_id=101, ref_id=501, reason="pay overdue invoice", requested_by="accounting")
+        r = await call("request_payment", kind="invoice", ticket_id=102, ref_id=501, reason="pay overdue invoice", requested_by="accounting")
         inv_req = r.get("request_id")
-        check("request_payment", {"kind": "invoice", "ref_id": 501}, r, r["filed"] and r["amount"] == 840, "filed: $840 to Bulldog Print Co, pending; amount taken from the database")
+        check("request_payment", {"kind": "invoice", "ref_id": 501, "ticket_id": 102}, r,
+              r["filed"] and r["amount"] == 840 and r["ticket_id"] == 101 and q("SELECT ticket_id FROM approval_requests WHERE id = ?", inv_req)[0]["ticket_id"] == 101,
+              "filed: $840 to Bulldog Print Co, pending, amount from the database; raised from ticket 102 but filed under ticket 101, which links invoice 501")
         r = await call("request_payment", kind="invoice", ticket_id=101, ref_id=501, reason="again", requested_by="accounting")
         check("request_payment", {"kind": "invoice", "ref_id": 501, "repeat": True}, r, r["filed"] is False and "Already pending" in r["message"], "REFUSED: duplicate request")
         r = await call("request_payment", kind="rent", ticket_id=102, ref_id=1, reason="September rent", requested_by="accounting")

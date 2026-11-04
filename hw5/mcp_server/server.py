@@ -455,16 +455,29 @@ def request_payment(kind: str, ticket_id: int, reason: str, requested_by: str,
         if amount > available:
             return {"filed": False, "message": f"Not enough cash: ${amount:.2f} needed, ${available:.2f} available "
                                                "after pending requests. No negative balances."}
+
+        # File the request under the ticket the bill belongs to: the ticket that links this invoice
+        # (tickets.invoice_id) or this lease (tickets.lease_id). That keeps the board accurate even when
+        # it's raised while working a different ticket.
+        link_col = {"invoice": "invoice_id", "rent": "lease_id"}.get(kind)
+        linked = None
+        if link_col:
+            linked = conn.execute(f"SELECT id FROM tickets WHERE {link_col} = ? ORDER BY id LIMIT 1", (ref_id,)).fetchone()
+        filed_under = linked["id"] if linked else ticket_id
+        if filed_under != ticket_id:
+            reason = f"{reason} (raised while working ticket {ticket_id})"
         with conn:
             cur = conn.execute(
                 "INSERT INTO approval_requests (ticket_id, kind, ref_id, vendor_id, sku, size, qty, payee, amount, "
                 "account, reason, requested_by, requested_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (ticket_id, kind, ref_id, vendor_id, sku, size, qty, payee, amount, account, reason, requested_by, now_utc()),
+                (filed_under, kind, ref_id, vendor_id, sku, size, qty, payee, amount, account, reason, requested_by, now_utc()),
             )
+    note = (f" Filed under ticket {filed_under}, which this {kind} belongs to, not ticket {ticket_id}."
+            if filed_under != ticket_id else "")
     return {"filed": True, "request_id": cur.lastrowid, "status": "pending", "kind": kind, "payee": payee,
-            "amount": amount, "account": account, "cash_before": acct["balance"],
-            "available_after_this_request": round(available - amount, 2),
-            "message": "Waiting for a human to approve on the dashboard. Nothing has been paid."}
+            "amount": amount, "account": account, "ticket_id": filed_under, "raised_from_ticket": ticket_id,
+            "cash_before": acct["balance"], "available_after_this_request": round(available - amount, 2),
+            "message": "Waiting for a human to approve on the dashboard. Nothing has been paid." + note}
 
 
 # ---------------------------------------------------------------- spelling and grammar (Customer Service)
