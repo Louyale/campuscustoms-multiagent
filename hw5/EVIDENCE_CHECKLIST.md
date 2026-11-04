@@ -2,6 +2,11 @@
 
 This file lists the evidence each problem needs. Each problem's evidence is added when that problem arrives and checked off once it exists. Before grading, every box should be ticked.
 
+## Every problem
+- [ ] A `## Problem N: <title>` section in `AI_prompts.md` with at least one prompt in my own words
+- [ ] A follow-up prompt, if one was needed, plus one sentence on what was lacking after the first
+- [ ] A row in the "At a glance" table
+
 ## Project-wide rules
 - [ ] Only `gpt-6-luna` appears in the code and in run logs, for every agent
 - [ ] Every AI call goes through `PORTKEY_API_KEY`
@@ -23,3 +28,8 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] `AI_prompts.md` started, with the setup prompts in the appendix
 - [x] Repo set up: `git init`, `.gitignore`, `.gitattributes`, `.env.example`, `README.md`
 - [x] Only the original `campus_customs.db` is committed; the working copy `campus_customs_new.db` is in `.gitignore` (my choice)
+
+## Problem 1: Vibe coder prompts (5 points)
+- [x] `AI_prompts.md` created at the start of the assignment and kept up to date
+- [x] One section per problem with its number and title (to be checked again at the end for every problem)
+- [x] Each section has my own-words prompt, a follow-up if needed with one sentence on what was lacking, and the outcome

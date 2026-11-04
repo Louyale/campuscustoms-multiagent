@@ -25,7 +25,24 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 
 | # | Problem | Main prompt was about | Follow-up fixed | Main output |
 |---|---|---|---|---|
-| | | | | |
+| 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | (none needed) | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
+
+---
+
+## Problem 1: Vibe coder prompts
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> we've already started problem 1, but here it is - pls perform any outstanding set up tasks, and we'll move to problem 2 after you confirm.
+
+**Follow-up prompt:** none needed. I created this log at the start of the assignment, before Problem 1 arrived (see the appendix).
+
+**Outcome:**
+
+- This file has one `## Problem N: <title>` section per problem. Each section has my prompt in my own words, a follow-up where I needed one (with one sentence on what was lacking after the first), and the outcome.
+- Setup prompts from before Problem 1 are in the appendix, and the "At a glance" table gives one row per problem.
+- `EVIDENCE_CHECKLIST.md` lists the evidence each problem needs, so I can confirm it's all there before grading.
+- The log is updated after every prompt.
 
 ---
 
