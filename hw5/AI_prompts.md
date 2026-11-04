@@ -178,6 +178,12 @@ I approved the rewritten README. Problem 3 is complete.
 | P4-7 | (extra) | Keep the no-email rule safe while testing | Only `campus-customs` loaded; the parent folder's `outlook-mail` server was excluded; one allowed tool per test |
 | P4-8 | (extra) | Prove the tools didn't change the data | The working database's SHA-256 was the same before and after (`database_unchanged: true`) |
 
+**Approval:**
+
+> good to go, we'll proceed to pblm 5
+
+I approved Problem 4 and its table names (harness Table 7: Tool Test Evidence; this log's Table 6: Problem 4 Tasks).
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)
