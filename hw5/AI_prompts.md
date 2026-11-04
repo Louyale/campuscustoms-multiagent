@@ -145,3 +145,15 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 - `campus_customs.db` is committed so graders have the original data.
 - `campus_customs_new.db` is in `.gitignore`. It changes on every run, and graders make their own copy from the original.
 - Made the first local commit. Nothing has been pushed.
+
+## Appendix: Rule reminders (between problems)
+
+**Reminder 1 (after Problem 2, with a screenshot of the shop rule "Do not email customers or call real vendors. Drafts stay on the board"):**
+
+> always remember to follow all rules inc this one
+
+**Outcome:**
+
+- Saved as a standing rule. No agent gets a real email, text or phone tool, and no mail connector is wired in.
+- Customer Service and the other agents only write drafts, which stay on the board.
+- The full shop rule list gets re-read before each problem and each full run.
