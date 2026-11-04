@@ -27,7 +27,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 |---|---|---|---|---|
 | 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | Label the Problem 1 tasks for the grader (Table 3), separate from the earlier setup | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
 | 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
-| 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | (none yet) | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
+| 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | Say what each tool returns; explain why the tool's qualities fit the ticket's actions; an approve box per tool | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
 
 ---
 
@@ -101,7 +101,13 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 
 > here are the contents for problem 3.  follow the instructions to build the mcp server using FastMCP so it talks to the campus customs new.db as noted and do not run it in this problem.  all agents use these tools.  now, write 3 tools you know we'll need for the tickets in the data base and do not invent data.  keep the names clear and put them in bold and larger font and list them in harness.  make a table for the 3 tools and include the requested information.  be sure to add the sentence for why it is the right tool for the ticket and show me the 3 sentences here so i can do what i usually do and amend if needed.  tie the tool to the specific ticket and do not use vague descriptions make the description ticket specific.  last add a readme file that explains what the mcp server is for, which database file it uses and the three tools it has - show me that here too so i can also review and amend if needed.
 
-**Follow-up prompt:** none yet. I'm reviewing the three sentences and the README.
+**Follow-up prompt:**
+
+> first for the tools, the first description title should say what it returns and why it is the right tools for the ticket, and you need to do a better job describing why the tools qualities were the right qualities to take the actions that ticket needed, make those revisions and give me an approve box under each of the 3 in the table
+
+**What was lacking after the first:** the why-sentences named what each tool reads but didn't explain which of the tool's qualities (lookup by SKU and size, following the ticket's link, the shop's date, the vendor-blocked flag, the same-call cash check) fit the action each ticket needs. The column also didn't say what each tool returns.
+
+**Outcome of the follow-up:** harness Table 5's column is now "What it returns, and why it's the right tool for the ticket", with a **Returns** line and a deeper **Why** line for each tool. A "Lou's approval" box (☐ Approve) was added for each of the three tools.
 
 **Outcome:** each Problem 3 task is done. Table 5 lists them for the grader.
 
