@@ -266,6 +266,12 @@ I approved all five agent prompts: Boss, Inventory, Accounting, Facilities and C
 
   All five are in one matching style, and the overview is `assets/agents/all_agents.png`.
 
+**Approval:**
+
+> Looks good
+
+I approved the new symbols and the five avatars. Part 5a is complete.
+
 **Outcome:** each 5a task is done. Table 7 lists them for the grader.
 
 **Table 7: Problem 5a Tasks**
