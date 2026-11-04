@@ -125,6 +125,12 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 - a "Which database it uses" section naming `data/campus_customs_new.db`
 - the three tools as bullets, each with why we chose it for its ticket
 
+**Approval:**
+
+> Approve README
+
+I approved the rewritten README. Problem 3 is complete.
+
 **Outcome:** each Problem 3 task is done. Table 5 lists them for the grader.
 
 **Table 5: Problem 3 Tasks**
@@ -137,7 +143,7 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 | P3-4 | A | Every agent uses these tools; write three you know the tickets need | `check_stock` (103, also 101), `get_open_invoices` (101), `get_rent_due` (102) |
 | P3-5 | A | Keep the names clear; never invent data | Plain verb names; values only from the database, with `found: false` when missing |
 | P3-6 | B | In `output/harness.md`, list each tool with the table it reads, the ticket it unlocks, and one sentence on why it's the right tool, tied to the ticket | `output/harness.md`, Table 5: The Three MCP Tools, Tied to Their Tickets (names in bold, larger font) |
-| P3-7 | B | Add a short `mcp_server/README.md`: what it's for, which database it uses, the three tools | `mcp_server/README.md` (with its Table 1: MCP Server Tools) |
+| P3-7 | B | Add a short `mcp_server/README.md`: what it's for, which database it uses, the three tools | `mcp_server/README.md` (purpose, database file, three tool bullets with why we chose each; approved by me) |
 | P3-8 | (extra) | Show how the tools follow the shop rules | `output/harness.md`, Table 6: Shop Rules Built Into the Problem 3 Tools |
 
 ---
