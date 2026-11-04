@@ -25,7 +25,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 
 | # | Problem | Main prompt was about | Follow-up fixed | Main output |
 |---|---|---|---|---|
-| 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | (none needed) | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
+| 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | Label the Problem 1 tasks for the grader (Table 3), separate from the earlier setup | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
 
 ---
 
@@ -35,14 +35,25 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 
 > we've already started problem 1, but here it is - pls perform any outstanding set up tasks, and we'll move to problem 2 after you confirm.
 
-**Follow-up prompt:** none needed. I created this log at the start of the assignment, before Problem 1 arrived (see the appendix).
+**Follow-up prompt:**
 
-**Outcome:**
+> and label the set up tasks that are itemized as problem 1 for the grader, the other set up tasks we did can stay on before problem 1
 
-- This file has one `## Problem N: <title>` section per problem. Each section has my prompt in my own words, a follow-up where I needed one (with one sentence on what was lacking after the first), and the outcome.
-- Setup prompts from before Problem 1 are in the appendix, and the "At a glance" table gives one row per problem.
-- `EVIDENCE_CHECKLIST.md` lists the evidence each problem needs, so I can confirm it's all there before grading.
-- The log is updated after every prompt.
+**What was lacking after the first:** the Problem 1 tasks were done, but they weren't itemized and labeled as Problem 1 for the grader, apart from the earlier setup work.
+
+**Outcome:** each Problem 1 task is done. Table 3 lists them for the grader. The other setup tasks (unzipping the data, the working database copy, the data overview and the repo files) came before Problem 1 and are in the appendix.
+
+**Table 3: Problem 1 Setup Tasks**
+
+| Task | Panel | What was asked | Where it's done |
+|---|---|---|---|
+| P1-1 | A | Create `AI_prompts.md` at the start of the assignment | This file, created with my first HW5 prompt (appendix, Prompt 2) |
+| P1-2 | A | Keep it updated as I work: the log of what I typed | Updated after every prompt, quoted exactly, typos included |
+| P1-3 | A | Describe each problem to the vibe coder in my own words | Each problem section quotes my own-words prompt; I don't paste the page or the URL |
+| P1-4 | B | One section per problem, with the problem number and title | `## Problem N: <title>` headings, plus Table 1: Problems at a Glance |
+| P1-5 | B | At least one prompt I typed, in my own words | The "Prompt (my own words)" line in each section |
+| P1-6 | B | One follow-up prompt if needed, plus one sentence on what was lacking after the first | The "Follow-up prompt" line in each section ("none needed" when there wasn't one) |
+| P1-7 | (extra) | Proof each problem's evidence exists before grading | `EVIDENCE_CHECKLIST.md` |
 
 ---
 
