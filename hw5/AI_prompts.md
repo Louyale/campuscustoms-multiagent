@@ -29,7 +29,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
 | 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | Say what each tool returns; explain why the tool's qualities fit the ticket's actions; an approve box per tool | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
 | 4 | Add the MCP server to vibe coder and test each tool | Add the server to this project in `.mcp.json`; test all three tools; a Tool Test Evidence table with the prompt, tool name and output; outputs must match the database | Sign in to the command-line copy of Claude Code, then pick up and confirm nothing was lost | `.mcp.json`, `scripts/mcp_smoke.py`, `output/mcp_smoke.json`, `output/harness.md` (Table 7) |
-| 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | (pending review) | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
+| 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | My edits: Boss reports to the humans; Customer Service grammar and tone; Inventory low stock (below 5) and best sellers; Accounting balance sheet and income statement | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
 
 ---
 
@@ -197,7 +197,27 @@ I split this problem into two parts: **5a** (Panel A, the agent team) and **5b**
 
 > back.  in problem 5, an important problem, we'll build out the agentic team for campus customs.  include everything so they can delegate work to each other fir each of their functions.  follow the instructions precisely - agent prompts with one file per agent, and agent files in backend with all 5 roles very clear.  i want to see these to be sure they are clear.  same rules about portkey and luna.  write each prompt in our own words with the shop rules the agent needs - show me these for amendment and approval with a button under each as you've been doing -we want the highest score so our prompts need detail for agent's work and scope.  do all this first, and then we'll work on problem 5b.  this is 5a.
 
-**Follow-up prompt:** (pending my review of the five prompts)
+**Follow-up prompt (my edits, typed directly into `output/agent_prompts_review.md`, then):**
+
+> see all my changes and incorporate them now.  tell me if they need to be more clear or if you have any additions based on them.
+
+My edits, as I typed them:
+
+**Table 8: My Edits to the Agent Prompts**
+
+| Agent | What I typed | How it reads in the prompt file now |
+|---|---|---|
+| Boss | "you also interact with the humans by bringing them your subordinates' results." | "You are also the team's voice to the humans who run the shop." Boss brings them the teammates' results, its decisions, and every approval they need to give. |
+| Boss | "tell customer service to always check grammar and spelling, and be assertive but friendly." | Every time Boss asks for a draft, it tells Customer Service to check grammar and spelling and be assertive but friendly. Customer Service returns every draft to Boss for review. |
+| Boss | "7. ask for rules on how to communicate the decisions to your human." | New step 7, plus a new section, "How you report to the humans": lead with the decision; list each approval with payee, amount, reason and cash before and after; give facts with their source; name risks; put human-only choices as clear questions; plain words; never say anything was paid, ordered or sent. A new step 6 has Boss review the draft first. |
+| Inventory | "you know best selling items. you know when items run low and need to be reordered." | Low stock: flag any item at 0, unable to cover a ticket, or with **fewer than 5 units** (my reorder point). Best sellers: the database has no sales history, so the agent says so and reports only what the data shows. |
+| Accounting | "you can prepare a balance sheet and an income statement is asked to do so and you know what information goes on those documents." | When asked, Accounting prepares a balance sheet (assets: cash and inventory at cost; liabilities: open invoices; equity = assets − liabilities, and it must balance) and an income statement (revenue $0, because revenue isn't modeled; expenses = recorded payments; net income). Added to its scope and output, with a new `FinancialStatement` type in `models.py`. |
+| Customer Service | "your grammar and spelling is always correct." | "Your grammar and spelling are always correct. Check every draft before you return it." The tone is now "assertive but friendly". |
+| Customer Service | "prompt drafts back to the boss" / "interaction with all other agents promptly" | "Return every draft promptly to whoever asked for it. Boss reviews every draft before it goes on the board." "Work promptly with every teammate." |
+
+**What was lacking after the first:** the prompts didn't cover how Boss reports to the humans, Customer Service's grammar and tone, Inventory's low-stock and best-seller duties, or Accounting's financial statements.
+
+**Clarifications I gave:** a reorder point of **below 5 units**, and yes, use the built-in reporting rules for Boss.
 
 **Outcome:** each 5a task is done. Table 7 lists them for the grader.
 

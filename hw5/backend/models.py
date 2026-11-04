@@ -93,6 +93,34 @@ class InventoryReport(BaseModel):
     note: str
 
 
+class StatementLine(BaseModel):
+    section: Literal["asset", "liability", "equity", "revenue", "expense", "note"]
+    label: str
+    amount: Optional[float] = None
+    source: str = Field(description="Table or tool the figure came from")
+
+
+class FinancialStatement(BaseModel):
+    """A balance sheet or income statement, built only from database figures."""
+    kind: Literal["balance_sheet", "income_statement"]
+    as_of: str = Field(description="desk.date_today, or the period covered for an income statement")
+    lines: list[StatementLine]
+    total_assets: Optional[float] = None
+    total_liabilities: Optional[float] = None
+    equity: Optional[float] = None
+    revenue: Optional[float] = None
+    expenses: Optional[float] = None
+    net_income: Optional[float] = None
+    missing_information: list[str] = []
+
+    @model_validator(mode="after")
+    def balances(self) -> "FinancialStatement":
+        if self.kind == "balance_sheet" and None not in (self.total_assets, self.total_liabilities, self.equity):
+            if round(self.total_assets, 2) != round(self.total_liabilities + self.equity, 2):
+                raise ValueError("balance sheet does not balance: assets must equal liabilities + equity")
+        return self
+
+
 class AccountingReport(BaseModel):
     cash_balance: Optional[float] = None
     cash_as_of: Optional[str] = None
@@ -101,6 +129,7 @@ class AccountingReport(BaseModel):
     margin_checks: list[MarginCheck] = []
     total_requested: float = 0
     cash_left_if_all_approved: Optional[float] = None
+    financial_statements: list[FinancialStatement] = []
     recommendation: str
     missing_information: list[str] = []
 
