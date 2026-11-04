@@ -111,6 +111,20 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 
 **Approval:** I approved all three revised tool entries (`check_stock`, `get_open_invoices`, `get_rent_due`), and each box in Table 5 now reads ☑ Approved by Lou.
 
+**Follow-up prompt 2 (the README):**
+
+> I'll send edits
+
+> please paste the readme here, and before you do, pls do a better job explaining what the server is for and note the database file it uses, and then list the 3 tools as bullets and why we chose them
+
+**What was lacking after the first:** the README said what the server does in one line, but not why the agent team needs a shared MCP server. It also showed the tools as a table, with no reason we chose each one.
+
+**Outcome:** `mcp_server/README.md` was rewritten. It now has:
+
+- a "What this server is for" section: one shared toolbox, one source of truth, no invented data, the shop rules in code, safe by design
+- a "Which database it uses" section naming `data/campus_customs_new.db`
+- the three tools as bullets, each with why we chose it for its ticket
+
 **Outcome:** each Problem 3 task is done. Table 5 lists them for the grader.
 
 **Table 5: Problem 3 Tasks**
