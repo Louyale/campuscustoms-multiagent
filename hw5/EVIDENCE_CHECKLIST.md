@@ -72,12 +72,12 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] My approval of each of the five prompts (all five ☑ in `output/agent_prompts_review.md`)
 
 ### 5b: grow the MCP tools (Panel B)
-- [x] MCP tools added so the agents can work all three open tickets (16 tools; harness Table 12)
+- [x] MCP tools added so the agents can work all three open tickets (24 tools; harness Table 12)
 - [x] Shop facts only from the MCP server over `campus_customs_new.db`; no second tools layer
 - [x] Agents append to `output/audit_trail.json` at every agent-loop step, never wiping it (`backend/audit.py`)
 - [x] Harness: each agent and each MCP tool, with the table each tool uses (Tables 11–12)
 - [x] Harness: safety section with guardrails for real customers and money, and token limits (Tables 14–15)
-- [x] `mcp_server/README.md` tool list matches the server (16 tools)
-- [x] Every tool tested on a scratch database copy (28 of 28 checks; `output/mcp_tool_check.json`)
+- [x] `mcp_server/README.md` tool list matches the server (24 tools)
+- [x] Every tool tested on a scratch database copy (41 of 41 checks, 24 of 24 tools; `output/mcp_tool_check.json`)
 - [ ] My approval of each agent's tool list (harness Table 11)
 - [ ] First audit trail entries from a real agent run

@@ -23,9 +23,11 @@ TOOL_ACCESS: dict[str, set[str]] = {
              "get_rent_due", "get_cash_balance", "list_payment_requests", "list_drafts"},
     "inventory": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices"},
     "accounting": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices", "get_rent_due",
-                   "get_cash_balance", "list_payments", "list_payment_requests", "request_payment"},
-    "facilities": {"get_rent_due", "get_cash_balance", "list_payment_requests"},
-    "customer_service": {"get_ticket", "check_stock", "save_customer_draft", "list_drafts"},
+                   "get_cash_balance", "list_payments", "list_payment_requests", "request_payment",
+                   "build_balance_sheet", "build_income_statement"},
+    "facilities": {"get_rent_due", "list_leases", "get_lease", "log_building_request", "list_building_requests",
+                   "update_building_request", "get_cash_balance", "list_payment_requests"},
+    "customer_service": {"get_ticket", "check_stock", "check_spelling_grammar", "save_customer_draft", "list_drafts"},
 }
 
 # Only the human approval step (the dashboard) may call these. No agent is ever given them.

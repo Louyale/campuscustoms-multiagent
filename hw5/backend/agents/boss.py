@@ -10,7 +10,7 @@ from pydantic_ai import Agent, NativeOutput
 from backend.config import build_model, load_prompt, settings_for
 from backend.mcp_tools import tools_for
 from backend.models import TicketDecision, TeamDeps
-from backend.team import ask_teammate
+from backend.team import ask_teammate, encourage_teammate
 
 NAME = "boss"
 
@@ -22,7 +22,7 @@ boss_agent = Agent(
     deps_type=TeamDeps,
     output_type=NativeOutput(TicketDecision),
     toolsets=[tools_for(NAME)],          # this role's MCP tools
-    tools=[ask_teammate],                # reach any other agent
+    tools=[ask_teammate, encourage_teammate],  # reach any other agent; encourage the team
     model_settings=settings_for(NAME),
     retries=2,
 )

@@ -30,7 +30,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | Say what each tool returns; explain why the tool's qualities fit the ticket's actions; an approve box per tool | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
 | 4 | Add the MCP server to vibe coder and test each tool | Add the server to this project in `.mcp.json`; test all three tools; a Tool Test Evidence table with the prompt, tool name and output; outputs must match the database | Sign in to the command-line copy of Claude Code, then pick up and confirm nothing was lost | `.mcp.json`, `scripts/mcp_smoke.py`, `output/mcp_smoke.json`, `output/harness.md` (Table 7) |
 | 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | My edits: Boss reports to the humans; Customer Service grammar and tone; Inventory low stock (below 5) and best sellers; Accounting balance sheet and income statement | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
-| 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | (pending review) | `mcp_server/server.py` (16 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–15) |
+| 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | Boss: encourage_teammate; Accounting: balance sheet and income statement tools; Customer Service: spelling and grammar gate; Facilities: lease and building-request tools | `mcp_server/server.py` (24 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–15) |
 
 ---
 
@@ -296,7 +296,30 @@ I approved the new symbols and the five avatars. Part 5a is complete.
 
 > add the tools the agents need and wire the to append to the json audit trail, and follow the instructions for the audit trail.  create a table in harness with each agent and the requisite information.  title it Agent Tools and provide the info.  add a safety sectionupdate the readme so the tool list matches what we have now.  for each agent's tool list, in the table, provide a lou approval area for review, amendment and the approval button
 
-**Follow-up prompt:** (pending my review of each agent's tool list)
+**Follow-up prompts (my review of each agent's tool list):**
+
+I approved Inventory's list and asked for edits to the other four:
+
+> for boss, add a tool that says that the boss sends encouraging messages to team mates
+
+> accounting needs tools to create the balance sheets and income statements and flag missing info, you forgot these
+
+> customer service needs a tool to have 100% correct spelling and grammar
+
+> facilities needs more tools to perform its function as to the lease and building requests
+
+**What was lacking after the first:** Boss had no way to encourage the team; Accounting couldn't build its statements; Customer Service had no spelling or grammar check; Facilities had only rent tools, with nothing for the lease itself or building requests.
+
+**Table 11: Tools Added From My Review**
+
+| Agent | What I asked for | Tool(s) added | How it works |
+|---|---|---|---|
+| 🕴️ Boss | Encouraging messages to teammates | `encourage_teammate` (a team tool, not MCP) | A short, sincere note (up to 200 characters) that goes along with Boss's next request to that teammate. Internal only, one per teammate per ticket, recorded in the audit trail |
+| 🧮 Accounting | Balance sheets and income statements, flagging missing info | `build_balance_sheet`, `build_income_statement` | Built only from database figures. The balance sheet always balances, and every figure the database lacks (fixed assets, receivables, owner's equity detail, other liabilities; revenue and cost of goods sold) is listed under `missing_information` |
+| 👕 Customer Service | 100% correct spelling and grammar | `check_spelling_grammar`, and `save_customer_draft` now refuses any draft that fails it | An offline dictionary plus grammar rules, with the shop's own names and products accepted. 🚩 No checker can promise 100%, so the gate catches the common mistakes and a human still reads every draft on the board |
+| 🧢 Facilities | More lease and building-request tools | `list_leases`, `get_lease`, `log_building_request`, `list_building_requests`, `update_building_request` | Full lease details with rent history (lease terms the database doesn't hold are flagged), plus a building-request log on the board (a new `building_requests` table). No landlord or contractor is ever contacted |
+
+All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness Tables 11 and 12 and the MCP README now match.
 
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
@@ -304,14 +327,14 @@ I approved the new symbols and the five avatars. Part 5a is complete.
 
 | Task | What was asked | Where it's done |
 |---|---|---|
-| P5b-1 | Add the tools the agents need for the open tickets to the MCP server | `mcp_server/server.py`: 3 tools grew to 16 (harness Table 12) |
+| P5b-1 | Add the tools the agents need for the open tickets to the MCP server | `mcp_server/server.py`: 3 tools grew to 24 (harness Table 12) |
 | P5b-2 | Shop facts come only from the MCP server over `campus_customs_new.db`; no second tools layer that bypasses MCP | Agents only have MCP tools plus `ask_teammate`; even `run_ticket` reads the ticket through MCP (`get_ticket`) |
 | P5b-3 | Wire the agents to append to `output/audit_trail.json` at every agent-loop step, with enough to audit later, never wiping it | `backend/audit.py` (`run_logged`, append-only); fields in harness Table 13 |
 | P5b-4 | In the harness, each agent and each MCP tool, with the table each tool uses | harness Table 11: **Agent Tools** (my title), and Table 12: MCP Tools and Their Tables |
 | P5b-5 | A short safety section: guardrails for real customers and real money, plus limits on token use | harness `## Safety`: Table 14: Safety Guardrails, and Table 15: Limits That Keep Token Use in Check |
-| P5b-6 | Update `mcp_server/README.md` so the tool list matches | All 16 tools listed, with the tables each uses |
+| P5b-6 | Update `mcp_server/README.md` so the tool list matches | All 24 tools listed, with the tables each uses |
 | P5b-7 | (mine) A Lou approval area for each agent's tool list | The "Lou's approval" column in harness Table 11, plus the approval buttons |
-| P5b-8 | (extra) Test every tool | `scripts/mcp_tool_check.py`: 28 of 28 checks, 16 of 16 tools, on a scratch database copy; `output/mcp_tool_check.json` |
+| P5b-8 | (extra) Test every tool | `scripts/mcp_tool_check.py`: 41 of 41 checks, 24 of 24 tools, on a scratch database copy; `output/mcp_tool_check.json` |
 
 **Money design (my rules, built into the tools):**
 

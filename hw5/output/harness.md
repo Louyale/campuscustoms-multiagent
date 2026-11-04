@@ -222,19 +222,19 @@ Every hand-off is recorded (`Delegation`: from, to, task, depth, and the answer 
 
 ### Part 5b: more MCP tools, the audit trail, and safety (Panel B)
 
-The MCP server grew from **3 tools to 16** so the agents can work all three open tickets. Every shop fact still comes **only from the MCP server** over `data/campus_customs_new.db`: the agents never open the database, and there's no second shop-tools layer. The backend itself reads a ticket through MCP (`get_ticket` in `run_ticket`).
+The MCP server grew from **3 tools to 24** so the agents can work all three open tickets. Every shop fact still comes **only from the MCP server** over `data/campus_customs_new.db`: the agents never open the database, and there's no second shop-tools layer. The backend itself reads a ticket through MCP (`get_ticket` in `run_ticket`).
 
 #### Agent Tools
 
 **Table 11: Agent Tools**
 
-| Agent | MCP tools it may call (table each one uses) | Other tool | Lou's approval |
+| Agent | MCP tools it may call (table each one uses) | Other tools | Lou's approval |
 |---|---|---|---|
-| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · `update_ticket_status` (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | `ask_teammate` | ☐ Approve · Notes: |
+| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · **`update_ticket_status`** (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | `ask_teammate` · **`encourage_teammate`** (a short, sincere note to a teammate, sent with Boss's next request; internal only, one per teammate per ticket) | ☐ Approve · Notes: |
 | 📦 **Inventory** | `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `get_open_invoices` (invoices, vendors, desk) | `ask_teammate` | ☑ Approved by Lou |
-| 🧮 **Accounting** | `get_cash_balance` (cash_accounts, approval_requests) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `list_payments` (payments) · `list_payment_requests` (approval_requests) · **`request_payment`** (approval_requests; reads invoices, leases, vendors, pricing, inventory, cash_accounts) | `ask_teammate` | ☐ Approve · Notes: |
-| 🧢 **Facilities** | `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) | `ask_teammate` | ☐ Approve · Notes: |
-| 👕 **Customer Service** | `get_ticket` (tickets, drafts, approval_requests) · `check_stock` (inventory, pricing) · **`save_customer_draft`** (drafts) · `list_drafts` (drafts) | `ask_teammate` | ☐ Approve · Notes: |
+| 🧮 **Accounting** | `get_cash_balance` (cash_accounts, approval_requests) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `list_payments` (payments) · `list_payment_requests` (approval_requests) · **`request_payment`** (approval_requests; reads invoices, leases, vendors, pricing, inventory, cash_accounts) · `build_balance_sheet` (cash_accounts, inventory, pricing, invoices, leases, approval_requests) · `build_income_statement` (payments) | `ask_teammate` | ☐ Approve · Notes: |
+| 🧢 **Facilities** | `get_rent_due` (leases, cash_accounts, desk) · `list_leases` (leases, desk) · `get_lease` (leases, payments, approval_requests, building_requests) · **`log_building_request`** (building_requests) · `list_building_requests` (building_requests) · **`update_building_request`** (building_requests) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) | `ask_teammate` | ☐ Approve · Notes: |
+| 👕 **Customer Service** | `get_ticket` (tickets, drafts, approval_requests) · `check_stock` (inventory, pricing) · `check_spelling_grammar` (inventory, tickets, vendors, leases, for the shop's own words) · **`save_customer_draft`** (drafts; refuses a draft that fails the spelling and grammar check) · `list_drafts` (drafts) | `ask_teammate` | ☐ Approve · Notes: |
 | 🙋 **Human (dashboard only)** | **`approve_and_pay`** (approval_requests, payments, cash_accounts, invoices, leases, desk) · **`reject_payment_request`** (approval_requests) | (none) | No agent has these tools |
 
 **Bold** marks tools that write. Every agent sees only its own tools (`TOOL_ACCESS` in `backend/mcp_tools.py`). The code refuses to start if any agent is ever given a human-only tool.
@@ -251,28 +251,40 @@ The MCP server grew from **3 tools to 16** so the agents can work all three open
 | 4 | `get_ticket` | tickets, drafts, approval_requests | reads | The ticket, plus anything already filed for it (all) |
 | 5 | `list_tickets` | tickets | reads | The board (all) |
 | 6 | `update_ticket_status` | tickets | **writes** `tickets.status` | Move a ticket along: in_progress, waiting_approval, blocked, resolved (all) |
-| 7 | `list_inventory` | inventory, pricing | reads | All stock, value at cost, and the reorder flag for fewer than 5 units (103, low stock, balance sheet) |
+| 7 | `list_inventory` | inventory, pricing | reads | All stock, value at cost, and the reorder flag for fewer than 5 units (103, low stock) |
 | 8 | `list_vendors` | vendors, invoices | reads | Specialty, lead days, and blocked or not (101, 103) |
 | 9 | `get_cash_balance` | cash_accounts, approval_requests | reads | Cash, and cash still free after pending requests (101, 102, 103) |
-| 10 | `list_payments` | payments | reads | Payments actually made (income statement) |
+| 10 | `list_payments` | payments | reads | Payments actually made |
 | 11 | `list_payment_requests` | approval_requests | reads | What's waiting for a human (all) |
 | 12 | `request_payment` | approval_requests (reads invoices, leases, vendors, pricing, inventory, cash_accounts) | **writes** a pending request | File an invoice, rent or purchase-order request for a human (101, 102, 103) |
-| 13 | `save_customer_draft` | drafts | **writes** a draft | Put a customer message on the board, never sent (101, 102, 103) |
-| 14 | `list_drafts` | drafts | reads | Drafts on the board (all) |
-| 15 | `approve_and_pay` | approval_requests, payments, cash_accounts, invoices, leases, desk | **writes** (human only) | Pay an approved request, update every table involved, refuse if cash is short |
-| 16 | `reject_payment_request` | approval_requests | **writes** (human only) | Reject a request; no money moves |
+| 13 | `build_balance_sheet` | cash_accounts, inventory, pricing, invoices, leases, approval_requests | reads | Balance sheet as of `desk.date_today`; flags every missing figure (Accounting) |
+| 14 | `build_income_statement` | payments | reads | Income statement for a period; revenue $0 (not modeled) and missing figures flagged (Accounting) |
+| 15 | `list_leases` | leases, desk | reads | Every lease, its rent and days until due (102) |
+| 16 | `get_lease` | leases, payments, approval_requests, building_requests | reads | One lease in full, with rent history and building requests; lease terms not in the database are flagged (102) |
+| 17 | `log_building_request` | building_requests | **writes** a request | Log a building or maintenance request for a leased space; no one outside is contacted (Facilities) |
+| 18 | `list_building_requests` | building_requests | reads | Building requests on the board (Facilities) |
+| 19 | `update_building_request` | building_requests | **writes** its status | open, in_progress, waiting_approval, done (Facilities) |
+| 20 | `check_spelling_grammar` | inventory, tickets, vendors, leases (the shop's own words) | reads | Offline spelling dictionary plus grammar rules for a draft (101, 102, 103) |
+| 21 | `save_customer_draft` | drafts | **writes** a draft | Put a customer message on the board, never sent; refused unless the spelling and grammar check passes (101, 102, 103) |
+| 22 | `list_drafts` | drafts | reads | Drafts on the board (all) |
+| 23 | `approve_and_pay` | approval_requests, payments, cash_accounts, invoices, leases, desk | **writes** (human only) | Pay an approved request, update every table involved, refuse if cash is short |
+| 24 | `reject_payment_request` | approval_requests | **writes** (human only) | Reject a request; no money moves |
 
-`drafts` and `approval_requests` are two **board tables** the server creates in the working copy the first time they're needed. A reset (copying `campus_customs.db` back) removes them, and the original database is never touched.
+`drafts`, `approval_requests` and `building_requests` are three **board tables** the server creates in the working copy the first time they're needed. A reset (copying `campus_customs.db` back) removes them, and the original database is never touched. Boss's `encourage_teammate` isn't an MCP tool: it's internal team chat, not a shop fact, and it's recorded in the audit trail.
 
 #### Every tool tested
 
-`scripts/mcp_tool_check.py` calls all 16 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **28 of 28 checks passed, and 16 of 16 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
+`scripts/mcp_tool_check.py` calls all 24 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **41 of 41 checks passed, and 24 of 24 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
 
 - a purchase order to a vendor blocked by invoice 501
 - a duplicate request
 - a wrong approval code
 - a $264 purchase order with only $160 left, both when filing and when paying, so the balance never went negative
 - a ticket status that doesn't exist
+- a building request with a made-up priority
+- a customer draft with spelling and grammar mistakes, which `save_customer_draft` refused to save
+
+The balance sheet balanced both before and after the test payments, and the income statement counted only the payments a human approved.
 
 Results are in `output/mcp_tool_check.json`, with the approval code masked.
 
@@ -308,6 +320,9 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | **No double payments** | Paying the same bill twice | `request_payment` refuses a duplicate pending request; `approve_and_pay` only pays a request that is still pending |
 | **Blocked vendors stay blocked** | A vendor with an unpaid bill won't ship | `request_payment` refuses a purchase order to a vendor with an open invoice |
 | **No real contact with customers or vendors** | A wrong or premature message can't be taken back | There is no send tool at all. `save_customer_draft` stores drafts on the board, where the `drafts.status` check allows only `draft`. When the vibe coder was tested, the `outlook-mail` server was excluded (Problem 4) |
+| **Correct spelling and grammar in every customer message** | Sloppy messages hurt the brand | `save_customer_draft` refuses any draft that fails `check_spelling_grammar` (an offline dictionary plus grammar rules, with the shop's own names and products accepted). A human still reads every draft on the board, because no checker can promise 100% |
+| **Financial statements never guess** | Made-up numbers in a balance sheet mislead the owner | `build_balance_sheet` and `build_income_statement` use only database figures and list every missing figure under `missing_information` |
+| **Building requests stay in-house** | A contractor or landlord shouldn't be contacted without a person | `log_building_request` only logs to the board; any cost needs a payment request and a human's approval |
 | **Never invent data** | Made-up stock, prices or dates mislead customers | Every fact comes from an MCP tool; missing facts come back as `found: false`, and the agents list them as missing information |
 | **Least privilege** | Each worker gets only the keys they need | Each agent sees only its tools (Table 11); Customer Service can't see cash, and Facilities can't file payments |
 | **The original data is protected** | You must always be able to reset | The server refuses `campus_customs.db` and opens only the working copy; a reset copies the original back |

@@ -226,3 +226,5 @@ class TeamDeps:
     chain: list[str] = field(default_factory=list)   # who is waiting on whom, e.g. ["boss", "inventory"]
     max_depth: int = 3                                # hand-offs allowed below Boss
     delegations: list[Delegation] = field(default_factory=list)
+    team_notes: dict[str, str] = field(default_factory=dict)   # Boss's encouragement, waiting to go with the next hand-off
+    notes_sent: list[dict] = field(default_factory=list)       # every encouragement sent on this ticket

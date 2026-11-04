@@ -87,6 +87,33 @@ async def main() -> None:
         r = await call("list_payments")
         check("list_payments", {}, r, r["payments"] == [], "no payments yet")
 
+        # --- financial statements (Accounting), before any payment ---
+        r = await call("build_balance_sheet")
+        check("build_balance_sheet", {}, r,
+              r["total_assets"] == 3400 + val and r["total_liabilities"] == 840 and r["equity"] == 3400 + val - 840
+              and r["balances"] and len(r["missing_information"]) >= 4
+              and any(l["section"] == "note" and "2,400" in l["label"] for l in r["lines"]),
+              f"assets ${3400 + val:,.2f} (cash + inventory at cost), liabilities $840 (invoice 501), balances; rent shown as a note; missing figures flagged")
+        r = await call("build_income_statement")
+        check("build_income_statement", {}, r, r["revenue"] == 0 and r["expenses"] == 0 and any("Revenue" in m for m in r["missing_information"]),
+              "revenue $0 (not modeled, flagged), expenses $0 (no payments yet)")
+
+        # --- leases and building requests (Facilities) ---
+        r = await call("list_leases")
+        check("list_leases", {}, r, len(r["leases"]) == 1 and r["leases"][0]["days_until_due"] == 2, "1 lease, rent due in 2 days")
+        r = await call("get_lease", lease_id=1)
+        check("get_lease", {"lease_id": 1}, r, r["found"] and r["lease"]["landlord"] == "Elm City Properties" and r["missing_information"],
+              "lease 1, Elm City Properties; lease terms not in the database are flagged")
+        r = await call("log_building_request", lease_id=1, issue="Front door lock sticks", priority="normal", requested_by="facilities")
+        breq = r.get("request_id")
+        check("log_building_request", {"lease_id": 1, "priority": "normal"}, r, r["logged"], "logged on the board; no one contacted")
+        r = await call("log_building_request", lease_id=1, issue="x", priority="whenever", requested_by="facilities")
+        check("log_building_request", {"priority": "whenever"}, r, r["logged"] is False, "REFUSED: priority must be low, normal or urgent")
+        r = await call("update_building_request", request_id=breq, status="in_progress", note="asked Accounting about cost")
+        check("update_building_request", {"request_id": breq, "status": "in_progress"}, r, r["updated"] and r["to"] == "in_progress", "open to in_progress")
+        r = await call("list_building_requests", status="in_progress")
+        check("list_building_requests", {"status": "in_progress"}, r, len(r["requests"]) == 1, "one request in progress")
+
         # --- money: request, refuse, approve, pay ---
         r = await call("request_payment", kind="purchase_order", ticket_id=103, vendor_id=1, sku="CC-HOOD-NAVY", size="M", qty=12,
                        reason="restock 12 hoodies", requested_by="accounting")
@@ -133,9 +160,29 @@ async def main() -> None:
         check("list_payment_requests", {}, r, [x["status"] for x in r["requests"]] == ["paid", "paid", "refused"], "requests: paid, paid, refused")
         r = await call("list_payments")
         check("list_payments", {"after": "two payments"}, r, r["total_paid"] == 3240, "two payments, $3,240 total, both approved by Lou")
+        r = await call("build_income_statement")
+        check("build_income_statement", {"after": "two payments"}, r, r["expenses"] == 3240 and r["net_income"] == -3240 and r["payments_counted"] == 2,
+              "expenses $3,240 (rent $2,400 + invoice $840), net income -$3,240 (no revenue modeled)")
+        r = await call("build_balance_sheet")
+        check("build_balance_sheet", {"after": "two payments"}, r, r["total_liabilities"] == 0 and r["balances"],
+              "invoice 501 paid, so no liabilities; still balances")
+
+        # --- spelling and grammar (Customer Service) ---
+        good_subject, good_body = "Your Classic Bulldog Tee", ("Hi Tauhid,\n\nThanks for your order of a Classic Bulldog Tee in size S. "
+                                                              "We're arranging a restock and will confirm timing soon.\n\nCampus Customs")
+        bad_body = "Hi Tauhid,\n\nwe recieve alot of orders and i think the the tee could of shipped  soon ."
+        r = await call("check_spelling_grammar", subject=good_subject, body=good_body)
+        check("check_spelling_grammar", {"draft": "clean"}, r, r["passed"], "clean draft passes (shop names like Bulldog and Tauhid accepted)")
+        r = await call("check_spelling_grammar", subject="your tee", body=bad_body)
+        found = {i["text"].lower() for i in r["issues"]}
+        check("check_spelling_grammar", {"draft": "with mistakes"}, r,
+              not r["passed"] and {"recieve", "alot", "the the", "could of", "i"} <= found,
+              f"{len(r['issues'])} issues caught: recieve, alot, the the, could of, lowercase i and sentence starts, spacing")
+        r = await call("save_customer_draft", ticket_id=101, to_name="Tauhid Zaman", subject="your tee", body=bad_body, written_by="customer_service")
+        check("save_customer_draft", {"draft": "with mistakes"}, r, r["saved"] is False and r["issues"], "REFUSED: won't save a draft with spelling or grammar issues")
 
         # --- board: drafts and ticket status ---
-        r = await call("save_customer_draft", ticket_id=101, to_name="Tauhid Zaman", subject="Your Bulldog tee", body="Hi Tauhid, ...", written_by="customer_service")
+        r = await call("save_customer_draft", ticket_id=101, to_name="Tauhid Zaman", subject=good_subject, body=good_body, written_by="customer_service")
         check("save_customer_draft", {"ticket_id": 101}, r, r["saved"] and r["sent"] is False, "draft saved on the board; sent = false")
         r = await call("list_drafts", ticket_id=101)
         check("list_drafts", {"ticket_id": 101}, r, len(r["drafts"]) == 1 and r["drafts"][0]["status"] == "draft", "one draft, status draft")

@@ -69,6 +69,9 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
 
     who = ROLE_LINES[me].split(":")[0]
     ticket = f" (ticket {deps.ticket_id})" if deps.ticket_id is not None else ""
+    note = deps.team_notes.pop(teammate, None)
+    if note:
+        task = f"{task}\n\nA note from 🕴️ Boss: {note}"
     deps.chain.append(teammate)
     try:
         result = await run_logged(
@@ -83,6 +86,26 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
     record.answer = result.output.model_dump_json()
     deps.delegations.append(record)
     return record.answer
+
+
+MAX_NOTE = 200  # characters; short notes keep token use down
+
+
+async def encourage_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, message: str) -> str:
+    """Boss only. Send a short, sincere note of encouragement or thanks to a teammate.
+
+    The note goes along with your next request to that teammate. It's internal team chat, never
+    sent to a customer, vendor or landlord. One note per teammate per ticket, up to 200 characters.
+    """
+    deps = ctx.deps
+    if teammate not in AGENT_NAMES or teammate == "boss":
+        return "REFUSED: choose a teammate other than yourself."
+    if any(n["to"] == teammate for n in deps.notes_sent):
+        return f"REFUSED: you already encouraged {teammate} on this ticket."
+    message = message.strip()[:MAX_NOTE]
+    deps.team_notes[teammate] = message
+    deps.notes_sent.append({"from": "boss", "to": teammate, "message": message})
+    return f"Noted. Your message goes to {teammate} with your next request."
 
 
 async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:

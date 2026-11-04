@@ -2,43 +2,59 @@
   "what": "Every MCP tool called through a FastMCP client against a scratch copy of the original database",
   "tools_on_server": [
     "approve_and_pay",
+    "build_balance_sheet",
+    "build_income_statement",
+    "check_spelling_grammar",
     "check_stock",
     "get_cash_balance",
+    "get_lease",
     "get_open_invoices",
     "get_rent_due",
     "get_ticket",
+    "list_building_requests",
     "list_drafts",
     "list_inventory",
+    "list_leases",
     "list_payment_requests",
     "list_payments",
     "list_tickets",
     "list_vendors",
+    "log_building_request",
     "reject_payment_request",
     "request_payment",
     "save_customer_draft",
+    "update_building_request",
     "update_ticket_status"
   ],
   "tools_tested": [
     "approve_and_pay",
+    "build_balance_sheet",
+    "build_income_statement",
+    "check_spelling_grammar",
     "check_stock",
     "get_cash_balance",
+    "get_lease",
     "get_open_invoices",
     "get_rent_due",
     "get_ticket",
+    "list_building_requests",
     "list_drafts",
     "list_inventory",
+    "list_leases",
     "list_payment_requests",
     "list_payments",
     "list_tickets",
     "list_vendors",
+    "log_building_request",
     "reject_payment_request",
     "request_payment",
     "save_customer_draft",
+    "update_building_request",
     "update_ticket_status"
   ],
   "all_tools_tested": true,
-  "checks_passed": 28,
-  "checks_total": 28,
+  "checks_passed": 41,
+  "checks_total": 41,
   "original_db_unchanged": true,
   "working_db_unchanged": true,
   "checks": [
@@ -470,6 +486,202 @@
       }
     },
     {
+      "tool": "build_balance_sheet",
+      "arguments": {},
+      "expected": "assets $4,424.00 (cash + inventory at cost), liabilities $840 (invoice 501), balances; rent shown as a note; missing figures flagged",
+      "passed": true,
+      "output": {
+        "kind": "balance_sheet",
+        "as_of": "2026-08-31",
+        "lines": [
+          {
+            "section": "asset",
+            "label": "Cash: checking",
+            "amount": 3400.0,
+            "source": "cash_accounts"
+          },
+          {
+            "section": "asset",
+            "label": "Inventory at cost (units on hand x unit cost)",
+            "amount": 1024.0,
+            "source": "inventory, pricing"
+          },
+          {
+            "section": "liability",
+            "label": "Accounts payable: invoice 501 (Bulldog Print Co, due 2026-08-28)",
+            "amount": 840.0,
+            "source": "invoices"
+          },
+          {
+            "section": "note",
+            "label": "Rent of $2,400.00 for Chapel Street shop due 2026-09-02 (2 days); not a liability until it's due",
+            "amount": null,
+            "source": "leases"
+          },
+          {
+            "section": "equity",
+            "label": "Owner's equity (assets minus liabilities)",
+            "amount": 3584.0,
+            "source": "calculated"
+          }
+        ],
+        "total_assets": 4424.0,
+        "total_liabilities": 840.0,
+        "equity": 3584.0,
+        "balances": true,
+        "missing_information": [
+          "Fixed assets (store fixtures, equipment, the point-of-sale system): no table records them.",
+          "Accounts receivable: the shop doesn't model revenue, so no customer owes it money in the data.",
+          "Owner's equity detail (owner contributions, retained earnings): equity is shown only as assets minus liabilities.",
+          "Other liabilities (wages, taxes, utilities, loans, credit cards): no table records them."
+        ]
+      }
+    },
+    {
+      "tool": "build_income_statement",
+      "arguments": {},
+      "expected": "revenue $0 (not modeled, flagged), expenses $0 (no payments yet)",
+      "passed": true,
+      "output": {
+        "kind": "income_statement",
+        "as_of": "start of records to 2026-08-31",
+        "lines": [
+          {
+            "section": "revenue",
+            "label": "Revenue (sales)",
+            "amount": 0.0,
+            "source": "not modeled: no sales table"
+          }
+        ],
+        "revenue": 0.0,
+        "expenses": 0,
+        "net_income": 0.0,
+        "payments_counted": 0,
+        "missing_information": [
+          "Revenue / sales: the shop doesn't model revenue, so revenue is shown as $0, not estimated.",
+          "Cost of goods sold: with no sales recorded, no inventory has been expensed as sold.",
+          "Other expenses (wages, utilities, insurance, taxes, depreciation): no table records them.",
+          "No payments have been recorded in this period, so expenses are $0."
+        ]
+      }
+    },
+    {
+      "tool": "list_leases",
+      "arguments": {},
+      "expected": "1 lease, rent due in 2 days",
+      "passed": true,
+      "output": {
+        "today": "2026-08-31",
+        "leases": [
+          {
+            "id": 1,
+            "space_name": "Chapel Street shop",
+            "landlord": "Elm City Properties",
+            "monthly_rent": 2400.0,
+            "next_due": "2026-09-02",
+            "notes": null,
+            "days_until_due": 2,
+            "overdue": false
+          }
+        ],
+        "total_monthly_rent": 2400.0
+      }
+    },
+    {
+      "tool": "get_lease",
+      "arguments": {
+        "lease_id": 1
+      },
+      "expected": "lease 1, Elm City Properties; lease terms not in the database are flagged",
+      "passed": true,
+      "output": {
+        "found": true,
+        "lease": {
+          "id": 1,
+          "space_name": "Chapel Street shop",
+          "landlord": "Elm City Properties",
+          "monthly_rent": 2400.0,
+          "next_due": "2026-09-02",
+          "notes": null
+        },
+        "today": "2026-08-31",
+        "days_until_due": 2,
+        "overdue": false,
+        "rent_payments": [],
+        "rent_requests": [],
+        "building_requests": [],
+        "missing_information": [
+          "Lease start and end dates, deposit, and renewal terms aren't in the database."
+        ]
+      }
+    },
+    {
+      "tool": "log_building_request",
+      "arguments": {
+        "lease_id": 1,
+        "priority": "normal"
+      },
+      "expected": "logged on the board; no one contacted",
+      "passed": true,
+      "output": {
+        "logged": true,
+        "request_id": 1,
+        "status": "open",
+        "message": "Logged on the board for a human. No one outside the shop was contacted."
+      }
+    },
+    {
+      "tool": "log_building_request",
+      "arguments": {
+        "priority": "whenever"
+      },
+      "expected": "REFUSED: priority must be low, normal or urgent",
+      "passed": true,
+      "output": {
+        "logged": false,
+        "message": "priority must be low, normal or urgent."
+      }
+    },
+    {
+      "tool": "update_building_request",
+      "arguments": {
+        "request_id": 1,
+        "status": "in_progress"
+      },
+      "expected": "open to in_progress",
+      "passed": true,
+      "output": {
+        "updated": true,
+        "request_id": 1,
+        "from": "open",
+        "to": "in_progress"
+      }
+    },
+    {
+      "tool": "list_building_requests",
+      "arguments": {
+        "status": "in_progress"
+      },
+      "expected": "one request in progress",
+      "passed": true,
+      "output": {
+        "requests": [
+          {
+            "id": 1,
+            "lease_id": 1,
+            "ticket_id": null,
+            "issue": "Front door lock sticks",
+            "priority": "normal",
+            "requested_by": "facilities",
+            "created_at": "2026-11-04T23:15:04+00:00",
+            "status": "in_progress",
+            "updated_at": "2026-11-04T23:15:04+00:00",
+            "note": "asked Accounting about cost"
+          }
+        ]
+      }
+    },
+    {
       "tool": "request_payment",
       "arguments": {
         "kind": "purchase_order",
@@ -716,10 +928,10 @@
             "account": "checking",
             "reason": "pay overdue invoice",
             "requested_by": "accounting",
-            "requested_at": "2026-11-04T23:03:09+00:00",
+            "requested_at": "2026-11-04T23:15:04+00:00",
             "status": "paid",
             "decided_by": "Lou",
-            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decided_at": "2026-11-04T23:15:04+00:00",
             "decision_note": null,
             "payment_id": 1
           },
@@ -737,10 +949,10 @@
             "account": "checking",
             "reason": "September rent",
             "requested_by": "accounting",
-            "requested_at": "2026-11-04T23:03:09+00:00",
+            "requested_at": "2026-11-04T23:15:04+00:00",
             "status": "paid",
             "decided_by": "Lou",
-            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decided_at": "2026-11-04T23:15:04+00:00",
             "decision_note": null,
             "payment_id": 2
           },
@@ -761,7 +973,7 @@
             "requested_at": "test",
             "status": "refused",
             "decided_by": "Lou",
-            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decided_at": "2026-11-04T23:15:05+00:00",
             "decision_note": "not enough cash; no negative balances",
             "payment_id": null
           }
@@ -801,6 +1013,278 @@
       }
     },
     {
+      "tool": "build_income_statement",
+      "arguments": {
+        "after": "two payments"
+      },
+      "expected": "expenses $3,240 (rent $2,400 + invoice $840), net income -$3,240 (no revenue modeled)",
+      "passed": true,
+      "output": {
+        "kind": "income_statement",
+        "as_of": "start of records to 2026-08-31",
+        "lines": [
+          {
+            "section": "revenue",
+            "label": "Revenue (sales)",
+            "amount": 0.0,
+            "source": "not modeled: no sales table"
+          },
+          {
+            "section": "expense",
+            "label": "Vendor invoices paid",
+            "amount": 840.0,
+            "source": "payments"
+          },
+          {
+            "section": "expense",
+            "label": "Rent",
+            "amount": 2400.0,
+            "source": "payments"
+          },
+          {
+            "section": "note",
+            "label": "Cash basis: vendor and purchase-order payments for stock are shown as spending. On an accrual basis they'd be inventory until sold.",
+            "amount": null,
+            "source": "payments"
+          }
+        ],
+        "revenue": 0.0,
+        "expenses": 3240.0,
+        "net_income": -3240.0,
+        "payments_counted": 2,
+        "missing_information": [
+          "Revenue / sales: the shop doesn't model revenue, so revenue is shown as $0, not estimated.",
+          "Cost of goods sold: with no sales recorded, no inventory has been expensed as sold.",
+          "Other expenses (wages, utilities, insurance, taxes, depreciation): no table records them."
+        ]
+      }
+    },
+    {
+      "tool": "build_balance_sheet",
+      "arguments": {
+        "after": "two payments"
+      },
+      "expected": "invoice 501 paid, so no liabilities; still balances",
+      "passed": true,
+      "output": {
+        "kind": "balance_sheet",
+        "as_of": "2026-08-31",
+        "lines": [
+          {
+            "section": "asset",
+            "label": "Cash: checking",
+            "amount": 160.0,
+            "source": "cash_accounts"
+          },
+          {
+            "section": "asset",
+            "label": "Inventory at cost (units on hand x unit cost)",
+            "amount": 1024.0,
+            "source": "inventory, pricing"
+          },
+          {
+            "section": "note",
+            "label": "Rent of $2,400.00 for Chapel Street shop due 2026-10-02 (32 days); not a liability until it's due",
+            "amount": null,
+            "source": "leases"
+          },
+          {
+            "section": "equity",
+            "label": "Owner's equity (assets minus liabilities)",
+            "amount": 1184.0,
+            "source": "calculated"
+          }
+        ],
+        "total_assets": 1184.0,
+        "total_liabilities": 0,
+        "equity": 1184.0,
+        "balances": true,
+        "missing_information": [
+          "Fixed assets (store fixtures, equipment, the point-of-sale system): no table records them.",
+          "Accounts receivable: the shop doesn't model revenue, so no customer owes it money in the data.",
+          "Owner's equity detail (owner contributions, retained earnings): equity is shown only as assets minus liabilities.",
+          "Other liabilities (wages, taxes, utilities, loans, credit cards): no table records them."
+        ]
+      }
+    },
+    {
+      "tool": "check_spelling_grammar",
+      "arguments": {
+        "draft": "clean"
+      },
+      "expected": "clean draft passes (shop names like Bulldog and Tauhid accepted)",
+      "passed": true,
+      "output": {
+        "passed": true,
+        "issues": [],
+        "words_checked": 29
+      }
+    },
+    {
+      "tool": "check_spelling_grammar",
+      "arguments": {
+        "draft": "with mistakes"
+      },
+      "expected": "10 issues caught: recieve, alot, the the, could of, lowercase i and sentence starts, spacing",
+      "passed": true,
+      "output": {
+        "passed": false,
+        "issues": [
+          {
+            "where": "subject",
+            "type": "grammar",
+            "text": "your tee",
+            "suggestion": "Y",
+            "problem": "start each sentence with a capital letter"
+          },
+          {
+            "where": "body",
+            "type": "spelling",
+            "text": "alot",
+            "suggestion": "lot"
+          },
+          {
+            "where": "body",
+            "type": "spelling",
+            "text": "recieve",
+            "suggestion": "receive"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "the the",
+            "suggestion": "the",
+            "problem": "repeated word"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "could of",
+            "suggestion": "could have",
+            "problem": "'could of' should be 'have', not 'of'"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "alot",
+            "suggestion": "a lot",
+            "problem": "'alot' is not a word"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "i",
+            "suggestion": "I",
+            "problem": "capitalize 'I'"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "we recieve ",
+            "suggestion": "W",
+            "problem": "start each sentence with a capital letter"
+          },
+          {
+            "where": "body",
+            "type": "style",
+            "text": "double space",
+            "suggestion": "single space",
+            "problem": "double space"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": " .",
+            "suggestion": ".",
+            "problem": "no space before punctuation"
+          }
+        ],
+        "words_checked": 19
+      }
+    },
+    {
+      "tool": "save_customer_draft",
+      "arguments": {
+        "draft": "with mistakes"
+      },
+      "expected": "REFUSED: won't save a draft with spelling or grammar issues",
+      "passed": true,
+      "output": {
+        "saved": false,
+        "message": "Fix the spelling and grammar issues first, then save again.",
+        "issues": [
+          {
+            "where": "subject",
+            "type": "grammar",
+            "text": "your tee",
+            "suggestion": "Y",
+            "problem": "start each sentence with a capital letter"
+          },
+          {
+            "where": "body",
+            "type": "spelling",
+            "text": "alot",
+            "suggestion": "lot"
+          },
+          {
+            "where": "body",
+            "type": "spelling",
+            "text": "recieve",
+            "suggestion": "receive"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "the the",
+            "suggestion": "the",
+            "problem": "repeated word"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "could of",
+            "suggestion": "could have",
+            "problem": "'could of' should be 'have', not 'of'"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "alot",
+            "suggestion": "a lot",
+            "problem": "'alot' is not a word"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "i",
+            "suggestion": "I",
+            "problem": "capitalize 'I'"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": "we recieve ",
+            "suggestion": "W",
+            "problem": "start each sentence with a capital letter"
+          },
+          {
+            "where": "body",
+            "type": "style",
+            "text": "double space",
+            "suggestion": "single space",
+            "problem": "double space"
+          },
+          {
+            "where": "body",
+            "type": "grammar",
+            "text": " .",
+            "suggestion": ".",
+            "problem": "no space before punctuation"
+          }
+        ]
+      }
+    },
+    {
       "tool": "save_customer_draft",
       "arguments": {
         "ticket_id": 101
@@ -828,10 +1312,10 @@
             "id": 1,
             "ticket_id": 101,
             "to_name": "Tauhid Zaman",
-            "subject": "Your Bulldog tee",
-            "body": "Hi Tauhid, ...",
+            "subject": "Your Classic Bulldog Tee",
+            "body": "Hi Tauhid,\n\nThanks for your order of a Classic Bulldog Tee in size S. We're arranging a restock and will confirm timing soon.\n\nCampus Customs",
             "written_by": "customer_service",
-            "created_at": "2026-11-04T23:03:09+00:00",
+            "created_at": "2026-11-04T23:15:05+00:00",
             "status": "draft"
           }
         ]

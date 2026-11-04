@@ -19,7 +19,7 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 - The working copy must already exist. The server won't quietly create a blank database.
 - "Today" for every tool is the database's `desk.date_today` (2026-08-31), never the computer's clock.
 
-## The tools (16), and why we have them
+## The tools (24), and why we have them
 
 ### The first three (Problem 3), one for each open ticket
 
@@ -42,17 +42,27 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 - **`get_cash_balance()`**: reads `cash_accounts` and `approval_requests`. Cash on hand, and how much of it is already promised to pending requests.
 - **`list_payments()`**: reads `payments`. Payments a human has approved and made.
 - **`list_payment_requests(status)`**: reads `approval_requests`. What's waiting for a human.
+- **`build_balance_sheet()`**: reads `cash_accounts`, `inventory`, `pricing`, `invoices`, `leases` and `approval_requests`. The balance sheet as of `desk.date_today`: cash and inventory at cost, open invoices, and equity as assets minus liabilities, so it always balances. Rent not yet due and pending requests are shown as notes. Every figure the database can't supply, such as fixed assets, receivables and owner's equity detail, is listed under `missing_information`.
+- **`build_income_statement(period_start, period_end)`**: reads `payments`. Revenue is $0 because the shop doesn't model it, and that's flagged, not estimated. Expenses are payments actually made, grouped by kind, and pending requests are never counted. Missing figures are listed.
 - **`request_payment(kind, ticket_id, ...)`**: writes a **pending** row to `approval_requests`. It **does not pay**. The amount comes from the database (the invoice amount, the lease rent, or qty × unit cost). It refuses a vendor blocked by an open invoice, a duplicate request, or anything the cash can't cover.
 
+**Leases and building requests**
+- **`list_leases()`**: reads `leases` and `desk`. Every lease, its rent and days until due.
+- **`get_lease(lease_id)`**: reads `leases`, `payments`, `approval_requests` and `building_requests`. One lease in full, with its rent payment history, pending rent requests and building requests. Lease terms the database doesn't hold are listed as missing.
+- **`log_building_request(lease_id, issue, priority, requested_by, ticket_id)`**: writes to `building_requests`. Logs a building or maintenance request (priority low, normal or urgent) on the board. No landlord or contractor is contacted.
+- **`list_building_requests(status)`**: reads `building_requests`.
+- **`update_building_request(request_id, status, note)`**: writes `building_requests.status` (open, in_progress, waiting_approval or done).
+
 **Drafts**
-- **`save_customer_draft(ticket_id, to_name, subject, body, written_by)`**: writes to `drafts`. The message stays on the board, and nothing is ever sent.
+- **`check_spelling_grammar(subject, body)`**: reads `inventory`, `tickets`, `vendors` and `leases` for the shop's own words. Offline spelling dictionary plus grammar rules: repeated words, a/an, capital letters, a lone "i", "could of", spacing, punctuation and brackets.
+- **`save_customer_draft(ticket_id, to_name, subject, body, written_by)`**: writes to `drafts`. The message stays on the board, and nothing is ever sent. It refuses any draft that doesn't pass `check_spelling_grammar`.
 - **`list_drafts(ticket_id)`**: reads `drafts`.
 
 **Human approval only** (the dashboard; no agent is given these)
 - **`approve_and_pay(request_id, approved_by, approval_code)`**: pays one pending request after a person approves it. It needs `HUMAN_APPROVAL_CODE` from `.env`, and refuses if the cash would go below zero. In one transaction it adds a row to `payments` (with `approved_by`), lowers `cash_accounts`, marks the invoice paid or moves the lease's `next_due` forward a month, and marks the request paid.
 - **`reject_payment_request(request_id, rejected_by, approval_code, reason)`**: rejects a pending request. No money moves.
 
-`drafts` and `approval_requests` are board tables the server creates in the working copy the first time they're needed. A reset removes them.
+`drafts`, `approval_requests` and `building_requests` are board tables the server creates in the working copy the first time they're needed. A reset removes them.
 
 ## Run
 
@@ -60,4 +70,4 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 python mcp_server/server.py
 ```
 
-All 16 tools are checked by `python scripts/mcp_tool_check.py`, which runs them on a scratch copy of the database.
+All 24 tools are checked by `python scripts/mcp_tool_check.py`, which runs them on a scratch copy of the database.

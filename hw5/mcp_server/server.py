@@ -27,6 +27,7 @@ Run:  python mcp_server/server.py
 from __future__ import annotations
 
 import os
+import re
 import sqlite3
 from contextlib import closing
 from datetime import date, datetime, timezone
@@ -221,6 +222,17 @@ CREATE TABLE IF NOT EXISTS approval_requests (
     status TEXT NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending', 'paid', 'rejected', 'refused')),
     decided_by TEXT, decided_at TEXT, decision_note TEXT, payment_id INTEGER
+);
+CREATE TABLE IF NOT EXISTS building_requests (
+    id INTEGER PRIMARY KEY,
+    lease_id INTEGER NOT NULL REFERENCES leases(id),
+    ticket_id INTEGER REFERENCES tickets(id),
+    issue TEXT NOT NULL,
+    priority TEXT NOT NULL CHECK (priority IN ('low', 'normal', 'urgent')),
+    requested_by TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'waiting_approval', 'done')),
+    updated_at TEXT, note TEXT
 );
 """
 
@@ -454,11 +466,103 @@ def request_payment(kind: str, ticket_id: int, reason: str, requested_by: str,
             "message": "Waiting for a human to approve on the dashboard. Nothing has been paid."}
 
 
+# ---------------------------------------------------------------- spelling and grammar (Customer Service)
+
+SHOP_WORDS = {
+    "hoodie", "hoodies", "tee", "tees", "yale", "bulldog", "bulldogs", "sku", "skus", "restock", "restocking",
+    "reprint", "campus", "customs", "chapel", "merch", "xl", "os", "eta", "po",
+}
+CONFUSIONS = [  # (pattern, problem, suggestion)
+    (r"\b(could|should|would|must) of\b", "'{0}' should be 'have', not 'of'", "{1} have"),
+    (r"\balot\b", "'alot' is not a word", "a lot"),
+    (r"\byour welcome\b", "'your' should be 'you're'", "you're welcome"),
+    (r"\bthier\b", "misspelling", "their"),
+    (r"\bdefinately\b", "misspelling", "definitely"),
+    (r"\bit's own\b", "'it's' means 'it is'", "its own"),
+]
+
+
+def shop_vocabulary() -> set[str]:
+    """Words the checker accepts because they are in the shop's own data (names, products, places)."""
+    words = set(SHOP_WORDS)
+    with closing(connect()) as conn:
+        for sql in ("SELECT name FROM inventory", "SELECT requester FROM tickets", "SELECT subject FROM tickets",
+                    "SELECT name FROM vendors", "SELECT specialty FROM vendors", "SELECT landlord FROM leases",
+                    "SELECT space_name FROM leases", "SELECT sku FROM inventory"):
+            for (text,) in conn.execute(sql):
+                words.update(w.lower() for w in re.findall(r"[A-Za-z][A-Za-z'-]*", text or ""))
+    return words
+
+
+def text_issues(text: str, label: str, vocab: set[str], spell) -> list[dict]:
+    issues = []
+    for word in sorted({w for w in re.findall(r"[A-Za-z][A-Za-z']*", text)}):
+        core = word.strip("'").lower()
+        if len(core) < 2 or core in vocab or core.endswith("'s") and core[:-2] in vocab:
+            continue
+        if spell.unknown([core]):
+            issues.append({"where": label, "type": "spelling", "text": word, "suggestion": spell.correction(core)})
+    for m in re.finditer(r"\b(\w+)\s+\1\b", text, re.IGNORECASE):
+        issues.append({"where": label, "type": "grammar", "text": m.group(0), "suggestion": m.group(1), "problem": "repeated word"})
+    for m in re.finditer(r"\b(a)\s+([aeiou]\w*)", text, re.IGNORECASE):
+        if not re.match(r"(?i)(uni|use|usu|one|euro|u[bcdfgklmnprst][aeiou])", m.group(2)):
+            issues.append({"where": label, "type": "grammar", "text": m.group(0), "suggestion": f"an {m.group(2)}", "problem": "use 'an' before a vowel sound"})
+    for m in re.finditer(r"\b(an)\s+([bcdfgjklmnpqrstvwxyz]\w*)", text, re.IGNORECASE):
+        if not re.match(r"(?i)(hour|honest|honor|heir|x)", m.group(2)):
+            issues.append({"where": label, "type": "grammar", "text": m.group(0), "suggestion": f"a {m.group(2)}", "problem": "use 'a' before a consonant sound"})
+    for pattern, problem, fix in CONFUSIONS:
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            issues.append({"where": label, "type": "grammar", "text": m.group(0),
+                           "suggestion": fix.format(m.group(0), m.group(1) if m.groups() else "") if fix else None,
+                           "problem": problem.format(m.group(0))})
+    for m in re.finditer(r"\bi\b", text):
+        issues.append({"where": label, "type": "grammar", "text": "i", "suggestion": "I", "problem": "capitalize 'I'"})
+    for m in re.finditer(r"(^|[.!?]\s+|\n\s*)([a-z])", text):
+        issues.append({"where": label, "type": "grammar", "text": m.group(2) + text[m.end():m.end() + 10],
+                       "suggestion": m.group(2).upper(), "problem": "start each sentence with a capital letter"})
+    if re.search(r" {2,}", text):
+        issues.append({"where": label, "type": "style", "text": "double space", "suggestion": "single space", "problem": "double space"})
+    for m in re.finditer(r"\s+([,.!?;:])", text):
+        issues.append({"where": label, "type": "grammar", "text": m.group(0), "suggestion": m.group(1), "problem": "no space before punctuation"})
+    for opener, closer in (("(", ")"), ('"', '"')):
+        if (text.count(opener) != text.count(closer)) if opener != closer else text.count(opener) % 2:
+            issues.append({"where": label, "type": "grammar", "text": opener, "suggestion": closer, "problem": "unbalanced brackets or quotes"})
+    if label == "body":
+        last_line = [l for l in text.strip().splitlines() if l.strip()]
+        sentences = [l for l in last_line if len(l.split()) > 3]
+        for l in sentences:
+            if not re.search(r"[.!?:)\"]$", l.strip()):
+                issues.append({"where": label, "type": "grammar", "text": l.strip()[-30:], "suggestion": "end with punctuation",
+                               "problem": "sentence has no end punctuation"})
+    return issues
+
+
+def check_text(subject: str, body: str) -> dict:
+    from spellchecker import SpellChecker  # offline dictionary, no AI call
+    vocab, spell = shop_vocabulary(), SpellChecker()
+    issues = text_issues(subject, "subject", vocab, spell) + text_issues(body, "body", vocab, spell)
+    return {"passed": not issues, "issues": issues, "words_checked": len(re.findall(r"[A-Za-z']+", subject + " " + body))}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def check_spelling_grammar(subject: str, body: str) -> dict:
+    """Check a draft's subject and body for spelling and grammar before it's saved. Offline
+    dictionary plus grammar rules: repeated words, a/an, capital letters, 'could of', a lone 'i',
+    spacing, punctuation and brackets. The shop's own names and products count as correct words
+    (inventory, tickets, vendors, leases). Fix every issue, then check again until it passes."""
+    return check_text(subject, body)
+
+
 # ---------------------------------------------------------------- drafts (Customer Service)
 
 @mcp.tool(annotations=WRITES)
 def save_customer_draft(ticket_id: int, to_name: str, subject: str, body: str, written_by: str) -> dict:
-    """Save a message draft on the board (drafts). It is never sent; there is no send tool."""
+    """Save a message draft on the board (drafts). It is never sent; there is no send tool.
+    Refused unless the subject and body pass check_spelling_grammar."""
+    check = check_text(subject, body)
+    if not check["passed"]:
+        return {"saved": False, "message": "Fix the spelling and grammar issues first, then save again.",
+                "issues": check["issues"]}
     with closing(board(connect())) as conn:
         if conn.execute("SELECT 1 FROM tickets WHERE id = ?", (ticket_id,)).fetchone() is None:
             return {"saved": False, "message": f"No ticket {ticket_id}."}
@@ -481,6 +585,190 @@ def list_drafts(ticket_id: int | None = None) -> dict:
             args.append(ticket_id)
         rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
     return {"drafts": rows}
+
+
+# ---------------------------------------------------------------- leases and building requests (Facilities)
+
+@mcp.tool(annotations=READ_ONLY)
+def list_leases() -> dict:
+    """Every lease (leases) with its rent, landlord, next due date and days until due (desk)."""
+    with closing(connect()) as conn:
+        today = shop_today(conn)
+        rows = [dict(r) for r in conn.execute("SELECT * FROM leases ORDER BY id")]
+    for r in rows:
+        r["days_until_due"] = (date.fromisoformat(r["next_due"]) - today).days
+        r["overdue"] = r["days_until_due"] < 0
+    return {"today": today.isoformat(), "leases": rows,
+            "total_monthly_rent": round(sum(r["monthly_rent"] for r in rows), 2)}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def get_lease(lease_id: int) -> dict:
+    """One lease in full (leases), with its rent payment history (payments, kind 'rent'), any rent
+    requests waiting for a human (approval_requests), and its building requests (building_requests)."""
+    with closing(board(connect())) as conn:
+        today = shop_today(conn)
+        lease = conn.execute("SELECT * FROM leases WHERE id = ?", (lease_id,)).fetchone()
+        if lease is None:
+            return {"found": False, "lease_id": lease_id, "message": f"No lease {lease_id}."}
+        paid = [dict(r) for r in conn.execute("SELECT * FROM payments WHERE kind = 'rent' AND ref_id = ? ORDER BY id", (lease_id,))]
+        reqs = [dict(r) for r in conn.execute("SELECT * FROM approval_requests WHERE kind = 'rent' AND ref_id = ? ORDER BY id", (lease_id,))]
+        building = [dict(r) for r in conn.execute("SELECT * FROM building_requests WHERE lease_id = ? ORDER BY id", (lease_id,))]
+    days = (date.fromisoformat(lease["next_due"]) - today).days
+    return {"found": True, "lease": dict(lease), "today": today.isoformat(), "days_until_due": days, "overdue": days < 0,
+            "rent_payments": paid, "rent_requests": reqs, "building_requests": building,
+            "missing_information": ["Lease start and end dates, deposit, and renewal terms aren't in the database."]}
+
+
+@mcp.tool(annotations=WRITES)
+def log_building_request(lease_id: int, issue: str, priority: str, requested_by: str, ticket_id: int | None = None) -> dict:
+    """Log a building or maintenance request for a leased space (building_requests). For example, a
+    broken lock, a leak, or a landlord notice. It goes on the board for a human; no contractor or
+    landlord is contacted. priority: low, normal or urgent."""
+    if priority not in ("low", "normal", "urgent"):
+        return {"logged": False, "message": "priority must be low, normal or urgent."}
+    if not issue.strip():
+        return {"logged": False, "message": "Describe the issue."}
+    with closing(board(connect())) as conn:
+        if conn.execute("SELECT 1 FROM leases WHERE id = ?", (lease_id,)).fetchone() is None:
+            return {"logged": False, "message": f"No lease {lease_id}."}
+        if ticket_id is not None and conn.execute("SELECT 1 FROM tickets WHERE id = ?", (ticket_id,)).fetchone() is None:
+            return {"logged": False, "message": f"No ticket {ticket_id}."}
+        with conn:
+            cur = conn.execute(
+                "INSERT INTO building_requests (lease_id, ticket_id, issue, priority, requested_by, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (lease_id, ticket_id, issue.strip(), priority, requested_by, now_utc()),
+            )
+    return {"logged": True, "request_id": cur.lastrowid, "status": "open",
+            "message": "Logged on the board for a human. No one outside the shop was contacted."}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_building_requests(status: str | None = None) -> dict:
+    """Building and maintenance requests on the board (building_requests), optionally one status."""
+    with closing(board(connect())) as conn:
+        sql, args = "SELECT * FROM building_requests", []
+        if status:
+            sql += " WHERE status = ?"
+            args.append(status)
+        rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
+    return {"requests": rows}
+
+
+@mcp.tool(annotations=WRITES)
+def update_building_request(request_id: int, status: str, note: str = "") -> dict:
+    """Move a building request along (building_requests.status): open, in_progress, waiting_approval
+    or done. Anything that costs money still needs a payment request and a human's approval."""
+    if status not in ("open", "in_progress", "waiting_approval", "done"):
+        return {"updated": False, "message": "status must be open, in_progress, waiting_approval or done."}
+    with closing(board(connect())) as conn:
+        row = conn.execute("SELECT status FROM building_requests WHERE id = ?", (request_id,)).fetchone()
+        if row is None:
+            return {"updated": False, "message": f"No building request {request_id}."}
+        with conn:
+            conn.execute("UPDATE building_requests SET status = ?, note = ?, updated_at = ? WHERE id = ?",
+                         (status, note, now_utc(), request_id))
+    return {"updated": True, "request_id": request_id, "from": row["status"], "to": status}
+
+
+# ---------------------------------------------------------------- financial statements (Accounting)
+
+# Figures the shop database simply doesn't hold. Every statement lists these as missing, never guessing.
+NOT_IN_DATABASE_BALANCE = [
+    "Fixed assets (store fixtures, equipment, the point-of-sale system): no table records them.",
+    "Accounts receivable: the shop doesn't model revenue, so no customer owes it money in the data.",
+    "Owner's equity detail (owner contributions, retained earnings): equity is shown only as assets minus liabilities.",
+    "Other liabilities (wages, taxes, utilities, loans, credit cards): no table records them.",
+]
+NOT_IN_DATABASE_INCOME = [
+    "Revenue / sales: the shop doesn't model revenue, so revenue is shown as $0, not estimated.",
+    "Cost of goods sold: with no sales recorded, no inventory has been expensed as sold.",
+    "Other expenses (wages, utilities, insurance, taxes, depreciation): no table records them.",
+]
+
+
+@mcp.tool(annotations=READ_ONLY)
+def build_balance_sheet() -> dict:
+    """Balance sheet as of desk.date_today, built only from database figures, with every missing
+    figure flagged. Assets: cash (cash_accounts) and inventory at cost (inventory x pricing).
+    Liabilities: open invoices (invoices), plus rent once it's overdue (leases). Rent not yet due
+    is shown as a note. Equity = assets - liabilities, so the sheet always balances."""
+    with closing(board(connect())) as conn:
+        today = shop_today(conn)
+        cash = [dict(r) for r in conn.execute("SELECT name, balance FROM cash_accounts ORDER BY name")]
+        stock = conn.execute(
+            "SELECT i.sku, i.size, i.qty, p.unit_cost FROM inventory i LEFT JOIN pricing p ON p.sku = i.sku"
+        ).fetchall()
+        invoices = [dict(r) for r in conn.execute(
+            "SELECT i.id, v.name AS vendor, i.amount, i.due_date FROM invoices i JOIN vendors v ON v.id = i.vendor_id "
+            "WHERE i.status = 'open' ORDER BY i.id")]
+        leases = [dict(r) for r in conn.execute("SELECT id, space_name, landlord, monthly_rent, next_due FROM leases")]
+        pending = [dict(r) for r in conn.execute(
+            "SELECT id, kind, payee, amount FROM approval_requests WHERE status = 'pending' ORDER BY id")]
+
+    lines, missing = [], list(NOT_IN_DATABASE_BALANCE)
+    for a in cash:
+        lines.append({"section": "asset", "label": f"Cash: {a['name']}", "amount": a["balance"], "source": "cash_accounts"})
+    unpriced = sorted({r["sku"] for r in stock if r["unit_cost"] is None})
+    inv_value = round(sum(r["qty"] * r["unit_cost"] for r in stock if r["unit_cost"] is not None), 2)
+    lines.append({"section": "asset", "label": "Inventory at cost (units on hand x unit cost)", "amount": inv_value,
+                  "source": "inventory, pricing"})
+    if unpriced:
+        missing.append(f"Unit cost missing for {', '.join(unpriced)}, so that stock isn't valued.")
+    for inv in invoices:
+        lines.append({"section": "liability", "label": f"Accounts payable: invoice {inv['id']} ({inv['vendor']}, due {inv['due_date']})",
+                      "amount": inv["amount"], "source": "invoices"})
+    for lease in leases:
+        due = date.fromisoformat(lease["next_due"])
+        if due < today:
+            lines.append({"section": "liability", "label": f"Overdue rent: {lease['space_name']} ({lease['landlord']})",
+                          "amount": lease["monthly_rent"], "source": "leases"})
+        else:
+            lines.append({"section": "note", "label": f"Rent of ${lease['monthly_rent']:,.2f} for {lease['space_name']} due {lease['next_due']} "
+                          f"({(due - today).days} days); not a liability until it's due", "amount": None, "source": "leases"})
+    for p in pending:
+        lines.append({"section": "note", "label": f"Pending payment request {p['id']} ({p['kind']}, {p['payee']}): awaiting human approval; not yet paid",
+                      "amount": p["amount"], "source": "approval_requests"})
+
+    total_assets = round(sum(l["amount"] for l in lines if l["section"] == "asset"), 2)
+    total_liabilities = round(sum(l["amount"] for l in lines if l["section"] == "liability"), 2)
+    equity = round(total_assets - total_liabilities, 2)
+    lines.append({"section": "equity", "label": "Owner's equity (assets minus liabilities)", "amount": equity, "source": "calculated"})
+    return {"kind": "balance_sheet", "as_of": today.isoformat(), "lines": lines,
+            "total_assets": total_assets, "total_liabilities": total_liabilities, "equity": equity,
+            "balances": round(total_assets, 2) == round(total_liabilities + equity, 2),
+            "missing_information": missing}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def build_income_statement(period_start: str | None = None, period_end: str | None = None) -> dict:
+    """Income statement for a period (dates as YYYY-MM-DD; default: everything up to desk.date_today),
+    built only from database figures, with every missing figure flagged. Cash basis: expenses are
+    payments actually made (payments), grouped by kind. Pending requests are never counted. Revenue
+    is $0 because the shop doesn't model revenue."""
+    with closing(connect()) as conn:
+        today = shop_today(conn)
+        end = period_end or today.isoformat()
+        start = period_start or "0001-01-01"
+        rows = [dict(r) for r in conn.execute(
+            "SELECT kind, amount, paid_at, approved_by FROM payments WHERE paid_at BETWEEN ? AND ? ORDER BY paid_at",
+            (start, end))]
+    groups: dict[str, float] = {}
+    for r in rows:
+        groups[r["kind"]] = round(groups.get(r["kind"], 0) + r["amount"], 2)
+    labels = {"rent": "Rent", "invoice": "Vendor invoices paid", "purchase_order": "Inventory purchases (purchase orders)"}
+    lines = [{"section": "revenue", "label": "Revenue (sales)", "amount": 0.0, "source": "not modeled: no sales table"}]
+    lines += [{"section": "expense", "label": labels.get(k, k), "amount": v, "source": "payments"} for k, v in sorted(groups.items())]
+    expenses = round(sum(groups.values()), 2)
+    missing = list(NOT_IN_DATABASE_INCOME)
+    if not rows:
+        missing.append("No payments have been recorded in this period, so expenses are $0.")
+    if groups.get("invoice") or groups.get("purchase_order"):
+        lines.append({"section": "note", "label": "Cash basis: vendor and purchase-order payments for stock are shown as spending. "
+                      "On an accrual basis they'd be inventory until sold.", "amount": None, "source": "payments"})
+    return {"kind": "income_statement", "as_of": f"{start if period_start else 'start of records'} to {end}",
+            "lines": lines, "revenue": 0.0, "expenses": expenses, "net_income": round(0.0 - expenses, 2),
+            "payments_counted": len(rows), "missing_information": missing}
 
 
 # ---------------------------------------------------------------- human approval only (no agent has these)
