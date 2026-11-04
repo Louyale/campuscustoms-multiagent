@@ -59,3 +59,14 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] `output/mcp_smoke.json` has, for every tool, the prompt, the tool name, and the tool output
 - [x] Tool output matches `data/campus_customs_new.db` (42 of 42 values, by direct SQL)
 - [x] Tool Test Evidence table (harness Table 7)
+
+## Problem 5: Build the agent team and grow the MCP tools (15 points)
+### 5a: the agent team (Panel A)
+- [x] Five PydanticAI agents: Boss, Inventory, Accounting, Facilities, Customer Service (`backend/agents/`)
+- [x] Prompts, models and agent loops, with delegation between all agents (full connectivity: `ask_teammate`)
+- [x] Prompts in `backend/prompts/`, one file per agent
+- [x] Data types in `backend/models.py`
+- [x] Agent files under `backend/`, with the five roles clear (harness Table 8)
+- [x] `PORTKEY_API_KEY` and only `gpt-6-luna` for every agent (`backend/config.py`)
+- [x] Each prompt in our own words, with the shop rules that agent needs, and detailed on work and scope
+- [ ] My approval of each of the five prompts

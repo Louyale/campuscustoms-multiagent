@@ -29,6 +29,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
 | 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | Say what each tool returns; explain why the tool's qualities fit the ticket's actions; an approve box per tool | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
 | 4 | Add the MCP server to vibe coder and test each tool | Add the server to this project in `.mcp.json`; test all three tools; a Tool Test Evidence table with the prompt, tool name and output; outputs must match the database | Sign in to the command-line copy of Claude Code, then pick up and confirm nothing was lost | `.mcp.json`, `scripts/mcp_smoke.py`, `output/mcp_smoke.json`, `output/harness.md` (Table 7) |
+| 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | (pending review) | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
 
 ---
 
@@ -183,6 +184,35 @@ I approved the rewritten README. Problem 3 is complete.
 > good to go, we'll proceed to pblm 5
 
 I approved Problem 4 and its table names (harness Table 7: Tool Test Evidence; this log's Table 6: Problem 4 Tasks).
+
+---
+
+## Problem 5: Build the agent team and grow the MCP tools
+
+I split this problem into two parts: **5a** (Panel A, the agent team) and **5b** (Panel B).
+
+### Part 5a: the agent team
+
+**Prompt (my own words, with a screenshot of Panel A):**
+
+> back.  in problem 5, an important problem, we'll build out the agentic team for campus customs.  include everything so they can delegate work to each other fir each of their functions.  follow the instructions precisely - agent prompts with one file per agent, and agent files in backend with all 5 roles very clear.  i want to see these to be sure they are clear.  same rules about portkey and luna.  write each prompt in our own words with the shop rules the agent needs - show me these for amendment and approval with a button under each as you've been doing -we want the highest score so our prompts need detail for agent's work and scope.  do all this first, and then we'll work on problem 5b.  this is 5a.
+
+**Follow-up prompt:** (pending my review of the five prompts)
+
+**Outcome:** each 5a task is done. Table 7 lists them for the grader.
+
+**Table 7: Problem 5a Tasks**
+
+| Task | What was asked | Where it's done |
+|---|---|---|
+| P5a-1 | Build the team with PydanticAI: Boss, Inventory, Accounting, Facilities, Customer Service | `backend/agents/` (one file per agent) and `backend/agents/__init__.py` (`TEAM`) |
+| P5a-2 | Prompts, models and agent loops so the agents can delegate to each other with full connectivity | `ask_teammate` on every agent (`backend/team.py`), each agent's own PydanticAI loop, and the guards in harness Table 9 |
+| P5a-3 | Agent prompts in `backend/prompts/`, one file per agent | `boss.md`, `inventory.md`, `accounting.md`, `facilities.md`, `customer_service.md` |
+| P5a-4 | Data types in `backend/models.py` | harness Table 10 |
+| P5a-5 | Agent files under `backend/`, with the five roles clear | harness Table 8: The Five Agents |
+| P5a-6 | `PORTKEY_API_KEY` and only `gpt-6-luna` for every agent | `backend/config.py` (one model, locked); all five checked as `gpt-6-luna` |
+| P5a-7 | Each prompt in our own words, with the shop rules that agent needs; detailed, covering its work and scope | Each prompt has: who you are, responsibilities, shop rules, working with teammates, scope, output (about 500–800 words each) |
+| P5a-8 | (mine) Show me each prompt, with an approve button under each | `output/agent_prompts_review.md` and the approval dialog |
 
 ---
 

@@ -155,3 +155,60 @@ The server is added to **this project** in `.mcp.json` at the project root (`hw5
 | **`get_rent_due`** (ticket 102) | "For ticket 102, use the campus-customs get_rent_due tool for lease_id 1, and report exactly what the tool returns." | `{"found": true, "lease_id": 1, "space_name": "Chapel Street shop", "landlord": "Elm City Properties", "monthly_rent": 2400, "next_due": "2026-09-02", "notes": null, "today": "2026-08-31", "days_until_due": 2, "overdue": false, "cash_accounts": [{"name": "checking", "balance": 3400, "date": "2026-08-31"}], "cash_total": 3400, "cash_covers_rent": true, "cash_after_rent": 1000}` | ✅ **16 of 16 values match**: `leases` 1 is $2,400 to Elm City Properties, due 2026-09-02; `cash_accounts` checking is $3,400; 2 days until due; $1,000 left after rent |
 
 All three tools were called by the vibe coder over MCP, and **42 of 42** checked values match the database. The full field-by-field check, each tool's arguments, and the vibe coder's reply are in `output/mcp_smoke.json`.
+
+## Problem 5: Build the agent team and grow the MCP tools
+
+### Part 5a: the agent team (Panel A)
+
+The team is built with **PydanticAI** (2.65.0). Every agent uses **`gpt-6-luna` through Portkey** (`PORTKEY_API_KEY`). The model name is set in one place, `backend/config.py`, which refuses any other value of `OPENAI_MODEL`.
+
+**Table 8: The Five Agents**
+
+| Agent | Agent file | Prompt file (one per agent) | Returns (in `backend/models.py`) | MCP tools it may call | Its job |
+|---|---|---|---|---|---|
+| **Boss** | `backend/agents/boss.py` | `backend/prompts/boss.md` | `TicketDecision` | `check_stock`, `get_open_invoices`, `get_rent_due` | Reads each ticket, routes it, combines the answers, makes the final call |
+| **Inventory** | `backend/agents/inventory.py` | `backend/prompts/inventory.md` | `InventoryReport` | `check_stock`, `get_open_invoices` | Stock by SKU and size, shortfalls, restock vendor, lead time, vendor blocks |
+| **Accounting** | `backend/agents/accounting.py` | `backend/prompts/accounting.md` | `AccountingReport` | `check_stock`, `get_open_invoices`, `get_rent_due` | Cash, invoices, margins, payment and purchase-order requests for human approval |
+| **Facilities** | `backend/agents/facilities.py` | `backend/prompts/facilities.md` | `FacilitiesReport` | `get_rent_due` | Lease, rent, landlord, due date; prepares the rent request |
+| **Customer Service** | `backend/agents/customer_service.py` | `backend/prompts/customer_service.md` | `CustomerDraft` | `check_stock` | Drafts messages that stay on the board; never sends |
+
+Each agent sees only the MCP tools its role needs (`TOOL_ACCESS` in `backend/mcp_tools.py`). For example, Customer Service can check stock but can't see invoices or cash.
+
+### How the agents delegate: full connectivity
+
+**Every agent has the same `ask_teammate(teammate, task)` tool** (`backend/team.py`), so any agent can hand work to any other agent. That's 5 × 4 = 20 possible hand-offs. Each agent runs its own **agent loop**: PydanticAI calls `gpt-6-luna`, runs the tools it asks for (MCP tools or `ask_teammate`), and repeats until the agent returns its structured report. A hand-off starts the teammate's loop, and the teammate's report comes back as the tool's answer.
+
+**Table 9: Delegation Guards**
+
+| Guard | What it stops | Checked offline (no model calls) |
+|---|---|---|
+| No asking yourself | An agent looping on itself | ✅ refused: "you cannot ask yourself" |
+| No asking an agent already waiting up the chain | Ping-pong, such as Inventory → Accounting → Inventory | ✅ refused: "inventory is already waiting on this request chain" |
+| At most 3 hand-offs below the first agent | Long, costly chains | ✅ refused: "hand-off limit reached (3)" |
+| Unknown teammate name | A made-up agent | ✅ refused, with the list of real teammates |
+| One shared request and token limit per ticket (40 requests, 400,000 tokens) | Runaway cost ("multi-agent chats burn tokens fast") | Set in `TICKET_LIMITS` and shared across every hand-off |
+
+Every hand-off is recorded (`Delegation`: from, to, task, depth, and the answer or the refusal), so the dashboard can show the agents at work.
+
+### Data types (`backend/models.py`)
+
+**Table 10: Agent Data Types**
+
+| Type | Used by | Key fields | Rule enforced in code |
+|---|---|---|---|
+| `Ticket` | Boss's input | the `tickets` row: id, type, requester, subject, sku, size, qty, lease_id, invoice_id, status, notes | (none) |
+| `PaymentRequest` | Accounting, Facilities, Boss | kind (invoice / rent / purchase_order), ref_id, payee, amount, account, cash before and after | **status is always `pending_human_approval`**; `cash_after` can't be below 0, and must equal cash before minus amount |
+| `MarginCheck` | Accounting | unit cost, list price, price considered, margin per unit and % | (none) |
+| `InventoryReport` | Inventory | on hand, needed, shortfall, restock vendor, lead days, vendor blocked by which invoice | (none) |
+| `AccountingReport` | Accounting | cash, payment requests, margin checks, cash left if all approved | the total requested can't exceed cash |
+| `FacilitiesReport` | Facilities | lease, rent, due date, days until due, notice vs. record, rent request | (none) |
+| `CustomerDraft` | Customer Service | to, subject, body, facts used, waiting on | **status is always `draft`** |
+| `TicketDecision` | Boss | steps in order with owners, approvals needed, customer draft, recommended status, reasoning | (none) |
+| `Delegation`, `TeamDeps` | All agents | the hand-off record, and the shared run state (chain, depth limit) | Used by the delegation guards |
+
+### Checks done for 5a (no model calls yet)
+
+- All five agents build on `gpt-6-luna`, and each sees exactly its MCP tools from the live server: `check_stock`, `get_open_invoices` and `get_rent_due`.
+- The delegation guards refuse correctly (Table 9).
+- A search of `backend/`, `mcp_server/` and `.mcp.json` finds no other model name.
+- Dependency note: `requirements.txt` uses `pydantic-ai-slim[openai,mcp]`. The workspace default is `[openai]`; the `mcp` extra is a deliberate exception, needed for `MCPToolset` to connect the agents to our MCP server.
