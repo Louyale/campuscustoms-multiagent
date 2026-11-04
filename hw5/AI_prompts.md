@@ -377,6 +377,16 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 - **Boss prompt:** a new "How you prioritize" section, and `run_board()` works the tickets most-urgent first.
 - **Tested:** 43 of 43 checks, including a $5,800 test order ranked high. The check-in order was confirmed offline. Rules are in harness Table 17. Boss's tool list is re-marked ☐ for my approval.
 
+**Follow-up prompts (tables check):**
+
+> now show me here all the coded tables we created and also confirm that we noted which data tables the agents read
+
+> Yes, add Table 18
+
+**What was lacking after the first:** the tables each agent reads were noted tool by tool (harness Tables 11 and 12), but not rolled up by agent.
+
+**Outcome:** I was shown the three board tables the code creates (`drafts`, `approval_requests`, `building_requests`), with their fields and rules. The tables each agent reads were confirmed against the code, and **harness Table 18: Data Tables Each Agent Reads** was added. It shows each agent's original data tables, its board tables, and what it writes. No agent can write to `payments`, `cash_accounts`, `invoices` or `leases`.
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**

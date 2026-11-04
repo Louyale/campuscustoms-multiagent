@@ -274,6 +274,32 @@ The MCP server grew from **3 tools to 25** so the agents can work all three open
 
 `drafts`, `approval_requests` and `building_requests` are three **board tables** the server creates in the working copy the first time they're needed. A reset (copying `campus_customs.db` back) removes them, and the original database is never touched. Boss's `encourage_teammate` isn't an MCP tool: it's internal team chat, not a shop fact, and it's recorded in the audit trail.
 
+#### Data tables each agent reads
+
+**Table 18: Data Tables Each Agent Reads**
+
+This rolls Tables 11 and 12 up by agent, and it was checked against the code (`TOOL_ACCESS` in `backend/mcp_tools.py`). "Original data tables" are the 9 tables from `data.zip`. "Board tables" are the 3 the server creates.
+
+| Agent | Original data tables it reads | Board tables it reads | What it writes |
+|---|---|---|---|
+| 🕴️ Boss | tickets, desk, inventory, pricing, invoices, vendors, leases, cash_accounts | drafts, approval_requests | `tickets.status` (`update_ticket_status`) |
+| 📦 Inventory | inventory, pricing, vendors, invoices, desk | (none) | Nothing (read-only) |
+| 🧮 Accounting | cash_accounts, invoices, vendors, leases, inventory, pricing, payments, desk | approval_requests | Pending rows in `approval_requests` only (`request_payment`) |
+| 🧢 Facilities | leases, cash_accounts, payments, desk | approval_requests, building_requests | `building_requests` (`log_building_request`, `update_building_request`) |
+| 👕 Customer Service | tickets, inventory, pricing, vendors\*, leases\* | drafts, approval_requests | `drafts` (`save_customer_draft`, only after the spelling check passes) |
+| 🙋 Human (dashboard) | approval_requests, payments, cash_accounts, invoices, leases, desk | approval_requests | `payments`, `cash_accounts`, `invoices`, `leases`, `approval_requests` (`approve_and_pay`, `reject_payment_request`) |
+
+\* Customer Service reads `vendors` and `leases` only for their names, so the spelling checker accepts words like "Elm City Properties". It doesn't use them as facts.
+
+**No agent can write to `payments`, `cash_accounts`, `invoices` or `leases`.** Only the human-only `approve_and_pay` can change them.
+
+**The three board tables the server creates:**
+- `drafts`: customer messages; its `status` can only be `draft`
+- `approval_requests`: payments waiting for a human; its `amount` must be above 0, and its `status` is pending, paid, rejected or refused
+- `building_requests`: building and maintenance requests; priority low, normal or urgent
+
+They are defined in `BOARD_TABLES` in `mcp_server/server.py`.
+
 #### Every tool tested
 
 `scripts/mcp_tool_check.py` calls all 25 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **43 of 43 checks passed, and 25 of 25 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
