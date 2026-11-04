@@ -59,7 +59,7 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 - **`save_customer_draft(ticket_id, to_name, subject, body, written_by)`**: writes to `drafts`. The message stays on the board, and nothing is ever sent. It refuses any draft that doesn't pass `check_spelling_grammar`.
 - **`list_drafts(ticket_id)`**: reads `drafts`.
 
-**Human approval only** (the dashboard; no agent is given these)
+**Human approval only** (the dashboard; no agent is given these, and the vibe coder's profile, `CAMPUS_MCP_PROFILE=vibe_coder` in `.mcp.json`, hides them)
 - **`approve_and_pay(request_id, approved_by, approval_code)`**: pays one pending request after a person approves it. It needs `HUMAN_APPROVAL_CODE` from `.env`, and refuses if the cash would go below zero. In one transaction it adds a row to `payments` (with `approved_by`), lowers `cash_accounts`, marks the invoice paid or moves the lease's `next_due` forward a month, and marks the request paid.
 - **`reject_payment_request(request_id, rejected_by, approval_code, reason)`**: rejects a pending request. No money moves.
 

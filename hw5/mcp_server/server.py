@@ -967,5 +967,16 @@ def reject_payment_request(request_id: int, rejected_by: str, approval_code: str
     return {"rejected": True, "request_id": request_id}
 
 
+
+# ---------------------------------------------------------------- who is connecting
+# The vibe coder (Claude Code, through .mcp.json) starts the server with CAMPUS_MCP_PROFILE=vibe_coder.
+# That profile hides the two human-only tools, so the coding assistant can never approve or pay.
+# The agents connect without the profile, but they are filtered to their own tools (backend/mcp_tools.py).
+# Only the human dashboard step uses the human-only tools.
+HUMAN_ONLY_TOOL_NAMES = {"approve_and_pay", "reject_payment_request"}
+if os.getenv("CAMPUS_MCP_PROFILE") == "vibe_coder":
+    mcp.disable(names=HUMAN_ONLY_TOOL_NAMES)
+
+
 if __name__ == "__main__":
     mcp.run()

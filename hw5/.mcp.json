@@ -3,8 +3,12 @@
     "campus-customs": {
       "type": "stdio",
       "command": "python",
-      "args": ["mcp_server/server.py"],
-      "env": {}
+      "args": [
+        "mcp_server/server.py"
+      ],
+      "env": {
+        "CAMPUS_MCP_PROFILE": "vibe_coder"
+      }
     }
   }
 }
