@@ -55,6 +55,12 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | P1-6 | B | One follow-up prompt if needed, plus one sentence on what was lacking after the first | The "Follow-up prompt" line in each section ("none needed" when there wasn't one) |
 | P1-7 | (extra) | Proof each problem's evidence exists before grading | `EVIDENCE_CHECKLIST.md` |
 
+**Confirmation:**
+
+> that label is fine, yes.
+
+I approved the Table 3 name as it is.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)
