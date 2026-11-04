@@ -19,7 +19,7 @@ mcp_toolset = MCPToolset(MCP_SERVER)
 
 # Which MCP tools each role may call (least privilege). New tools are added here as the server grows.
 TOOL_ACCESS: dict[str, set[str]] = {
-    "boss": {"get_ticket", "list_tickets", "update_ticket_status", "check_stock", "get_open_invoices",
+    "boss": {"get_ticket", "list_tickets", "rank_open_tickets", "update_ticket_status", "check_stock", "get_open_invoices",
              "get_rent_due", "get_cash_balance", "list_payment_requests", "list_drafts"},
     "inventory": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices"},
     "accounting": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices", "get_rent_due",

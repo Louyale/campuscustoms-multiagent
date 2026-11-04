@@ -87,6 +87,22 @@ async def main() -> None:
         r = await call("list_payments")
         check("list_payments", {}, r, r["payments"] == [], "no payments yet")
 
+        # --- priorities (Boss) ---
+        r = await call("rank_open_tickets")
+        order = [(t["ticket_id"], t["priority"]) for t in r["ranked"]]
+        check("rank_open_tickets", {}, r, order == [(101, "urgent"), (102, "urgent"), (103, "normal")] and not r["cash_covers_everything"],
+              "101 urgent (invoice 3 days overdue), 102 urgent (rent in 2 days), 103 normal; cash $3,400 can't cover all $3,512")
+        with sqlite3.connect(SCRATCH) as c:  # a big bulk order on the scratch copy, to test the $5,000 rule
+            c.execute("INSERT INTO tickets (id, type, requester, subject, sku, size, qty, status, notes, created_at) VALUES "
+                      "(990, 'price_override', 'Test Club', 'Big bulk order', 'CC-HOOD-NAVY', 'L', 100, 'open', 'test', '2026-08-31T12:00:00-04:00')")
+        r = await call("rank_open_tickets")
+        big = next(t for t in r["ranked"] if t["ticket_id"] == 990)
+        check("rank_open_tickets", {"test ticket": "100 hoodies = $5,800 at list"}, r,
+              big["priority"] == "high" and any("5,000.00" in x for x in big["reasons"]),
+              "a $5,800 order (over $5,000.00) is automatically HIGH, ranked above the normal ticket 103")
+        with sqlite3.connect(SCRATCH) as c:
+            c.execute("DELETE FROM tickets WHERE id = 990")
+
         # --- financial statements (Accounting), before any payment ---
         r = await call("build_balance_sheet")
         check("build_balance_sheet", {}, r,

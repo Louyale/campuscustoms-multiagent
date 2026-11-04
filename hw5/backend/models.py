@@ -16,6 +16,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field, model_validator
 
 AgentName = Literal["boss", "inventory", "accounting", "facilities", "customer_service"]
+Priority = Literal["urgent", "high", "normal", "low"]
 AGENT_NAMES: tuple[str, ...] = ("boss", "inventory", "accounting", "facilities", "customer_service")
 
 # One symbol per agent, used in the prompts, the hand-off log and the dashboard.
@@ -188,6 +189,8 @@ class Step(BaseModel):
 class TicketDecision(BaseModel):
     ticket_id: int
     summary: str
+    priority: Priority = Field(description="How urgent this ticket is, from rank_open_tickets and your judgment")
+    priority_reason: str = Field(description="One line on why it has this priority")
     agents_used: list[AgentName]
     steps: list[Step]
     approvals_needed: list[PaymentRequest] = []
@@ -225,6 +228,7 @@ class Assignment(BaseModel):
     to_agent: AgentName
     task: str
     due_by: Optional[str] = Field(None, description="Shop date the answer is needed by (desk.date_today scale)")
+    priority: Priority = "normal"
     assigned_on: Optional[str] = None
     status: Literal["in_progress", "done", "failed"] = "in_progress"
     completed_on: Optional[str] = None

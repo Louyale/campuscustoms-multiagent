@@ -297,6 +297,97 @@ def list_tickets(status: str | None = None) -> dict:
     return {"today": today.isoformat(), "count": len(rows), "tickets": rows}
 
 
+PRIORITY_ORDER = {"urgent": 0, "high": 1, "normal": 2, "low": 3}
+HIGH_PRIORITY_AMOUNT = 5000.00  # the shop owner's rule: anything over $5,000.00 is automatically at least high priority
+
+
+def at_least_high(level: str) -> str:
+    return min(level, "high", key=PRIORITY_ORDER.get)
+
+
+@mcp.tool(annotations=READ_ONLY)
+def rank_open_tickets() -> dict:
+    """Rank every open ticket by urgency, using only database facts measured against desk.date_today
+    (tickets, invoices, vendors, leases, inventory, pricing, cash_accounts). Rules:
+    - urgent: a linked invoice is overdue, or linked rent is overdue or due within 3 days
+    - high: a customer is waiting on an item that is out of stock or short, or rent is due within 7 days
+    - normal: any other request, such as a discount or price question
+    - low: nothing needed now
+    - any single amount over $5,000.00 (a bill, rent, or restock at cost) is automatically at least high
+    Ties go to the earliest deadline, then the oldest ticket. Each ticket comes with its reasons, its
+    deadline, and anything it depends on (for example, a blocked vendor's unpaid invoice)."""
+    with closing(connect()) as conn:
+        today = shop_today(conn)
+        tickets = [dict(r) for r in conn.execute("SELECT * FROM tickets WHERE status != 'resolved' ORDER BY id")]
+        cash = round(conn.execute("SELECT COALESCE(SUM(balance), 0) FROM cash_accounts").fetchone()[0], 2)
+        ranked = []
+        for t in tickets:
+            reasons, depends_on, deadline, level = [], [], None, "low"
+            inv = lease = None
+            money_needed = 0.0
+            if t["invoice_id"]:
+                inv = conn.execute("SELECT i.*, v.name AS vendor FROM invoices i JOIN vendors v ON v.id = i.vendor_id WHERE i.id = ?",
+                                   (t["invoice_id"],)).fetchone()
+                if inv and inv["status"] == "open":
+                    days = (today - date.fromisoformat(inv["due_date"])).days
+                    money_needed += inv["amount"]
+                    deadline = min(filter(None, [deadline, inv["due_date"]]))
+                    if days > 0:
+                        level = "urgent"
+                        reasons.append(f"invoice {inv['id']} (${inv['amount']:,.2f}, {inv['vendor']}) is {days} days overdue")
+                    depends_on.append(f"invoice {inv['id']} must be paid before {inv['vendor']} will ship")
+            if t["lease_id"]:
+                lease = conn.execute("SELECT * FROM leases WHERE id = ?", (t["lease_id"],)).fetchone()
+                if lease:
+                    days = (date.fromisoformat(lease["next_due"]) - today).days
+                    money_needed += lease["monthly_rent"]
+                    deadline = min(filter(None, [deadline, lease["next_due"]]))
+                    if days <= 3:
+                        level = "urgent"
+                        reasons.append(f"rent of ${lease['monthly_rent']:,.2f} is {'overdue' if days < 0 else f'due in {days} days'}")
+                    elif days <= 7:
+                        level = at_least_high(level)
+                        reasons.append(f"rent is due in {days} days")
+            if t["sku"] and t["size"]:
+                row = conn.execute("SELECT qty FROM inventory WHERE sku = ? AND size = ?", (t["sku"], t["size"])).fetchone()
+                on_hand = row["qty"] if row else 0
+                short = max(0, (t["qty"] or 0) - on_hand)
+                if short:
+                    reasons.append(f"{t['requester']} wants {t['qty']} x {t['sku']} {t['size']}; {on_hand} on hand, {short} short")
+                    if t["type"] == "customer_order":
+                        level = at_least_high(level)
+                    price = conn.execute("SELECT unit_cost FROM pricing WHERE sku = ?", (t["sku"],)).fetchone()
+                    if price:
+                        money_needed += short * price["unit_cost"]
+            amounts = []
+            if t["invoice_id"] and inv:
+                amounts.append(inv["amount"])
+            if t["lease_id"] and lease:
+                amounts.append(lease["monthly_rent"])
+            if t["sku"] and t["size"] and t["qty"]:
+                lp = conn.execute("SELECT unit_cost, list_price FROM pricing WHERE sku = ?", (t["sku"],)).fetchone()
+                if lp:
+                    amounts.append(t["qty"] * lp["list_price"])  # the order's value at list price
+            big = [a for a in amounts if a > HIGH_PRIORITY_AMOUNT]
+            if big:
+                level = at_least_high(level)
+                reasons.append(f"an amount over ${HIGH_PRIORITY_AMOUNT:,.2f} (${max(big):,.2f}) is automatically high priority")
+            if level == "low" and t["status"] == "open":
+                level = "normal"
+                reasons.append(f"{t['type'].replace('_', ' ')} from {t['requester']} needs an answer")
+            ranked.append({"ticket_id": t["id"], "type": t["type"], "requester": t["requester"], "subject": t["subject"],
+                           "status": t["status"], "priority": level, "deadline": deadline, "reasons": reasons,
+                           "depends_on": depends_on, "money_needed_estimate": round(money_needed, 2),
+                           "created_at": t["created_at"]})
+    ranked.sort(key=lambda r: (PRIORITY_ORDER[r["priority"]], r["deadline"] or "9999-12-31", r["created_at"]))
+    for i, r in enumerate(ranked, 1):
+        r["rank"] = i
+    total = round(sum(r["money_needed_estimate"] for r in ranked), 2)
+    return {"today": today.isoformat(), "ranked": ranked, "cash_on_hand": cash,
+            "money_needed_all_tickets": total, "cash_covers_everything": cash >= total,
+            "note": "money_needed_estimate counts unpaid linked bills plus restock at unit cost; a human still approves every payment."}
+
+
 @mcp.tool(annotations=WRITES)
 def update_ticket_status(ticket_id: int, status: str) -> dict:
     """Move a ticket to a new status on the board (tickets.status). Allowed: open, in_progress,
@@ -389,6 +480,9 @@ def list_payment_requests(status: str | None = None) -> dict:
             sql += " WHERE status = ?"
             args.append(status)
         rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
+    for r in rows:  # the shop owner's rule: anything over $5,000.00 is high priority for the approver
+        r["priority"] = "high" if r["amount"] > HIGH_PRIORITY_AMOUNT else "normal"
+    rows.sort(key=lambda r: (r["status"] != "pending", PRIORITY_ORDER[r["priority"]], r["id"]))
     return {"requests": rows}
 
 

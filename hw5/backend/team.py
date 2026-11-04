@@ -30,7 +30,10 @@ from backend.audit import append_entry, now, run_logged
 from backend.mcp_tools import mcp_toolset
 from datetime import date
 
-from backend.models import AGENT_NAMES, AGENT_SYMBOLS, AgentName, Assignment, Delegation, TeamDeps, Ticket, TicketDecision
+from backend.models import (AGENT_NAMES, AGENT_SYMBOLS, AgentName, Assignment, Delegation, Priority, TeamDeps, Ticket,
+                            TicketDecision)
+
+PRIORITY_ORDER = {"urgent": 0, "high": 1, "normal": 2, "low": 3}
 
 # Limits for one ticket, across every agent it involves.
 TICKET_LIMITS = UsageLimits(request_limit=40, total_tokens_limit=400_000)
@@ -54,7 +57,8 @@ def title(name: str) -> str:
     return ROLE_LINES[name].split(":")[0]
 
 
-async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str, due_by: str | None = None) -> str:
+async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str, due_by: str | None = None,
+                       priority: Priority = "normal") -> str:
     """Give another agent on the Campus Customs team an assignment and get their report back.
 
     teammate: one of boss, inventory, accounting, facilities, customer_service.
@@ -62,6 +66,8 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
     due_by: the shop date the answer is needed by (YYYY-MM-DD), measured against desk.date_today.
         Boss must always give one, set from the ticket's urgency. For example, before the rent's due
         date, or today for an overdue bill or a waiting customer.
+    priority: urgent, high, normal or low. Set it from the ticket's priority, so the teammate knows
+        what matters most (urgent = overdue money or rent due within 3 days).
     """
     deps = ctx.deps
     me = deps.chain[-1] if deps.chain else "boss"
@@ -94,10 +100,11 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
         return f"REFUSED: {record.refused}"
 
     job = Assignment(id=f"A{len(deps.assignments) + 1}", from_agent=me, to_agent=teammate, task=task,
-                     due_by=deadline.isoformat() if deadline else None, assigned_on=deps.shop_today, status="in_progress")
+                     due_by=deadline.isoformat() if deadline else None, priority=priority,
+                     assigned_on=deps.shop_today, status="in_progress")
     deps.assignments.append(job)
     ticket = f" (ticket {deps.ticket_id})" if deps.ticket_id is not None else ""
-    needed = f", needed by {job.due_by}" if job.due_by else ""
+    needed = (f", needed by {job.due_by}" if job.due_by else "") + f", priority {job.priority.upper()}"
     deps.chain.append(teammate)
     try:
         result = await run_logged(
@@ -125,7 +132,7 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
                   "assignment": job.model_dump(exclude={"report"}), "thanks_to": teammate})
     record.answer = job.report
     deps.delegations.append(record)
-    return json.dumps({"assignment": job.id, "status": job.status, "due_by": job.due_by, "on_time": job.on_time,
+    return json.dumps({"assignment": job.id, "status": job.status, "priority": job.priority, "due_by": job.due_by, "on_time": job.on_time,
                        "thanks_sent": job.thanks, "report": result.output.model_dump()})
 
 
@@ -140,13 +147,14 @@ async def check_in_on_assignments(ctx: RunContext[TeamDeps]) -> str:
     for a in deps.assignments:
         due = date.fromisoformat(a.due_by) if a.due_by else None
         rows.append({
-            "assignment": a.id, "to": a.to_agent, "task": a.task[:160], "due_by": a.due_by,
+            "assignment": a.id, "to": a.to_agent, "task": a.task[:160], "priority": a.priority, "due_by": a.due_by,
             "status": a.status,
             "days_left": (due - today).days if due and today else None,
             "overdue": bool(due and today and a.status != "done" and today > due),
             "on_time": a.on_time, "thanks_sent": a.thanks,
             "reply_summary": (a.report or a.note or "")[:300] or None,
         })
+    rows.sort(key=lambda r: (r["status"] == "done", PRIORITY_ORDER[r["priority"]], r["due_by"] or "9999-12-31"))
     return json.dumps({"today": deps.shop_today, "assignments": rows,
                        "all_done": bool(rows) and all(r["status"] == "done" for r in rows),
                        "open": [r["assignment"] for r in rows if r["status"] != "done"]})
@@ -172,3 +180,18 @@ async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:
             usage_limits=TICKET_LIMITS,
         )
     return result.output, deps
+
+
+async def run_board() -> list[tuple[TicketDecision, TeamDeps]]:
+    """Work the whole board in priority order: rank the open tickets over MCP (rank_open_tickets),
+    then run each one, most urgent first. Cash is shared, so the most urgent ticket gets first claim
+    on it, and later tickets see the payment requests already pending."""
+    async with mcp_toolset:
+        ranking = await mcp_toolset.direct_call_tool("rank_open_tickets", {})
+        ranking = ranking if isinstance(ranking, dict) else json.loads(ranking)
+        append_entry({"time": now(), "run_id": None, "ticket_id": None, "agent": "boss", "symbol": AGENT_SYMBOLS["boss"],
+                      "step_kind": "BoardRanking", "ranking": ranking})
+        results = []
+        for item in ranking["ranked"]:
+            results.append(await run_ticket(item["ticket_id"]))
+    return results

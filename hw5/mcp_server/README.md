@@ -19,7 +19,7 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 - The working copy must already exist. The server won't quietly create a blank database.
 - "Today" for every tool is the database's `desk.date_today` (2026-08-31), never the computer's clock.
 
-## The tools (24), and why we have them
+## The tools (25), and why we have them
 
 ### The first three (Problem 3), one for each open ticket
 
@@ -32,6 +32,7 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 **The board**
 - **`get_ticket(ticket_id)`**: reads `tickets`, `drafts` and `approval_requests`. Boss starts every ticket here.
 - **`list_tickets(status)`**: reads `tickets`. The whole board, or one status.
+- **`rank_open_tickets()`**: reads `tickets`, `invoices`, `vendors`, `leases`, `inventory`, `pricing`, `cash_accounts` and `desk`. It ranks every open ticket urgent, high, normal or low from database facts, with reasons, deadlines and dependencies, and says whether cash covers every ticket. Any amount over $5,000.00 is automatically at least high.
 - **`update_ticket_status(ticket_id, status)`**: writes `tickets.status` (open, in_progress, waiting_approval, blocked or resolved).
 
 **Stock and vendors**
@@ -70,4 +71,4 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 python mcp_server/server.py
 ```
 
-All 24 tools are checked by `python scripts/mcp_tool_check.py`, which runs them on a scratch copy of the database.
+All 25 tools are checked by `python scripts/mcp_tool_check.py`, which runs them on a scratch copy of the database.

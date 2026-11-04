@@ -360,6 +360,23 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 
 **Outcome:** `request_payment` now files every invoice or rent request under the ticket that links that invoice or lease, and notes the ticket it was raised from. The tool check proves it (raised from ticket 102, filed under 101), with 41 of 41 checks passing, and the Safety table gained a row for it.
 
+**Follow-up prompts (priorities):**
+
+> does our boss prioritize tasks?  if not, it should
+
+> it should follow up first on high priority tasks and then down the order.  if any item is over 5,000.00 it should automatically get high priority
+
+**What was lacking after the first:** Boss weighed competing cash needs, but tickets and assignments had no priority, and Boss looked at each ticket alone instead of the whole board.
+
+**Outcome:**
+
+- **New MCP tool `rank_open_tickets`** (25 tools in all). It ranks every open ticket urgent, high, normal or low from database facts, with reasons, deadlines, dependencies, and whether cash covers everything.
+- **My $5,000 rule:** any amount over $5,000.00 (a bill, rent, or an order at list price) is **automatically at least high**. Payment requests over $5,000.00 are marked high for the approver.
+- **Today's ranking:** 101 urgent (invoice 3 days overdue), 102 urgent (rent in 2 days), 103 normal (discount). Cash of $3,400 can't cover the estimated $3,512.
+- **Priority everywhere:** every assignment carries a priority. `check_in_on_assignments` lists open work urgent → high → normal → low, so Boss **follows up from the top down**. Boss's decision includes `priority` and `priority_reason`.
+- **Boss prompt:** a new "How you prioritize" section, and `run_board()` works the tickets most-urgent first.
+- **Tested:** 43 of 43 checks, including a $5,800 test order ranked high. The check-in order was confirmed offline. Rules are in harness Table 17. Boss's tool list is re-marked ☐ for my approval.
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**

@@ -223,7 +223,7 @@ Every hand-off is recorded (`Delegation`: from, to, task, depth, and the answer 
 
 ### Part 5b: more MCP tools, the audit trail, and safety (Panel B)
 
-The MCP server grew from **3 tools to 24** so the agents can work all three open tickets. Every shop fact still comes **only from the MCP server** over `data/campus_customs_new.db`: the agents never open the database, and there's no second shop-tools layer. The backend itself reads a ticket through MCP (`get_ticket` in `run_ticket`).
+The MCP server grew from **3 tools to 25** so the agents can work all three open tickets. Every shop fact still comes **only from the MCP server** over `data/campus_customs_new.db`: the agents never open the database, and there's no second shop-tools layer. The backend itself reads a ticket through MCP (`get_ticket` in `run_ticket`).
 
 #### Agent Tools
 
@@ -231,7 +231,7 @@ The MCP server grew from **3 tools to 24** so the agents can work all three open
 
 | Agent | MCP tools it may call (table each one uses) | Other tools | Lou's approval |
 |---|---|---|---|
-| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · **`update_ticket_status`** (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | **`ask_teammate(teammate, task, due_by)`**: every hand-off is an assignment with a **deadline** (Boss must set `due_by`, a shop date no earlier than `desk.date_today`); when the teammate replies, Boss's thanks is recorded automatically (a fixed message, 0 tokens) · **`check_in_on_assignments`**: each assignment's status, deadline, on time or overdue, the thanks sent, and a reply summary, so Boss confirms everything is done without re-asking | ☑ Approved by Lou |
+| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · **`rank_open_tickets`** (tickets, invoices, vendors, leases, inventory, pricing, cash_accounts, desk) · **`update_ticket_status`** (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | **`ask_teammate(teammate, task, due_by, priority)`**: every hand-off is an assignment with a **deadline** and a **priority** (urgent, high, normal, low); Boss's thanks is recorded automatically when the teammate replies (a fixed message, 0 tokens) · **`check_in_on_assignments`**: open work listed urgent → high → normal → low, so Boss follows up from the top down; shows status, deadline, on time or overdue, thanks, and a reply summary | ☐ Approve (revised for priorities) · Notes: |
 | 📦 **Inventory** | `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `get_open_invoices` (invoices, vendors, desk) | `ask_teammate` | ☑ Approved by Lou |
 | 🧮 **Accounting** | `get_cash_balance` (cash_accounts, approval_requests) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `list_payments` (payments) · `list_payment_requests` (approval_requests) · **`request_payment`** (approval_requests; reads invoices, leases, vendors, pricing, inventory, cash_accounts) · `build_balance_sheet` (cash_accounts, inventory, pricing, invoices, leases, approval_requests) · `build_income_statement` (payments) | `ask_teammate` | ☑ Approved by Lou |
 | 🧢 **Facilities** | `get_rent_due` (leases, cash_accounts, desk) · `list_leases` (leases, desk) · `get_lease` (leases, payments, approval_requests, building_requests) · **`log_building_request`** (building_requests) · `list_building_requests` (building_requests) · **`update_building_request`** (building_requests) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) | `ask_teammate` | ☑ Approved by Lou |
@@ -270,18 +270,20 @@ The MCP server grew from **3 tools to 24** so the agents can work all three open
 | 22 | `list_drafts` | drafts | reads | Drafts on the board (all) |
 | 23 | `approve_and_pay` | approval_requests, payments, cash_accounts, invoices, leases, desk | **writes** (human only) | Pay an approved request, update every table involved, refuse if cash is short |
 | 24 | `reject_payment_request` | approval_requests | **writes** (human only) | Reject a request; no money moves |
+| 25 | `rank_open_tickets` | tickets, invoices, vendors, leases, inventory, pricing, cash_accounts, desk | reads | Rank every open ticket urgent, high, normal or low, with reasons, deadlines, dependencies and whether cash covers them all; anything over $5,000.00 is automatically at least high (Boss) |
 
 `drafts`, `approval_requests` and `building_requests` are three **board tables** the server creates in the working copy the first time they're needed. A reset (copying `campus_customs.db` back) removes them, and the original database is never touched. Boss's `encourage_teammate` isn't an MCP tool: it's internal team chat, not a shop fact, and it's recorded in the audit trail.
 
 #### Every tool tested
 
-`scripts/mcp_tool_check.py` calls all 24 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **41 of 41 checks passed, and 24 of 24 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
+`scripts/mcp_tool_check.py` calls all 25 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **43 of 43 checks passed, and 25 of 25 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
 
 - a purchase order to a vendor blocked by invoice 501
 - a duplicate request
 - a wrong approval code
 - a $264 purchase order with only $160 left, both when filing and when paying, so the balance never went negative
 - a ticket status that doesn't exist
+- a test ticket worth $5,800, which `rank_open_tickets` automatically ranked high (over $5,000.00)
 - a building request with a made-up priority
 - a customer draft with spelling and grammar mistakes, which `save_customer_draft` refused to save
 
@@ -306,6 +308,21 @@ Every agent runs through `run_logged` (`backend/audit.py`), which walks Pydantic
 | `model`, `tokens`, `finish_reason` | The model that answered (it must be gpt-6-luna), input, cached and output tokens, and why it stopped |
 | `output` | The agent's final structured report |
 | `team_usage_so_far` | Requests and tokens used by the whole team so far on this ticket |
+
+#### How Boss prioritizes
+
+**Table 17: Priority Rules**
+
+| Priority | When (from database facts, against `desk.date_today`) | Today's board |
+|---|---|---|
+| **urgent** | Overdue money (a linked invoice past due), or rent overdue or due within 3 days | **101**: invoice 501 is 3 days overdue (and the customer is waiting) · **102**: rent is due in 2 days |
+| **high** | A waiting customer whose item is out of stock or short, rent due within 7 days, or **any amount over $5,000.00 (automatically at least high, Lou's rule)** | (none today; a $5,800 test order was ranked high) |
+| **normal** | Any other request, such as a discount or price question | **103**: the Yale AI Club's bulk-discount request (12 hoodies short) |
+| **low** | Nothing needed now | (none) |
+
+- **Ranking and order of work.** Ties go to the earliest deadline, then the oldest ticket. `rank_open_tickets` also reports what each ticket depends on (101 needs invoice 501 paid before the vendor will ship) and whether cash covers every ticket. Today it doesn't: $3,400 against an estimated $3,512. `run_board()` (`backend/team.py`) works the tickets in this order, most urgent first, so the most urgent ticket gets first claim on the shared cash.
+- **Follow-up order.** Every assignment carries a priority. `check_in_on_assignments` lists open work urgent → high → normal → low, with finished work last, so Boss follows up from the top down.
+- **Priorities for the approver.** Boss's decision now includes `priority` and `priority_reason`. In `list_payment_requests`, any request over $5,000.00 is marked high priority for the human approver.
 
 #### Test run: one ticket through the team (proves the audit trail)
 
