@@ -28,6 +28,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | Label the Problem 1 tasks for the grader (Table 3), separate from the earlier setup | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
 | 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
 | 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | Say what each tool returns; explain why the tool's qualities fit the ticket's actions; an approve box per tool | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
+| 4 | Add the MCP server to vibe coder and test each tool | Add the server to this project in `.mcp.json`; test all three tools; a Tool Test Evidence table with the prompt, tool name and output; outputs must match the database | Sign in to the command-line copy of Claude Code, then pick up and confirm nothing was lost | `.mcp.json`, `scripts/mcp_smoke.py`, `output/mcp_smoke.json`, `output/harness.md` (Table 7) |
 
 ---
 
@@ -154,15 +155,28 @@ I approved the rewritten README. Problem 3 is complete.
 
 > k, now for problem 4, use this vibe coder to add the mcp server to this project, follow all instructions attached and test all three tools.  create a table titled Tool Test Evidence, and for each tool list the requisite three pieces of information, and make sure the tool output matches the values in the data/campus_customs_new.db
 
-**Follow-up prompt:** (in progress)
+**Follow-up prompt (after the sign-in pause):**
 
-**Outcome so far:**
+> are we now logged back in?
 
-- Saved `.mcp.json` at the project root (`hw5/`), with the `campus-customs` server running `python mcp_server/server.py`.
-- Claude Code connected to it: its startup check showed `campus-customs: connected` and listed all three tools.
-- Wrote `scripts/mcp_smoke.py`. It asks the vibe coder each test prompt, records the real tool call and output, and checks every value against `data/campus_customs_new.db`.
-- 🚩 The parent `Dan Rocks` folder also defines an `outlook-mail` server, which can send email. The tests load only `campus-customs` (`--strict-mcp-config`) and allow only the one tool under test, so no email can be sent.
-- Waiting on a one-time sign-in to the command-line copy of Claude Code.
+> pls pick up where you left off.  not sure why that happened, but confirm nothing was lost or overlooked?
+
+**What was lacking after the first:** the tool tests couldn't run yet. The command-line copy of Claude Code needed a one-time sign-in, so I signed in and asked to confirm the work picked up without losing anything.
+
+**Outcome:** each Problem 4 task is done. Table 6 lists them for the grader.
+
+**Table 6: Problem 4 Tasks**
+
+| Task | Panel | What was asked | Where it's done |
+|---|---|---|---|
+| P4-1 | A | Add the MCP server to **this project** in the vibe coder, so it can call the tools | `.mcp.json` at the project root (`hw5/`); Claude Code's startup check reported `campus-customs: connected`, with all three tools listed |
+| P4-2 | A | Save the connection JSON in `.mcp.json` at the project root | `hw5/.mcp.json` (shown in `output/harness.md`, Problem 4) |
+| P4-3 | B | With the vibe coder connected, test **each** of the three tools | `scripts/mcp_smoke.py`: Claude Code called `check_stock`, `get_open_invoices` and `get_rent_due` over MCP |
+| P4-4 | B | Save the evidence in `output/mcp_smoke.json`: the prompt, the tool name, and the tool output for each tool | `output/mcp_smoke.json` (`prompt`, `tool_name`, `tool_output`, plus the arguments and the vibe coder's reply) |
+| P4-5 | B | The tool output must match values in `data/campus_customs_new.db` | 42 of 42 values match, field by field, checked by direct SQL (`database_check` in the JSON) |
+| P4-6 | (mine) | A table titled **Tool Test Evidence** with the three pieces of information for each tool | `output/harness.md`, Table 7: Tool Test Evidence |
+| P4-7 | (extra) | Keep the no-email rule safe while testing | Only `campus-customs` loaded; the parent folder's `outlook-mail` server was excluded; one allowed tool per test |
+| P4-8 | (extra) | Prove the tools didn't change the data | The working database's SHA-256 was the same before and after (`database_unchanged: true`) |
 
 ---
 

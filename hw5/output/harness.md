@@ -118,3 +118,40 @@ The server is in `mcp_server/server.py`, built with FastMCP 4.1.6, and it talks 
 | Human approval for payments, no negative balances | These tools only read and pay nothing. `get_rent_due` reports `cash_after_rent` so a shortfall shows up before any payment step |
 | Working copy only; original untouched | `connect()` refuses `campus_customs.db` and opens `campus_customs_new.db` in `mode=rw`, so it can't silently create a blank file |
 | Declared links checked | `connect()` turns on `PRAGMA foreign_keys` (harness 🚩 from Problem 2) |
+
+## Problem 4: Add the MCP server to vibe coder and test each tool
+
+### Connecting the server to the vibe coder
+
+The server is added to **this project** in `.mcp.json` at the project root (`hw5/`). This is the file Claude Code reads for a project's local MCP servers:
+
+```json
+{
+  "mcpServers": {
+    "campus-customs": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["mcp_server/server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+- `python` must be the project venv's python, which has FastMCP. So activate `.venv` before starting the vibe coder.
+- When Claude Code started from `hw5/`, its startup check reported **`campus-customs: connected`** and listed all three tools: `mcp__campus-customs__check_stock`, `mcp__campus-customs__get_open_invoices` and `mcp__campus-customs__get_rent_due`.
+- 🚩 Claude Code also picks up an `outlook-mail` server from the parent `Dan Rocks` folder, and it can send email. To keep to the "no emailing customers" rule, every test loaded **only** `campus-customs` (`--strict-mcp-config`), allowed no built-in tools, and permitted only the one tool under test.
+
+### Testing each tool
+
+`scripts/mcp_smoke.py` asks the vibe coder (Claude Code, headless) each prompt below and records the tool it really called and the tool's raw output. It then reads `data/campus_customs_new.db` directly with SQL and checks **every** value in the output. Everything is saved in `output/mcp_smoke.json`. The working database's SHA-256 was the same before and after (`23686a90…f360a`), which shows the tools only read.
+
+**Table 7: Tool Test Evidence**
+
+| Tool name | Prompt I asked the vibe coder | Tool output (from the run) | Matches `campus_customs_new.db`? |
+|---|---|---|---|
+| **`check_stock`** (ticket 103) | "For ticket 103, use the campus-customs check_stock tool to look up SKU CC-HOOD-NAVY in size M with qty_needed 20, and report exactly what the tool returns." | `{"found": true, "sku": "CC-HOOD-NAVY", "name": "Basic Hoodie Big Yale", "size": "M", "qty": 8, "location": "Aisle A", "in_stock": true, "unit_cost": 22, "list_price": 58, "qty_needed": 20, "shortfall": 12}` | ✅ **11 of 11 values match**: `inventory` (CC-HOOD-NAVY, M) has qty 8 in Aisle A; `pricing` has cost $22 and list $58; shortfall 20 − 8 = 12 |
+| **`get_open_invoices`** (ticket 101) | "For ticket 101, use the campus-customs get_open_invoices tool with invoice_id 501, and report exactly what the tool returns." | `{"today": "2026-08-31", "open_invoices": [{"invoice_id": 501, "vendor_id": 1, "vendor_name": "Bulldog Print Co", "specialty": "apparel reprint", "lead_days": 5, "amount": 840, "due_date": "2026-08-28", "status": "open", "description": "Rush reprint CC-TEE-WHITE S", "days_overdue": 3, "overdue": true}], "total_open": 840, "blocked_vendor_ids": [1], "message": null}` | ✅ **15 of 15 values match**: `invoices` 501 is $840, due 2026-08-28, `open`; `vendors` 1 is Bulldog Print Co, 5 lead days; `desk.date_today` 2026-08-31 makes it 3 days overdue |
+| **`get_rent_due`** (ticket 102) | "For ticket 102, use the campus-customs get_rent_due tool for lease_id 1, and report exactly what the tool returns." | `{"found": true, "lease_id": 1, "space_name": "Chapel Street shop", "landlord": "Elm City Properties", "monthly_rent": 2400, "next_due": "2026-09-02", "notes": null, "today": "2026-08-31", "days_until_due": 2, "overdue": false, "cash_accounts": [{"name": "checking", "balance": 3400, "date": "2026-08-31"}], "cash_total": 3400, "cash_covers_rent": true, "cash_after_rent": 1000}` | ✅ **16 of 16 values match**: `leases` 1 is $2,400 to Elm City Properties, due 2026-09-02; `cash_accounts` checking is $3,400; 2 days until due; $1,000 left after rent |
+
+All three tools were called by the vibe coder over MCP, and **42 of 42** checked values match the database. The full field-by-field check, each tool's arguments, and the vibe coder's reply are in `output/mcp_smoke.json`.

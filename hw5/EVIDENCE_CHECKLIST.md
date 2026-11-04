@@ -51,3 +51,11 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] `mcp_server/README.md`: what the server is for, which database file, the three tools
 - [x] My review of the three tool sentences (all three approved in harness Table 5)
 - [x] My review of `mcp_server/README.md` (approved)
+
+## Problem 4: Add the MCP server to vibe coder and test each tool (8 points)
+- [x] MCP server added to this project for the vibe coder (Claude Code: `campus-customs: connected`, all three tools listed)
+- [x] Connection JSON saved in `.mcp.json` at the project root
+- [x] Each of the three tools tested with the vibe coder connected
+- [x] `output/mcp_smoke.json` has, for every tool, the prompt, the tool name, and the tool output
+- [x] Tool output matches `data/campus_customs_new.db` (42 of 42 values, by direct SQL)
+- [x] Tool Test Evidence table (harness Table 7)
