@@ -33,3 +33,10 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] `AI_prompts.md` created at the start of the assignment and kept up to date
 - [x] One section per problem with its number and title (to be checked again at the end for every problem)
 - [x] Each section has my own-words prompt, a follow-up if needed with one sentence on what was lacking, and the outcome
+
+## Problem 2: Study the Campus Customs database (8 points)
+- [x] Every table and its fields looked through (`output/data_overview.md`; harness Table 2)
+- [x] Original copied to `data/campus_customs_new.db`, the working copy (SHA-256 matches)
+- [x] The three open tickets studied, with how they link to other tables (harness Table 3)
+- [x] `output/harness.md` started, with each table's fields and one line on why it matters for the agents (harness Table 2)
+- [x] Open items kept for later problems (harness Table 4, O1–O9)

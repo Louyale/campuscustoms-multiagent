@@ -26,6 +26,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | # | Problem | Main prompt was about | Follow-up fixed | Main output |
 |---|---|---|---|---|
 | 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | Label the Problem 1 tasks for the grader (Table 3), separate from the earlier setup | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
+| 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
 
 ---
 
@@ -60,6 +61,30 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 > that label is fine, yes.
 
 I approved the Table 3 name as it is.
+
+---
+
+## Problem 2: Study the Campus Customs database
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> here are the instructions for problem 2.  we already did some of this as well, but label them and log them as we did with problem 1.  then study the remainder and keep open what will be needed for subsequent problems.
+
+**Follow-up prompt:** none needed.
+
+**Outcome:** each Problem 2 task is done. Table 4 lists them for the grader and marks which were done during setup.
+
+**Table 4: Problem 2 Tasks**
+
+| Task | Panel | What was asked | When | Where it's done |
+|---|---|---|---|---|
+| P2-1 | A | Open `data/campus_customs.db` and look through every table and its fields | Setup, then rechecked | `output/data_overview.md` (every row). Rechecked: all 9 tables, field types, required fields, keys and links, and `integrity_check` = ok |
+| P2-2 | A | Copy the original to `data/campus_customs_new.db`, the working copy later problems update | Setup | The copy's SHA-256 matches the original (`23686a90…f360a`), rechecked for this problem |
+| P2-3 | A | Study the three open tickets and how they link to other tables | Problem 2 | `output/harness.md`, Table 3: How Each Open Ticket Links to Other Tables |
+| P2-4 | B | Start `output/harness.md` | Problem 2 | `output/harness.md` |
+| P2-5 | B | For each table, list the fields and one short line on why it matters for the agents | Problem 2 | `output/harness.md`, Table 2: Table Fields and Why Each Table Matters |
+| P2-6 | B | Keep growing the harness in later problems | Ongoing | Each later problem adds its own section |
+| P2-7 | (extra) | Keep open what later problems will need | Problem 2 | `output/harness.md`, Table 4: Open Items for Later Problems (O1–O9) |
 
 ---
 
