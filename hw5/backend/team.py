@@ -25,11 +25,11 @@ from backend.models import AGENT_NAMES, AgentName, Delegation, TeamDeps, Ticket,
 TICKET_LIMITS = UsageLimits(request_limit=40, total_tokens_limit=400_000)
 
 ROLE_LINES = {
-    "boss": "🧑‍💼 Boss: reads each ticket, routes work, makes the final call",
+    "boss": "🕴️ Boss: reads each ticket, routes work, makes the final call",
     "inventory": "📦 Inventory: stock by SKU and size, shortfalls, restock vendor and lead time",
     "accounting": "🧮 Accounting: cash, invoices, margins, payment requests for human approval",
-    "facilities": "🏢 Facilities: leases, rent and the shop space",
-    "customer_service": "💬 Customer Service: drafts messages that stay on the board",
+    "facilities": "🧢 Facilities: leases, rent and the shop space",
+    "customer_service": "👕 Customer Service: drafts messages that stay on the board",
 }
 
 

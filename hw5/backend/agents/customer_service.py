@@ -17,7 +17,7 @@ NAME = "customer_service"
 customer_service_agent = Agent(
     build_model(),                       # gpt-6-luna through Portkey (backend/config.py)
     name=NAME,
-    description="💬 Customer Service",
+    description="👕 Customer Service",
     instructions=load_prompt(NAME),      # backend/prompts/customer_service.md
     deps_type=TeamDeps,
     output_type=NativeOutput(CustomerDraft),

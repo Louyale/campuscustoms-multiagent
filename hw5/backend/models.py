@@ -20,12 +20,15 @@ AGENT_NAMES: tuple[str, ...] = ("boss", "inventory", "accounting", "facilities",
 
 # One symbol per agent, used in the prompts, the hand-off log and the dashboard.
 AGENT_SYMBOLS: dict[str, str] = {
-    "boss": "🧑‍💼",
+    "boss": "🕴️",
     "inventory": "📦",
     "accounting": "🧮",
-    "facilities": "🏢",
-    "customer_service": "💬",
+    "facilities": "🧢",
+    "customer_service": "👕",
 }
+
+# Figure avatars for the dashboard (drawn by scripts/make_avatars.py).
+AGENT_AVATARS: dict[str, str] = {name: f"assets/agents/{name}.svg" for name in AGENT_NAMES}
 
 
 # ----------------------------------------------------------------------------- the board

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
+  <title>Accounting: in a cardigan and glasses, with a calculator</title>
+  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c)">
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
+    <path d="M52,77 L60,92 L68,77 Z" fill="#e5e7eb"/>
+    <path d="M60,92 L60,120" stroke="#46566a" stroke-width="2"/>
+    <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
+    <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
+    <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
+    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
+    <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
+    <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
+    <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
+    <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="54" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="66" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><path d="M59,48 L61,48" stroke="#222" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -240,11 +240,31 @@ I approved all five agent prompts: Boss, Inventory, Accounting, Facilities and C
 
 | Agent | Symbol |
 |---|---|
-| Boss | 🧑‍💼 |
+| Boss | 🕴️ (a person in a business suit) |
 | Inventory | 📦 |
 | Accounting | 🧮 |
-| Facilities | 🏢 |
-| Customer Service | 💬 |
+| Facilities | 🧢 (a Yale cap, the shop's CC-HAT-BLUE) |
+| Customer Service | 👕 (the shop's Classic Bulldog Tee) |
+
+**Follow-up prompt 3 (the symbols):**
+
+> Change some
+
+> boss in a suit and customer service in campus customs gear  facilities in yale gear
+
+**What was lacking after the first:** the Boss, Customer Service and Facilities symbols didn't show the outfits I wanted. Emoji can't show a figure in Campus Customs or Yale gear, so the change has two layers.
+
+**Outcome:**
+
+- **Emoji** (prompts, code, logs): Boss 🧑‍💼 → 🕴️ (in a suit); Customer Service 💬 → 👕 (a shop tee); Facilities 🏢 → 🧢 (a Yale cap). Inventory 📦 and Accounting 🧮 stay the same. The new emoji are in Table 9 above, and the swap was made in every file.
+- **Figure avatars** (for the dashboard): `assets/agents/*.svg`, drawn by `scripts/make_avatars.py`:
+  - **Boss** in a dark suit with a pink tie
+  - **Customer Service** in Campus Customs gear: a white "CC" shop tee and a headset
+  - **Facilities** in Yale gear: a Yale-blue hoodie with a block Y, and a Yale cap
+  - **Inventory** in an apron, carrying a box
+  - **Accounting** in a cardigan and glasses, with a calculator
+
+  All five are in one matching style, and the overview is `assets/agents/all_agents.png`.
 
 **Outcome:** each 5a task is done. Table 7 lists them for the grader.
 
