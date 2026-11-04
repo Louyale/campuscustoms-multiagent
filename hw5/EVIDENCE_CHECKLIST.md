@@ -40,3 +40,13 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] The three open tickets studied, with how they link to other tables (harness Table 3)
 - [x] `output/harness.md` started, with each table's fields and one line on why it matters for the agents (harness Table 2)
 - [x] Open items kept for later problems (harness Table 4, O1–O9)
+
+## Problem 3: Build the MCP server (12 points)
+- [x] MCP server in `mcp_server/` using FastMCP (`server.py`, FastMCP 4.1.6 pinned in `requirements.txt`)
+- [x] Talks to `data/campus_customs_new.db` (the original is refused)
+- [x] Not connected or run in this problem (syntax check only)
+- [x] Three tools the tickets need, with clear names: `check_stock`, `get_open_invoices`, `get_rent_due`
+- [x] No invented data: database values only, `found: false` when missing
+- [x] `output/harness.md`: each tool's table, ticket (101 / 102 / 103), and a ticket-specific why-sentence (Table 5)
+- [x] `mcp_server/README.md`: what the server is for, which database file, the three tools
+- [ ] My review of the three sentences and the README

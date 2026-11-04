@@ -86,3 +86,35 @@ These points aren't decided here. They're listed so later problems pick them up.
 | O7 | `tickets.status` is `open` for all three. | We'll need the list of status values the agents move a ticket through, and drafts must stay on the board. | Board, dashboard |
 | O8 | Every full run must start from a fresh copy of the original. | Shop rule: reset before a full run. A reset script makes this one command. | Every full run |
 | O9 | `cash_accounts.date` (2026-08-31) should change when cash moves. | It shows when the balance was last updated. | Pay tool |
+
+## Problem 3: Build the MCP server
+
+The server is in `mcp_server/server.py`, built with FastMCP 4.1.6, and it talks only to `data/campus_customs_new.db`. **Every agent in this homework uses these tools.** Each tool returns database values only (or simple arithmetic on them), and anything missing comes back as `found: false` rather than a guess. As the assignment allows, the server wasn't connected or run in this problem; only a syntax check was done.
+
+### The three MCP tools
+
+#### **`check_stock`**
+#### **`get_open_invoices`**
+#### **`get_rent_due`**
+
+**Table 5: The Three MCP Tools, Tied to Their Tickets**
+
+| Tool | Table(s) it reads | Ticket it unlocks | Why it's the right tool for that ticket |
+|---|---|---|---|
+| **`check_stock`** | `inventory`, `pricing` | **103** (Yale AI Club, 20 hoodies, size M); also 101 | Ticket 103 asks for 20 size M hoodies at a bulk discount. `check_stock("CC-HOOD-NAVY", "M", 20)` reads the 8 on hand in `inventory`, showing a shortfall of 12, and the $22 cost and $58 list price in `pricing`. That gives Inventory the restock gap and Accounting the margin before anyone quotes a discount. |
+| **`get_open_invoices`** | `invoices`, `vendors`, `desk` | **101** (Tauhid Zaman, 1 tee, size S) | Ticket 101's size S tee is out of stock and linked to invoice 501. `get_open_invoices(invoice_id=501)` shows that Bulldog Print Co, the only apparel reprint vendor (5 lead days), is owed $840, 3 days overdue as of `desk.date_today`. That's why the tee can't be restocked until a human approves paying it. |
+| **`get_rent_due`** | `leases`, `cash_accounts`, `desk` | **102** (Elm City Properties rent notice) | Ticket 102 says the shop rent is due in 2 days. `get_rent_due(1)` confirms from `leases` that the Chapel Street rent is $2,400, due 2026-09-02, 2 days after `desk.date_today`, and from `cash_accounts` that checking's $3,400 covers it with $1,000 left. So Facilities can bring a sized, affordable payment to a human for approval. |
+
+### How the tools follow the shop rules
+
+**Table 6: Shop Rules Built Into the Problem 3 Tools**
+
+| Rule | How the tools handle it |
+|---|---|
+| Never invent data | Values come only from the database; a missing SKU, size, lease or price returns `found: false` with a message |
+| "Today" is `desk.date_today` | `get_open_invoices` and `get_rent_due` measure days from `desk.date_today`, never the computer clock |
+| Vendor lead times come from `vendors` | `get_open_invoices` returns `vendors.lead_days` |
+| A vendor with an open invoice won't ship | `get_open_invoices` returns `blocked_vendor_ids` |
+| Human approval for payments, no negative balances | These tools only read and pay nothing. `get_rent_due` reports `cash_after_rent` so a shortfall shows up before any payment step |
+| Working copy only; original untouched | `connect()` refuses `campus_customs.db` and opens `campus_customs_new.db` in `mode=rw`, so it can't silently create a blank file |
+| Declared links checked | `connect()` turns on `PRAGMA foreign_keys` (harness 🚩 from Problem 2) |

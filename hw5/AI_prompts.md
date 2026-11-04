@@ -27,6 +27,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 |---|---|---|---|---|
 | 1 | Vibe coder prompts | Finish setting up this log, one section per problem number and title, kept updated | Label the Problem 1 tasks for the grader (Table 3), separate from the earlier setup | `AI_prompts.md`, `EVIDENCE_CHECKLIST.md` |
 | 2 | Study the Campus Customs database | Label and log the parts done during setup; study the rest; keep open what later problems need | (none needed) | `output/harness.md`, `output/data_overview.md`, `data/campus_customs_new.db` |
+| 3 | Build the MCP server | FastMCP server on `campus_customs_new.db`, not run; three ticket-specific tools with no invented data; bold tool names and a harness table with the table read, ticket and a why-sentence; a short `mcp_server/README.md`; show me the sentences and README to review | (none yet) | `mcp_server/server.py`, `mcp_server/README.md`, `requirements.txt`, `output/harness.md` (Tables 5–6) |
 
 ---
 
@@ -91,6 +92,31 @@ I approved the Table 3 name as it is.
 > yes as to all titles
 
 I approved all the Problem 2 table names as they are: harness Tables 1–4 and this log's Table 4.
+
+---
+
+## Problem 3: Build the MCP server
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> here are the contents for problem 3.  follow the instructions to build the mcp server using FastMCP so it talks to the campus customs new.db as noted and do not run it in this problem.  all agents use these tools.  now, write 3 tools you know we'll need for the tickets in the data base and do not invent data.  keep the names clear and put them in bold and larger font and list them in harness.  make a table for the 3 tools and include the requested information.  be sure to add the sentence for why it is the right tool for the ticket and show me the 3 sentences here so i can do what i usually do and amend if needed.  tie the tool to the specific ticket and do not use vague descriptions make the description ticket specific.  last add a readme file that explains what the mcp server is for, which database file it uses and the three tools it has - show me that here too so i can also review and amend if needed.
+
+**Follow-up prompt:** none yet. I'm reviewing the three sentences and the README.
+
+**Outcome:** each Problem 3 task is done. Table 5 lists them for the grader.
+
+**Table 5: Problem 3 Tasks**
+
+| Task | Panel | What was asked | Where it's done |
+|---|---|---|---|
+| P3-1 | A | Write an MCP server in `mcp_server/` using FastMCP | `mcp_server/server.py` (FastMCP 4.1.6, pinned in `requirements.txt`) |
+| P3-2 | A | It talks to `data/campus_customs_new.db` | `DB_PATH` in `server.py`; `connect()` refuses the original and won't create a blank file |
+| P3-3 | A | Don't connect or run it in this problem | Not run. Only a syntax check (`py_compile`) and an install of FastMCP to confirm its API |
+| P3-4 | A | Every agent uses these tools; write three you know the tickets need | `check_stock` (103, also 101), `get_open_invoices` (101), `get_rent_due` (102) |
+| P3-5 | A | Keep the names clear; never invent data | Plain verb names; values only from the database, with `found: false` when missing |
+| P3-6 | B | In `output/harness.md`, list each tool with the table it reads, the ticket it unlocks, and one sentence on why it's the right tool, tied to the ticket | `output/harness.md`, Table 5: The Three MCP Tools, Tied to Their Tickets (names in bold, larger font) |
+| P3-7 | B | Add a short `mcp_server/README.md`: what it's for, which database it uses, the three tools | `mcp_server/README.md` (with its Table 1: MCP Server Tools) |
+| P3-8 | (extra) | Show how the tools follow the shop rules | `output/harness.md`, Table 6: Shop Rules Built Into the Problem 3 Tools |
 
 ---
 
