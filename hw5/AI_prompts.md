@@ -86,6 +86,12 @@ I approved the Table 3 name as it is.
 | P2-6 | B | Keep growing the harness in later problems | Ongoing | Each later problem adds its own section |
 | P2-7 | (extra) | Keep open what later problems will need | Problem 2 | `output/harness.md`, Table 4: Open Items for Later Problems (O1–O9) |
 
+**Confirmation:**
+
+> yes as to all titles
+
+I approved all the Problem 2 table names as they are: harness Tables 1–4 and this log's Table 4.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)
