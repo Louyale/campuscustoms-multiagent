@@ -79,5 +79,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Harness: safety section with guardrails for real customers and money, and token limits (Tables 14–15)
 - [x] `mcp_server/README.md` tool list matches the server (24 tools)
 - [x] Every tool tested on a scratch database copy (41 of 41 checks, 24 of 24 tools; `output/mcp_tool_check.json`)
-- [ ] My approval of each agent's tool list (harness Table 11)
+- [x] My approval of each agent's tool list (all five ☑ in harness Table 11)
 - [ ] First audit trail entries from a real agent run

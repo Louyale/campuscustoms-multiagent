@@ -335,6 +335,8 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 - **Check-in:** `check_in_on_assignments` shows each assignment's owner, deadline, status, days left, on time or overdue, the thanks sent, and a reply summary. Boss checks in before deciding, so nothing is left open and no one is asked twice.
 - **Tested offline:** the three deadline refusals, and a check-in showing one assignment done on time and thanked and one overdue. The MCP tool check is still 41 of 41.
 
+**Approval:** I approved all five agents' tool lists: 🕴️ Boss (revised), 📦 Inventory, 🧮 Accounting, 🧢 Facilities and 👕 Customer Service. Each one reads ☑ Approved by Lou in harness Table 11.
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**
