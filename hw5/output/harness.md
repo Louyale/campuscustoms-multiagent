@@ -172,6 +172,8 @@ The team is built with **PydanticAI** (2.65.0). Every agent uses **`gpt-6-luna` 
 | **Facilities** | `backend/agents/facilities.py` | `backend/prompts/facilities.md` | `FacilitiesReport` | `get_rent_due` | Lease, rent, landlord, due date; prepares the rent request |
 | **Customer Service** | `backend/agents/customer_service.py` | `backend/prompts/customer_service.md` | `CustomerDraft` | `check_stock` | Drafts messages that stay on the board; never sends |
 
+**Prompt approval:** I reviewed all five prompts, added my own edits (prompt log Table 8), and approved each one (☑ in `output/agent_prompts_review.md`). Each prompt is about 600–1,100 words. My edits added Boss's "How you report to the humans" rules, Customer Service's grammar and assertive-but-friendly tone, Inventory's low-stock rule (fewer than 5 units) and best-seller honesty, and Accounting's balance sheet and income statement.
+
 Each agent sees only the MCP tools its role needs (`TOOL_ACCESS` in `backend/mcp_tools.py`). For example, Customer Service can check stock but can't see invoices or cash.
 
 ### How the agents delegate: full connectivity
@@ -200,7 +202,8 @@ Every hand-off is recorded (`Delegation`: from, to, task, depth, and the answer 
 | `PaymentRequest` | Accounting, Facilities, Boss | kind (invoice / rent / purchase_order), ref_id, payee, amount, account, cash before and after | **status is always `pending_human_approval`**; `cash_after` can't be below 0, and must equal cash before minus amount |
 | `MarginCheck` | Accounting | unit cost, list price, price considered, margin per unit and % | (none) |
 | `InventoryReport` | Inventory | on hand, needed, shortfall, restock vendor, lead days, vendor blocked by which invoice | (none) |
-| `AccountingReport` | Accounting | cash, payment requests, margin checks, cash left if all approved | the total requested can't exceed cash |
+| `AccountingReport` | Accounting | cash, payment requests, margin checks, cash left if all approved, financial statements | the total requested can't exceed cash |
+| `FinancialStatement`, `StatementLine` | Accounting (when asked) | balance sheet (assets, liabilities, equity) or income statement (revenue, expenses, net income), each line with its source table | **a balance sheet must balance**: assets = liabilities + equity |
 | `FacilitiesReport` | Facilities | lease, rent, due date, days until due, notice vs. record, rent request | (none) |
 | `CustomerDraft` | Customer Service | to, subject, body, facts used, waiting on | **status is always `draft`** |
 | `TicketDecision` | Boss | steps in order with owners, approvals needed, customer draft, recommended status, reasoning | (none) |

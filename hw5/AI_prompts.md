@@ -237,7 +237,7 @@ I approved all five agent prompts: Boss, Inventory, Accounting, Facilities and C
 | P5a-4 | Data types in `backend/models.py` | harness Table 10 |
 | P5a-5 | Agent files under `backend/`, with the five roles clear | harness Table 8: The Five Agents |
 | P5a-6 | `PORTKEY_API_KEY` and only `gpt-6-luna` for every agent | `backend/config.py` (one model, locked); all five checked as `gpt-6-luna` |
-| P5a-7 | Each prompt in our own words, with the shop rules that agent needs; detailed, covering its work and scope | Each prompt has: who you are, responsibilities, shop rules, working with teammates, scope, output (about 500–800 words each) |
+| P5a-7 | Each prompt in our own words, with the shop rules that agent needs; detailed, covering its work and scope | Each prompt has: who you are, responsibilities, shop rules, working with teammates, scope, output (about 600–1,100 words each after my edits; all five approved) |
 | P5a-8 | (mine) Show me each prompt, with an approve button under each | `output/agent_prompts_review.md` and the approval dialog |
 
 ---
