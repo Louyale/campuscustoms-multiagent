@@ -307,6 +307,29 @@ Every agent runs through `run_logged` (`backend/audit.py`), which walks Pydantic
 | `output` | The agent's final structured report |
 | `team_usage_so_far` | Requests and tokens used by the whole team so far on this ticket |
 
+#### Test run: one ticket through the team (proves the audit trail)
+
+The database was reset first. Ticket **102** (the rent notice) then ran through the team on `gpt-6-luna` (`python scripts/run_ticket.py --ticket 102 --reset-before`), and the database was reset again afterwards. The full record is in `output/test_run_102.json`, and every step is in `output/audit_trail.json`.
+
+**Table 16: Ticket 102 Test Run**
+
+| What | Result |
+|---|---|
+| Boss's decision | "Recommend approving the overdue invoice first, then the $2,400 rent due September 2; both requests are pending human approval." Ticket set to `waiting_approval` |
+| Assignments (all with deadlines) | **A1** 🧢 Facilities: confirm the lease, rent and due date · **A2** 🧮 Accounting: cash and payment requests · **A3** 👕 Customer Service: an acknowledgment draft. All due 2026-08-31, all done on time, and each one thanked automatically |
+| Payment requests filed | $840 invoice 501 to Bulldog Print Co, and $2,400 rent to Elm City Properties. Both **pending**, so cash stays $3,400 until a human approves |
+| Payments made | **None** (the `payments` table is still empty) |
+| Draft on the board | To Elm City Properties, "Acknowledgment of rent notice", passed the spelling and grammar check; never sent |
+| Audit trail | **53 entries appended**: 4 prompts, 19 requests to the model, 19 model replies, 4 final answers, 4 run summaries and 3 `AssignmentDone` entries, across Boss, Facilities, Accounting and Customer Service |
+| Model calls and tokens | 19 calls; 60,039 input tokens (45,213 of them cached, 75%), 2,514 output tokens; 50.5 seconds |
+| Tool calls | 24, including `get_ticket`, `get_rent_due`, `get_cash_balance`, `request_payment` ×2, `check_in_on_assignments`, `check_spelling_grammar` ×2, `save_customer_draft` and `update_ticket_status` ×2 |
+
+🚩 **What the test run found, and what was done:**
+
+- **The model name in replies is `gpt-6-luna-global`.** That's the name Portkey reports for `gpt-6-luna`. Our code asks only for `gpt-6-luna` (`backend/config.py` refuses anything else), and no other model was called.
+- **A grammar rule was too strict.** It flagged the comma after a greeting, so Customer Service wrote "Dear Elm City Properties." with a period instead. **Fixed:** a comma now ends a greeting or sign-off correctly, and all 41 tool checks still pass.
+- **A request was filed under the wrong ticket.** Accounting filed the invoice 501 request under ticket 102, the rent ticket, though invoice 501 belongs to ticket 101. Paying it first is sensible cash planning, but it should be filed under 101. Lou's decision is pending.
+
 ## Safety
 
 Campus Customs' agents touch real customers and real money. These are the guardrails a real business would want, and where each one lives in this project.

@@ -80,4 +80,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] `mcp_server/README.md` tool list matches the server (24 tools)
 - [x] Every tool tested on a scratch database copy (41 of 41 checks, 24 of 24 tools; `output/mcp_tool_check.json`)
 - [x] My approval of each agent's tool list (all five ☑ in harness Table 11)
-- [ ] First audit trail entries from a real agent run
+- [x] First audit trail entries from a real agent run (ticket 102: 53 entries, 4 agents, nothing paid; harness Table 16)
+- [x] Database reset after the test run (`scripts/reset_db.py`)

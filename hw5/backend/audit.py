@@ -114,7 +114,7 @@ async def run_logged(agent: Agent, agent_name: str, prompt: str, deps: TeamDeps,
                 **describe(node),
             })
         result = run.result
-    usage = run.usage()
+    usage = run.usage
     append_entry({
         "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "run_id": deps.run_id,

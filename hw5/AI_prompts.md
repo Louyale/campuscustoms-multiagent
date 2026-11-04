@@ -337,6 +337,21 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 
 **Approval:** I approved all five agents' tool lists: 🕴️ Boss (revised), 📦 Inventory, 🧮 Accounting, 🧢 Facilities and 👕 Customer Service. Each one reads ☑ Approved by Lou in harness Table 11.
 
+**Follow-up prompt (test the audit trail):**
+
+> Yes, test one ticket
+
+**What was lacking after the first:** the audit trail was wired up but empty, because no agent had run on gpt-6-luna yet.
+
+**Outcome:**
+
+- I reset the database, ran ticket 102 through the team, and reset it again (`scripts/reset_db.py`, `scripts/run_ticket.py`).
+- Boss gave three assignments with deadlines (Facilities, Accounting, Customer Service), all done on time and thanked. Two payment requests are waiting for a human ($840 for invoice 501 and $2,400 rent), one draft is on the board, and **nothing was paid**.
+- **53 audit entries** were appended. The run took 19 model calls: 60,039 input tokens (75% cached) and 2,514 output tokens. Details are in harness Table 16 and `output/test_run_102.json`.
+- **Found and fixed:** a grammar rule had flagged the comma after a greeting.
+- **Noted:** Portkey reports the model as `gpt-6-luna-global`.
+- **Pending my decision:** the invoice 501 request was filed under ticket 102 instead of ticket 101.
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**

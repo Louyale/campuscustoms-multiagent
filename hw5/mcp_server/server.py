@@ -532,7 +532,7 @@ def text_issues(text: str, label: str, vocab: set[str], spell) -> list[dict]:
         last_line = [l for l in text.strip().splitlines() if l.strip()]
         sentences = [l for l in last_line if len(l.split()) > 3]
         for l in sentences:
-            if not re.search(r"[.!?:)\"]$", l.strip()):
+            if not re.search(r"[.!?:,)\"]$", l.strip()):  # a comma is right after a greeting or sign-off
                 issues.append({"where": label, "type": "grammar", "text": l.strip()[-30:], "suggestion": "end with punctuation",
                                "problem": "sentence has no end punctuation"})
     return issues
