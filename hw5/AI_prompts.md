@@ -387,6 +387,12 @@ All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness
 
 **Outcome:** I was shown the three board tables the code creates (`drafts`, `approval_requests`, `building_requests`), with their fields and rules. The tables each agent reads were confirmed against the code, and **harness Table 18: Data Tables Each Agent Reads** was added. It shows each agent's original data tables, its board tables, and what it writes. No agent can write to `payments`, `cash_accounts`, `invoices` or `leases`.
 
+**Approval:**
+
+> Approve Boss
+
+I approved Boss's revised tool list (priorities, deadlines, check-ins). All five agents' tool lists now read ☑ Approved by Lou in harness Table 11, and Part 5b is complete.
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**

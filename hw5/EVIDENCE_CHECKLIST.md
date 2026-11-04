@@ -79,7 +79,7 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Harness: safety section with guardrails for real customers and money, and token limits (Tables 14–15)
 - [x] `mcp_server/README.md` tool list matches the server (25 tools)
 - [x] Every tool tested on a scratch database copy (43 of 43 checks, 25 of 25 tools; `output/mcp_tool_check.json`)
-- [ ] My approval of each agent's tool list (Boss re-marked ☐ after the priority change; the other four ☑)
+- [x] My approval of each agent's tool list (all five ☑ in harness Table 11, Boss's after the priority change)
 - [x] Boss prioritizes: `rank_open_tickets`, priority on every assignment, top-down follow-up, the $5,000 rule (harness Table 17)
 - [x] First audit trail entries from a real agent run (ticket 102: 53 entries, 4 agents, nothing paid; harness Table 16)
 - [x] Database reset after the test run (`scripts/reset_db.py`)
