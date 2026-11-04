@@ -148,6 +148,24 @@ I approved the rewritten README. Problem 3 is complete.
 
 ---
 
+## Problem 4: Add the MCP server to vibe coder and test each tool
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> k, now for problem 4, use this vibe coder to add the mcp server to this project, follow all instructions attached and test all three tools.  create a table titled Tool Test Evidence, and for each tool list the requisite three pieces of information, and make sure the tool output matches the values in the data/campus_customs_new.db
+
+**Follow-up prompt:** (in progress)
+
+**Outcome so far:**
+
+- Saved `.mcp.json` at the project root (`hw5/`), with the `campus-customs` server running `python mcp_server/server.py`.
+- Claude Code connected to it: its startup check showed `campus-customs: connected` and listed all three tools.
+- Wrote `scripts/mcp_smoke.py`. It asks the vibe coder each test prompt, records the real tool call and output, and checks every value against `data/campus_customs_new.db`.
+- 🚩 The parent `Dan Rocks` folder also defines an `outlook-mail` server, which can send email. The tests load only `campus-customs` (`--strict-mcp-config`) and allow only the one tool under test, so no email can be sent.
+- Waiting on a one-time sign-in to the command-line copy of Claude Code.
+
+---
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**
