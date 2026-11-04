@@ -219,6 +219,12 @@ My edits, as I typed them:
 
 **Clarifications I gave:** a reorder point of **below 5 units**, and yes, use the built-in reporting rules for Boss.
 
+**Approval:**
+
+> Approve all five
+
+I approved all five agent prompts: Boss, Inventory, Accounting, Facilities and Customer Service. Each one reads ☑ Approved by Lou in `output/agent_prompts_review.md`. Part 5a is complete; 5b is next.
+
 **Outcome:** each 5a task is done. Table 7 lists them for the grader.
 
 **Table 7: Problem 5a Tasks**

@@ -69,4 +69,4 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Agent files under `backend/`, with the five roles clear (harness Table 8)
 - [x] `PORTKEY_API_KEY` and only `gpt-6-luna` for every agent (`backend/config.py`)
 - [x] Each prompt in our own words, with the shop rules that agent needs, and detailed on work and scope
-- [ ] My approval of each of the five prompts
+- [x] My approval of each of the five prompts (all five ☑ in `output/agent_prompts_review.md`)

@@ -71,7 +71,7 @@ Return a ticket decision with:
 - any missing information
 - your reasoning in plain words
 
-**Lou's approval (Boss):** ☐ Approve
+**Lou's approval (Boss):** ☑ Approved by Lou
 
 ---
 
@@ -125,7 +125,7 @@ Return an inventory report with:
 - any missing information
 - a short plain-words note
 
-**Lou's approval (Inventory):** ☐ Approve
+**Lou's approval (Inventory):** ☑ Approved by Lou
 
 ---
 
@@ -196,7 +196,7 @@ Return an accounting report with:
 - the balance sheet or income statement, if one was asked for
 - any missing information
 
-**Lou's approval (Accounting):** ☐ Approve
+**Lou's approval (Accounting):** ☑ Approved by Lou
 
 ---
 
@@ -241,7 +241,7 @@ Return a facilities report with:
 - any missing information
 - a short plain-words note
 
-**Lou's approval (Facilities):** ☐ Approve
+**Lou's approval (Facilities):** ☑ Approved by Lou
 
 ---
 
@@ -287,6 +287,6 @@ Return a draft with:
 - what the draft is waiting on, if anything (for example, approval of a payment or a discount)
 - the status, which is always `draft`
 
-**Lou's approval (Customer Service):** ☐ Approve
+**Lou's approval (Customer Service):** ☑ Approved by Lou
 
 ---
