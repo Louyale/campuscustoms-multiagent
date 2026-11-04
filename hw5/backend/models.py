@@ -18,6 +18,15 @@ from pydantic import BaseModel, Field, model_validator
 AgentName = Literal["boss", "inventory", "accounting", "facilities", "customer_service"]
 AGENT_NAMES: tuple[str, ...] = ("boss", "inventory", "accounting", "facilities", "customer_service")
 
+# One symbol per agent, used in the prompts, the hand-off log and the dashboard.
+AGENT_SYMBOLS: dict[str, str] = {
+    "boss": "🧑‍💼",
+    "inventory": "📦",
+    "accounting": "🧮",
+    "facilities": "🏢",
+    "customer_service": "💬",
+}
+
 
 # ----------------------------------------------------------------------------- the board
 

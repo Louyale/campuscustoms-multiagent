@@ -225,6 +225,27 @@ My edits, as I typed them:
 
 I approved all five agent prompts: Boss, Inventory, Accounting, Facilities and Customer Service. Each one reads ☑ Approved by Lou in `output/agent_prompts_review.md`. Part 5a is complete; 5b is next.
 
+**Follow-up prompt 2:**
+
+> for your accounting question, for now we should only be stating that the agent has the ability to create the balance sheets, but will identify any missing figures.  i also want you to give each agent an agengt figure symbol to match each agent
+
+**What was lacking after the first:** the Accounting prompt spelled out every balance sheet and income statement line, but for now it should only say that the agent can prepare them and will identify any missing figures. The agents also had no symbols of their own.
+
+**Outcome:**
+
+- **Accounting:** the statement section now reads: "You can prepare a balance sheet and an income statement for the shop. Build them only from figures your tools return. Identify every figure that's missing, list it under missing information, and never estimate or fill it in." The "Who you are" line and the output list match.
+- **Agent symbols:** each agent has one symbol, used in its prompt title, its agent file, the hand-off log (`ROLE_LINES` in `backend/team.py`), harness Table 8, and the review file. They're set once in `AGENT_SYMBOLS` in `backend/models.py`, so the dashboard can use the same symbols later.
+
+**Table 9: Agent Symbols**
+
+| Agent | Symbol |
+|---|---|
+| Boss | 🧑‍💼 |
+| Inventory | 📦 |
+| Accounting | 🧮 |
+| Facilities | 🏢 |
+| Customer Service | 💬 |
+
 **Outcome:** each 5a task is done. Table 7 lists them for the grader.
 
 **Table 7: Problem 5a Tasks**

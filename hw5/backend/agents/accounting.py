@@ -17,7 +17,7 @@ NAME = "accounting"
 accounting_agent = Agent(
     build_model(),                       # gpt-6-luna through Portkey (backend/config.py)
     name=NAME,
-    description="Accounting",
+    description="🧮 Accounting",
     instructions=load_prompt(NAME),      # backend/prompts/accounting.md
     deps_type=TeamDeps,
     output_type=NativeOutput(AccountingReport),

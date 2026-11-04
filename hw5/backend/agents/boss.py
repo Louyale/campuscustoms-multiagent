@@ -17,7 +17,7 @@ NAME = "boss"
 boss_agent = Agent(
     build_model(),                       # gpt-6-luna through Portkey (backend/config.py)
     name=NAME,
-    description="Boss",
+    description="🧑‍💼 Boss",
     instructions=load_prompt(NAME),      # backend/prompts/boss.md
     deps_type=TeamDeps,
     output_type=NativeOutput(TicketDecision),

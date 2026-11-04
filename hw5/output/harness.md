@@ -164,13 +164,15 @@ The team is built with **PydanticAI** (2.65.0). Every agent uses **`gpt-6-luna` 
 
 **Table 8: The Five Agents**
 
+Each agent has its own symbol (`AGENT_SYMBOLS` in `backend/models.py`), used in its prompt title, the hand-off log and, later, the dashboard.
+
 | Agent | Agent file | Prompt file (one per agent) | Returns (in `backend/models.py`) | MCP tools it may call | Its job |
 |---|---|---|---|---|---|
-| **Boss** | `backend/agents/boss.py` | `backend/prompts/boss.md` | `TicketDecision` | `check_stock`, `get_open_invoices`, `get_rent_due` | Reads each ticket, routes it, combines the answers, makes the final call |
-| **Inventory** | `backend/agents/inventory.py` | `backend/prompts/inventory.md` | `InventoryReport` | `check_stock`, `get_open_invoices` | Stock by SKU and size, shortfalls, restock vendor, lead time, vendor blocks |
-| **Accounting** | `backend/agents/accounting.py` | `backend/prompts/accounting.md` | `AccountingReport` | `check_stock`, `get_open_invoices`, `get_rent_due` | Cash, invoices, margins, payment and purchase-order requests for human approval |
-| **Facilities** | `backend/agents/facilities.py` | `backend/prompts/facilities.md` | `FacilitiesReport` | `get_rent_due` | Lease, rent, landlord, due date; prepares the rent request |
-| **Customer Service** | `backend/agents/customer_service.py` | `backend/prompts/customer_service.md` | `CustomerDraft` | `check_stock` | Drafts messages that stay on the board; never sends |
+| 🧑‍💼 **Boss** | `backend/agents/boss.py` | `backend/prompts/boss.md` | `TicketDecision` | `check_stock`, `get_open_invoices`, `get_rent_due` | Reads each ticket, routes it, combines the answers, makes the final call |
+| 📦 **Inventory** | `backend/agents/inventory.py` | `backend/prompts/inventory.md` | `InventoryReport` | `check_stock`, `get_open_invoices` | Stock by SKU and size, shortfalls, restock vendor, lead time, vendor blocks |
+| 🧮 **Accounting** | `backend/agents/accounting.py` | `backend/prompts/accounting.md` | `AccountingReport` | `check_stock`, `get_open_invoices`, `get_rent_due` | Cash, invoices, margins, payment and purchase-order requests for human approval |
+| 🏢 **Facilities** | `backend/agents/facilities.py` | `backend/prompts/facilities.md` | `FacilitiesReport` | `get_rent_due` | Lease, rent, landlord, due date; prepares the rent request |
+| 💬 **Customer Service** | `backend/agents/customer_service.py` | `backend/prompts/customer_service.md` | `CustomerDraft` | `check_stock` | Drafts messages that stay on the board; never sends |
 
 **Prompt approval:** I reviewed all five prompts, added my own edits (prompt log Table 8), and approved each one (☑ in `output/agent_prompts_review.md`). Each prompt is about 600–1,100 words. My edits added Boss's "How you report to the humans" rules, Customer Service's grammar and assertive-but-friendly tone, Inventory's low-stock rule (fewer than 5 units) and best-seller honesty, and Accounting's balance sheet and income statement.
 

@@ -17,7 +17,7 @@ NAME = "facilities"
 facilities_agent = Agent(
     build_model(),                       # gpt-6-luna through Portkey (backend/config.py)
     name=NAME,
-    description="Facilities",
+    description="🏢 Facilities",
     instructions=load_prompt(NAME),      # backend/prompts/facilities.md
     deps_type=TeamDeps,
     output_type=NativeOutput(FacilitiesReport),
