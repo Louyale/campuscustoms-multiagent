@@ -387,7 +387,7 @@ Prices are the course's `gpt-6-luna` prices (`backend/prices.json`, the same she
 
 **Table 17: Token Use and Cost per Ticket Against the Limits** (run 4, the final team)
 
-| Measure | Run 4 (one ticket) | Limit per ticket (Table 20) | Headroom |
+| Measure | Run 4 (one ticket) | Limit per ticket (Table 21) | Headroom |
 |---|---|---|---|
 | Model requests | 20 | 40 | 20 spare (50% used) |
 | Total tokens (input + output) | 90,828 | 400,000 | 23% used |
@@ -413,11 +413,25 @@ Prices are the course's `gpt-6-luna` prices (`backend/prices.json`, the same she
 
 **For the owner:** handling one ticket costs about a third of a cent. By comparison, **if** a shop manager earning $25 an hour spent 10 minutes on the same lookups, drafting and paperwork, the ticket would cost about **$4.17** in time. That's about 1,297 times the agents' cost. The $25 an hour and 10 minutes are illustrative assumptions, not shop data, so adjust them to your own numbers. The agents don't replace the human: a person still approves every payment and reads every draft. They do the legwork, so the human's time goes only to decisions.
 
+**Table 19: Cost Summary and Savings for the Owner**
+
+| For the owner | Agent team cost | Compared with | Savings |
+|---|---|---|---|
+| **One ticket, start to finish** | **$0.0032** (about a third of a cent) | Without caching: $0.0100 | **$0.0068 per ticket (68% less)** |
+| The whole board (3 tickets) | $0.010 | Without caching: $0.030 | $0.020 |
+| **1,000 tickets a day for 30 days** | **about $96 a month** (range $76–$96) | Without caching: about $301 a month | **about $204 a month saved by caching** |
+| Per assignment (deadline, done, thanked) | $0.0011 | (none) | (none) |
+| Per shop fact looked up through MCP | $0.0002 | (none) | (none) |
+| **One ticket vs. a person doing the legwork**\* | $0.0032 | $4.17 (a $25-an-hour manager, 10 minutes) | **$4.16 per ticket, about 1,297 times cheaper** |
+| **1,000 tickets vs. a person**\* | $3.21 | $4,167 (about 167 staff hours) | **about $4,163 per 1,000 tickets** |
+
+\* The person comparison uses illustrative assumptions ($25 an hour, 10 minutes per ticket), not shop data, so the owner can swap in real figures. The agents do the lookups, cash checks, payment requests, drafts and audit trail. A human still approves every payment and reads every draft, so the person's time goes to decisions, not legwork. The caching figures come straight from the run's token counts and the course's gpt-6-luna prices (`backend/prices.json`, `python scripts/cost_report.py`).
+
 ## Safety
 
 Campus Customs' agents touch real customers and real money. These are the guardrails a real business would want, and where each one lives in this project.
 
-**Table 19: Safety Guardrails**
+**Table 20: Safety Guardrails**
 
 | Guardrail | Why a real business wants it | How it's built here |
 |---|---|---|
@@ -441,7 +455,7 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | **Secrets stay secret** | Leaked keys get abused | `PORTKEY_API_KEY` and `HUMAN_APPROVAL_CODE` live only in `.env` (git-ignored); evidence files mask the code |
 | **One model only** | Predictable cost and behavior | `backend/config.py` refuses anything but `gpt-6-luna` |
 
-**Table 20: Limits That Keep Token Use in Check**
+**Table 21: Limits That Keep Token Use in Check**
 
 | Limit | Setting | Where |
 |---|---|---|

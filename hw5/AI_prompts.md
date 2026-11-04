@@ -438,9 +438,20 @@ I approved Boss's revised tool list (priorities, deadlines, check-ins). All five
   - **Table 16:** all four runs.
   - **Table 17:** about **$0.0032 per ticket**. Caching saves 68%. The whole board is about $0.010, and 1,000 tickets a day comes to about **$96 a month** (range $76–$96).
   - **Table 18: Cost Compared With the Work Done:** about $0.0011 per assignment and $0.0002 per lookup. Against an illustrative human cost of $4.17 a ticket ($25 an hour × 10 minutes, labeled as an assumption), the agents cost about 1/1,300th of that. The human still approves every payment.
-- **Renumbering:** Safety and Limits are now harness Tables 19 and 20; all 20 tables are in page order.
+- **Renumbering:** Safety and Limits are now harness Tables 20 and 21; all 20 tables are in page order.
 - **My question about "the f-string broke":** it was a mistake in one of the vibe coder's own automated edits. While adding a tool, the edit put a real line break inside a line of Python text, so the file wouldn't run. The test caught it on the spot, it was fixed right away, and it was never committed or run broken. The same thing happened once more, to a grammar-rule line, and it was caught the same way. The vibe coder now makes those edits with direct file edits, which can't cause it.
 - **Part 5b is closed out.**
+
+**Follow-up prompt (owner's cost summary):**
+
+> perfect, almost done.  just add the cost saving comparison from your analysis to the chart you provided and be sure to save that to either the readme or the harness as appropriate
+
+**What was lacking after the first:** the cost chart showed what the team costs, but not what it saves.
+
+**Outcome:** added **harness Table 19: Cost Summary and Savings for the Owner**, in the harness's cost section beside Tables 17–18, the right home for it. Safety and Limits are now Tables 20 and 21.
+
+- **Caching:** $0.0068 saved per ticket (68%), about $204 a month at 1,000 tickets a day.
+- **Compared with a person doing the legwork** (illustrative $25 an hour × 10 minutes): $4.16 saved per ticket, about 1,297 times cheaper, and about $4,163 per 1,000 tickets. A human still approves every payment.
 
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
@@ -452,7 +463,7 @@ I approved Boss's revised tool list (priorities, deadlines, check-ins). All five
 | P5b-2 | Shop facts come only from the MCP server over `campus_customs_new.db`; no second tools layer that bypasses MCP | Agents only have MCP tools plus `ask_teammate`; even `run_ticket` reads the ticket through MCP (`get_ticket`) |
 | P5b-3 | Wire the agents to append to `output/audit_trail.json` at every agent-loop step, with enough to audit later, never wiping it | `backend/audit.py` (`run_logged`, append-only); fields in harness Table 14 |
 | P5b-4 | In the harness, each agent and each MCP tool, with the table each tool uses | harness Table 11: **Agent Tools** (my title), and Table 12: MCP Tools and Their Tables |
-| P5b-5 | A short safety section: guardrails for real customers and real money, plus limits on token use | harness `## Safety`: Table 19: Safety Guardrails, and Table 20: Limits That Keep Token Use in Check |
+| P5b-5 | A short safety section: guardrails for real customers and real money, plus limits on token use | harness `## Safety`: Table 20: Safety Guardrails, and Table 21: Limits That Keep Token Use in Check |
 | P5b-6 | Update `mcp_server/README.md` so the tool list matches | All 24 tools listed, with the tables each uses |
 | P5b-7 | (mine) A Lou approval area for each agent's tool list | The "Lou's approval" column in harness Table 11, plus the approval buttons |
 | P5b-8 | (extra) Test every tool | `scripts/mcp_tool_check.py`: 41 of 41 checks, 24 of 24 tools, on a scratch database copy; `output/mcp_tool_check.json` |
