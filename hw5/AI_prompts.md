@@ -109,6 +109,8 @@ I approved all the Problem 2 table names as they are: harness Tables 1–4 and t
 
 **Outcome of the follow-up:** harness Table 5's column is now "What it returns, and why it's the right tool for the ticket", with a **Returns** line and a deeper **Why** line for each tool. A "Lou's approval" box (☐ Approve) was added for each of the three tools.
 
+**Approval:** I approved all three revised tool entries (`check_stock`, `get_open_invoices`, `get_rent_due`), and each box in Table 5 now reads ☑ Approved by Lou.
+
 **Outcome:** each Problem 3 task is done. Table 5 lists them for the grader.
 
 **Table 5: Problem 3 Tasks**

@@ -49,4 +49,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] No invented data: database values only, `found: false` when missing
 - [x] `output/harness.md`: each tool's table, ticket (101 / 102 / 103), and a ticket-specific why-sentence (Table 5)
 - [x] `mcp_server/README.md`: what the server is for, which database file, the three tools
-- [ ] My review of the three sentences and the README
+- [x] My review of the three tool sentences (all three approved in harness Table 5)
+- [ ] My review of `mcp_server/README.md`
