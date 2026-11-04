@@ -275,12 +275,13 @@ def get_ticket(ticket_id: int) -> dict:
     """One ticket from the board (tickets), with any drafts and payment requests already filed
     for it (drafts, approval_requests). Boss starts every ticket here."""
     with closing(board(connect())) as conn:
+        today = shop_today(conn)
         t = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
         if t is None:
             return {"found": False, "ticket_id": ticket_id, "message": f"No ticket {ticket_id}."}
         drafts = [dict(r) for r in conn.execute("SELECT * FROM drafts WHERE ticket_id = ? ORDER BY id", (ticket_id,))]
         reqs = [dict(r) for r in conn.execute("SELECT * FROM approval_requests WHERE ticket_id = ? ORDER BY id", (ticket_id,))]
-    return {"found": True, "ticket": dict(t), "drafts": drafts, "payment_requests": reqs}
+    return {"found": True, "today": today.isoformat(), "ticket": dict(t), "drafts": drafts, "payment_requests": reqs}
 
 
 @mcp.tool(annotations=READ_ONLY)

@@ -191,6 +191,7 @@ Each agent sees only the MCP tools its role needs (`TOOL_ACCESS` in `backend/mcp
 | No asking yourself | An agent looping on itself | ✅ refused: "you cannot ask yourself" |
 | No asking an agent already waiting up the chain | Ping-pong, such as Inventory → Accounting → Inventory | ✅ refused: "inventory is already waiting on this request chain" |
 | At most 3 hand-offs below the first agent | Long, costly chains | ✅ refused: "hand-off limit reached (3)" |
+| Boss must give every assignment a deadline (`due_by`), not before `desk.date_today` (added in 5b) | Work with no "needed by" date, or a deadline already past | ✅ refused: "Boss must give every assignment a due_by date"; "due_by 2026-08-30 is before today" |
 | Unknown teammate name | A made-up agent | ✅ refused, with the list of real teammates |
 | One shared request and token limit per ticket (40 requests, 400,000 tokens) | Runaway cost ("multi-agent chats burn tokens fast") | Set in `TICKET_LIMITS` and shared across every hand-off |
 
@@ -230,7 +231,7 @@ The MCP server grew from **3 tools to 24** so the agents can work all three open
 
 | Agent | MCP tools it may call (table each one uses) | Other tools | Lou's approval |
 |---|---|---|---|
-| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · **`update_ticket_status`** (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | `ask_teammate` · **`encourage_teammate`** (a short, sincere note to a teammate, sent with Boss's next request; internal only, one per teammate per ticket) | ☐ Approve · Notes: |
+| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · **`update_ticket_status`** (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | **`ask_teammate(teammate, task, due_by)`**: every hand-off is an assignment with a **deadline** (Boss must set `due_by`, a shop date no earlier than `desk.date_today`); when the teammate replies, Boss's thanks is recorded automatically (a fixed message, 0 tokens) · **`check_in_on_assignments`**: each assignment's status, deadline, on time or overdue, the thanks sent, and a reply summary, so Boss confirms everything is done without re-asking | ☐ Approve · Notes: |
 | 📦 **Inventory** | `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `get_open_invoices` (invoices, vendors, desk) | `ask_teammate` | ☑ Approved by Lou |
 | 🧮 **Accounting** | `get_cash_balance` (cash_accounts, approval_requests) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `list_payments` (payments) · `list_payment_requests` (approval_requests) · **`request_payment`** (approval_requests; reads invoices, leases, vendors, pricing, inventory, cash_accounts) · `build_balance_sheet` (cash_accounts, inventory, pricing, invoices, leases, approval_requests) · `build_income_statement` (payments) | `ask_teammate` | ☐ Approve · Notes: |
 | 🧢 **Facilities** | `get_rent_due` (leases, cash_accounts, desk) · `list_leases` (leases, desk) · `get_lease` (leases, payments, approval_requests, building_requests) · **`log_building_request`** (building_requests) · `list_building_requests` (building_requests) · **`update_building_request`** (building_requests) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) | `ask_teammate` | ☐ Approve · Notes: |
@@ -297,6 +298,7 @@ Every agent runs through `run_logged` (`backend/audit.py`), which walks Pydantic
 | Field | What it records |
 |---|---|
 | `time`, `run_id`, `ticket_id` | When it happened, and which ticket run it belongs to (every agent on one ticket shares a `run_id`) |
+| `assignment`, `thanks_to` | For each finished assignment (`step_kind: AssignmentDone`): its id, owner, task, deadline, on time or late, and the thanks Boss sent |
 | `agent`, `symbol`, `chain`, `depth` | Which agent, and the hand-off chain that led to it (for example boss → inventory → accounting) |
 | `step`, `step_kind` | The step number within that agent's loop, and its kind: `UserPromptNode` (the request), `ModelRequestNode` (what was sent to the model), `CallToolsNode` (the model's reply), `End` (the final answer), `RunSummary` |
 | `tool_calls` | Every tool the model asked for, with its exact arguments |
@@ -337,6 +339,7 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | Model requests per ticket, across the whole team | 40 | `TICKET_LIMITS` in `backend/team.py` |
 | Total tokens per ticket, across the whole team | 400,000 | `TICKET_LIMITS` (one usage counter shared by every hand-off) |
 | Hand-offs below the first agent | 3 | `TeamDeps.max_depth` |
+| Check in instead of re-asking | Boss reads stored replies with `check_in_on_assignments`; thanks are a fixed message (0 tokens) | `backend/team.py` |
 | No asking yourself; no asking an agent already waiting up the chain | Refused | `ask_teammate` (stops ping-pong loops) |
 | Retries when the output doesn't validate | 2 | `retries=2` on each agent |
 | Reasoning effort | low | `REASONING_EFFORT` in `.env` and `backend/config.py` |

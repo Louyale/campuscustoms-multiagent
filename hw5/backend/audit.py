@@ -41,6 +41,10 @@ _lock = threading.Lock()
 MAX_TEXT = 800  # long tool results and messages are shortened, so the file stays readable
 
 
+def now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
 def short(value: Any, limit: int = MAX_TEXT) -> Any:
     text = value if isinstance(value, str) else json.dumps(value, default=str)
     return text if len(text) <= limit else text[:limit] + f"... [{len(text) - limit} more characters]"

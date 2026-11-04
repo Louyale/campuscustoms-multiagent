@@ -218,6 +218,22 @@ class Delegation(BaseModel):
     refused: Optional[str] = None
 
 
+class Assignment(BaseModel):
+    """One piece of work handed to a teammate, with a deadline in shop days."""
+    id: str
+    from_agent: AgentName
+    to_agent: AgentName
+    task: str
+    due_by: Optional[str] = Field(None, description="Shop date the answer is needed by (desk.date_today scale)")
+    assigned_on: Optional[str] = None
+    status: Literal["in_progress", "done", "failed"] = "in_progress"
+    completed_on: Optional[str] = None
+    on_time: Optional[bool] = None
+    thanks: Optional[str] = None
+    report: Optional[str] = None
+    note: Optional[str] = None
+
+
 @dataclass
 class TeamDeps:
     """Shared state for one ticket run, passed to every agent and every hand-off."""
@@ -226,5 +242,5 @@ class TeamDeps:
     chain: list[str] = field(default_factory=list)   # who is waiting on whom, e.g. ["boss", "inventory"]
     max_depth: int = 3                                # hand-offs allowed below Boss
     delegations: list[Delegation] = field(default_factory=list)
-    team_notes: dict[str, str] = field(default_factory=dict)   # Boss's encouragement, waiting to go with the next hand-off
-    notes_sent: list[dict] = field(default_factory=list)       # every encouragement sent on this ticket
+    shop_today: Optional[str] = None                  # desk.date_today, used for assignment deadlines
+    assignments: list["Assignment"] = field(default_factory=list)

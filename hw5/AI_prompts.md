@@ -314,12 +314,26 @@ I approved Inventory's list and asked for edits to the other four:
 
 | Agent | What I asked for | Tool(s) added | How it works |
 |---|---|---|---|
-| 🕴️ Boss | Encouraging messages to teammates | `encourage_teammate` (a team tool, not MCP) | A short, sincere note (up to 200 characters) that goes along with Boss's next request to that teammate. Internal only, one per teammate per ticket, recorded in the audit trail |
+| 🕴️ Boss | Encouraging messages to teammates (first version, replaced; see below) | `encourage_teammate` | A short note sent with Boss's next request. Replaced by check-ins and deadlines, which are worth their tokens |
 | 🧮 Accounting | Balance sheets and income statements, flagging missing info | `build_balance_sheet`, `build_income_statement` | Built only from database figures. The balance sheet always balances, and every figure the database lacks (fixed assets, receivables, owner's equity detail, other liabilities; revenue and cost of goods sold) is listed under `missing_information` |
 | 👕 Customer Service | 100% correct spelling and grammar | `check_spelling_grammar`, and `save_customer_draft` now refuses any draft that fails it | An offline dictionary plus grammar rules, with the shop's own names and products accepted. 🚩 No checker can promise 100%, so the gate catches the common mistakes and a human still reads every draft on the board |
 | 🧢 Facilities | More lease and building-request tools | `list_leases`, `get_lease`, `log_building_request`, `list_building_requests`, `update_building_request` | Full lease details with rent history (lease terms the database doesn't hold are flagged), plus a building-request log on the board (a new `building_requests` table). No landlord or contractor is ever contacted |
 
 All of them are tested: **41 of 41 checks passed, across all 24 tools**. Harness Tables 11 and 12 and the MCP README now match.
+
+**Follow-up prompt (Boss's tool, round 2):**
+
+> let's change the boss encouragement tool to something that has value for the tokens so make it a check in tool that checks on the status os an assignment and then thanks the sub agent for their efforts upon the reply.  be sure that the boss gives a request for when the assignment is needed such as a deadline tool if we dont have that  .  send me another approval
+
+**What was lacking after the first:** the encouragement notes cost tokens without improving the work. A check-in on each assignment's status, with a deadline on every assignment, gives Boss real control.
+
+**Outcome:**
+
+- `encourage_teammate` is removed.
+- **Deadlines:** every hand-off from Boss is an *assignment* (A1, A2, ...) with a required `due_by` date in shop time. It's refused if missing, badly formatted, or before `desk.date_today`.
+- **Thanks on reply:** when the teammate replies, Boss's thanks is recorded automatically, for example "Thank you, 🧢 Facilities, for your work on A1, delivered on time." It's a fixed message, so it costs 0 tokens, and it's logged in the audit trail (`AssignmentDone`).
+- **Check-in:** `check_in_on_assignments` shows each assignment's owner, deadline, status, days left, on time or overdue, the thanks sent, and a reply summary. Boss checks in before deciding, so nothing is left open and no one is asked twice.
+- **Tested offline:** the three deadline refusals, and a check-in showing one assignment done on time and thanked and one overdue. The MCP tool check is still 41 of 41.
 
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
