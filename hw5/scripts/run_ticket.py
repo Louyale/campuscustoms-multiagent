@@ -78,6 +78,8 @@ async def main() -> None:
         "tool_calls": [c["tool"] for e in new for c in (e.get("tool_calls") or [])],
         "board_after_run": board,
         "nothing_paid": board["payments"] == [],
+        "approval_check": deps.approval_check,
+        "approvals_all_filed": all(c["filed_on_board"] for c in deps.approval_check),
     }
     out = PROJECT / "output" / f"test_run_{args.ticket}.json"
     out.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
@@ -90,6 +92,8 @@ async def main() -> None:
     print(f"  model calls: {report['model_calls']}; tokens: {tokens}; {seconds}s")
     print(f"  board: {len(board['approval_requests'])} payment request(s), {len(board['drafts'])} draft(s); "
           f"payments made: {len(board['payments'])}")
+    print(f"  approvals listed by Boss that are really filed: "
+          f"{sum(c['filed_on_board'] for c in deps.approval_check)}/{len(deps.approval_check)}")
     print(f"  saved {out.relative_to(PROJECT)}")
 
     if args.reset_after:

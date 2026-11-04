@@ -76,7 +76,7 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Shop facts only from the MCP server over `campus_customs_new.db`; no second tools layer
 - [x] Agents append to `output/audit_trail.json` at every agent-loop step, never wiping it (`backend/audit.py`)
 - [x] Harness: each agent and each MCP tool, with the table each tool uses (Tables 11–12), rolled up by agent in Table 13
-- [x] Harness: safety section with guardrails for real customers and money, and token limits (Tables 18–19)
+- [x] Harness: safety section with guardrails for real customers and money, and token limits (Tables 19–20)
 - [x] `mcp_server/README.md` tool list matches the server (25 tools)
 - [x] Every tool tested on a scratch database copy (43 of 43 checks, 25 of 25 tools; `output/mcp_tool_check.json`)
 - [x] My approval of each agent's tool list (all five ☑ in harness Table 11, Boss's after the priority change)
@@ -86,3 +86,6 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Second live run with priorities (harness Table 16, run 2), and token use against the limits (harness Table 17)
 - [x] The vibe coder can't reach the human-only pay tools (`CAMPUS_MCP_PROFILE=vibe_coder` in `.mcp.json`)
 - [x] Every prompt treats outside text as data, never as instructions
+- [x] Dollar cost per ticket and per month, and cost compared with the work done (harness Tables 17–18; `scripts/cost_report.py`)
+- [x] Boss's listed approvals are checked against the board by code (`DecisionCheck`; run 4: 1 of 1)
+- [x] **Part 5b closed out**

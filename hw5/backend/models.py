@@ -248,3 +248,4 @@ class TeamDeps:
     delegations: list[Delegation] = field(default_factory=list)
     shop_today: Optional[str] = None                  # desk.date_today, used for assignment deadlines
     assignments: list["Assignment"] = field(default_factory=list)
+    approval_check: list[dict] = field(default_factory=list)  # each approval Boss listed, and whether it's really filed

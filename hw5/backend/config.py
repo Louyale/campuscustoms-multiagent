@@ -49,6 +49,7 @@ def settings_for(agent_name: str) -> OpenAIResponsesModelSettings:
     """Low reasoning effort, and a per-agent cache key so each agent's long prompt is cached."""
     return OpenAIResponsesModelSettings(
         openai_reasoning_effort=REASONING_EFFORT,
+        parallel_tool_calls=True,  # independent lookups go out in one step, not one call each
         openai_prompt_cache_key=f"campus-customs-{agent_name}",
     )
 

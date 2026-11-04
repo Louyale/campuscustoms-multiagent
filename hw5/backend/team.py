@@ -173,12 +173,37 @@ async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:
             raise ValueError(found.get("message", f"No ticket {ticket_id}"))
         deps.shop_today = found["today"]
         ticket = Ticket(**found["ticket"])
+        # Efficiency: hand Boss the ticket and the board ranking up front, so it doesn't spend model calls
+        # fetching facts the backend already has. Both still come from the MCP server.
+        ranking = await mcp_toolset.direct_call_tool("rank_open_tickets", {})
+        ranking = ranking if isinstance(ranking, dict) else json.loads(ranking)
+        already_filed = {"drafts": found.get("drafts", []), "payment_requests": found.get("payment_requests", [])}
         result = await run_logged(
             registry()["boss"], "boss",
-            f"New ticket from the board (today is {deps.shop_today}):\n{ticket.model_dump_json(indent=2)}",
+            f"New ticket from the board (today is {deps.shop_today}).\n\n"
+            f"TICKET (from get_ticket):\n{ticket.model_dump_json(indent=2)}\n\n"
+            f"ALREADY FILED FOR THIS TICKET:\n{json.dumps(already_filed, default=str)}\n\n"
+            f"BOARD RANKING (from rank_open_tickets):\n{json.dumps(ranking, default=str)}",
             deps,
             usage_limits=TICKET_LIMITS,
         )
+        # Guard: every approval Boss lists must really be filed and pending on the board, so the owner is
+        # never told a request is "prepared" when it isn't.
+        board = await mcp_toolset.direct_call_tool("list_payment_requests", {"status": "pending"})
+        board = board if isinstance(board, dict) else json.loads(board)
+        filed = [(r["kind"], round(r["amount"], 2)) for r in board["requests"]]
+        deps.approval_check = []
+        for a in result.output.approvals_needed:
+            key = (a.kind, round(a.amount, 2))
+            ok = key in filed
+            if ok:
+                filed.remove(key)
+            deps.approval_check.append({"kind": a.kind, "payee": a.payee, "amount": a.amount, "filed_on_board": ok})
+        missing = [c for c in deps.approval_check if not c["filed_on_board"]]
+        append_entry({"time": now(), "run_id": deps.run_id, "ticket_id": ticket_id, "agent": "boss",
+                      "symbol": AGENT_SYMBOLS["boss"], "step_kind": "DecisionCheck",
+                      "approvals_listed": len(deps.approval_check), "approvals_missing_from_board": missing,
+                      "passed": not missing})
     return result.output, deps
 
 

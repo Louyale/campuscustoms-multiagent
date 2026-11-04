@@ -1,0 +1,178 @@
+{
+  "ticket": 102,
+  "run_id": "282c7fe65ede",
+  "seconds": 44.9,
+  "decision": {
+    "ticket_id": 102,
+    "summary": "Recommend approving the $2,400 rent payment for the Chapel Street shop before it is due on September 2, 2026.",
+    "priority": "urgent",
+    "priority_reason": "Rent of $2,400 is due in two days, on 2026-09-02.",
+    "agents_used": [
+      "facilities",
+      "accounting"
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "owner": "facilities",
+        "action": "Confirm lease 1 rent details: Elm City Properties, $2,400 for the Chapel Street shop, due 2026-09-02."
+      },
+      {
+        "order": 2,
+        "owner": "accounting",
+        "action": "Prepare the rent payment request using checking; $3,400 cash is available, leaving $1,000 if approved."
+      },
+      {
+        "order": 3,
+        "owner": "boss",
+        "action": "Recommend human approval of the rent payment before the due date; no payment has been made."
+      }
+    ],
+    "approvals_needed": [
+      {
+        "kind": "rent",
+        "ref_id": "1",
+        "payee": "Elm City Properties",
+        "amount": 2400.0,
+        "account": "checking",
+        "reason": "Regular Chapel Street shop rent due 2026-09-02.",
+        "cash_before": 3400.0,
+        "cash_after": 1000.0,
+        "status": "pending_human_approval"
+      }
+    ],
+    "customer_draft": null,
+    "recommended_status": "waiting_approval",
+    "missing_information": [],
+    "reasoning": "Ranked urgent because rent is due within three days. Facilities confirmed the lease and due date; the rent record and Accounting report confirm $3,400 cash before the payment and $1,000 after. A human must approve the request; payment has not been made. Other open tickets also need funds, and cash does not cover all estimated needs, so prioritize this rent payment due in two days."
+  },
+  "assignments": [
+    {
+      "id": "A1",
+      "from_agent": "boss",
+      "to_agent": "facilities",
+      "task": "For ticket 102, confirm lease 1 landlord, rent amount, and next due date; advise rent facts needed for decision.",
+      "due_by": "2026-08-31",
+      "priority": "urgent",
+      "assigned_on": "2026-08-31",
+      "status": "done",
+      "completed_on": "2026-08-31",
+      "on_time": true,
+      "thanks": "Thank you, \ud83e\udde2 Facilities, for your work on A1 - delivered on time.",
+      "note": null
+    },
+    {
+      "id": "A2",
+      "from_agent": "facilities",
+      "to_agent": "accounting",
+      "task": "For ticket 102 / lease 1 (Chapel Street shop), confirm available checking cash after other pending obligations and prepare the regular rent payment request if funds cover it: Elm City Properties, $2,400, due 2026-09-02. Cash figures from rent record are $3,400 before and $1,000 after rent. Report any existing/promised payments that affect this.",
+      "due_by": "2026-08-31",
+      "priority": "urgent",
+      "assigned_on": "2026-08-31",
+      "status": "done",
+      "completed_on": "2026-08-31",
+      "on_time": true,
+      "thanks": "Thank you, \ud83e\uddee Accounting, for your work on A2 - delivered on time.",
+      "note": null
+    }
+  ],
+  "hand_offs": [
+    {
+      "from_agent": "facilities",
+      "to_agent": "accounting",
+      "task": "For ticket 102 / lease 1 (Chapel Street shop), confirm available checking cash after other pending obligations and prepare the regular rent payment request if funds cover it: Elm City Properties, $2,400, due 2026-09-02. Cash figures from rent record are $3,400 before and $1,000 after rent. Report any existing/promised payments that affect this.",
+      "depth": 2,
+      "refused": null
+    },
+    {
+      "from_agent": "boss",
+      "to_agent": "facilities",
+      "task": "For ticket 102, confirm lease 1 landlord, rent amount, and next due date; advise rent facts needed for decision.",
+      "depth": 1,
+      "refused": null
+    }
+  ],
+  "audit_entries_added": 43,
+  "audit_entries_for_this_run": 43,
+  "agents_in_audit": [
+    "accounting",
+    "boss",
+    "facilities"
+  ],
+  "models_used": [
+    "gpt-6-luna-global"
+  ],
+  "tokens": {
+    "input": 66535,
+    "cached_input": 53655,
+    "output": 1420
+  },
+  "model_calls": 16,
+  "tool_calls": [
+    "rank_open_tickets",
+    "get_ticket",
+    "update_ticket_status",
+    "get_rent_due",
+    "ask_teammate",
+    "get_rent_due",
+    "get_cash_balance",
+    "ask_teammate",
+    "get_cash_balance",
+    "get_rent_due",
+    "list_payment_requests",
+    "request_payment",
+    "get_cash_balance",
+    "check_in_on_assignments",
+    "update_ticket_status"
+  ],
+  "board_after_run": {
+    "cash": [
+      {
+        "name": "checking",
+        "balance": 3400.0,
+        "date": "2026-08-31"
+      }
+    ],
+    "payments": [],
+    "tickets": [
+      {
+        "id": 101,
+        "status": "open"
+      },
+      {
+        "id": 102,
+        "status": "waiting_approval"
+      },
+      {
+        "id": 103,
+        "status": "open"
+      }
+    ],
+    "approval_requests": [
+      {
+        "id": 1,
+        "ticket_id": 102,
+        "kind": "rent",
+        "ref_id": 1,
+        "vendor_id": null,
+        "sku": null,
+        "size": null,
+        "qty": null,
+        "payee": "Elm City Properties",
+        "amount": 2400.0,
+        "account": "checking",
+        "reason": "Regular Chapel Street shop rent due 2026-09-02; requested ahead of due date.",
+        "requested_by": "Accounting",
+        "requested_at": "2026-11-04T23:40:56+00:00",
+        "status": "pending",
+        "decided_by": null,
+        "decided_at": null,
+        "decision_note": null,
+        "payment_id": null
+      }
+    ],
+    "drafts": [],
+    "building_requests": []
+  },
+  "nothing_paid": true
+}

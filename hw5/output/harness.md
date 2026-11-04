@@ -352,51 +352,72 @@ Every agent runs through `run_logged` (`backend/audit.py`), which walks Pydantic
 
 #### Test runs: one ticket through the team (proves the audit trail)
 
-Ticket **102** (the rent notice) ran through the team on `gpt-6-luna` twice: run 1 before the priority tools existed, and run 2 after them. The database was reset before and after each run (`python scripts/run_ticket.py --ticket 102 --reset-before --reset-after`). The records are `output/test_run_102_run1.json` and `output/test_run_102.json`, and every step of both runs is in `output/audit_trail.json`.
+Ticket **102** (the rent notice) ran through the team on `gpt-6-luna` four times, as the team improved. The database was reset before and after every run (`python scripts/run_ticket.py --ticket 102 --reset-before --reset-after`). Each run's record is in `output/test_run_102_run1.json`, `_run2.json`, `_run3_regression.json` and `test_run_102.json` (run 4). Every step of every run is in `output/audit_trail.json`, which now holds **191 entries**: all four runs, never wiped.
 
 **Table 16: Ticket 102 Test Runs**
 
-| What | Run 1 (before priorities) | Run 2 (with priorities and the final safety rules) |
-|---|---|---|
-| Boss's decision | "Recommend approving the overdue invoice first, then the $2,400 rent due September 2; both requests are pending human approval." | "Recommend approving the $2,400 rent payment for the Chapel Street shop before it is due on September 2, 2026." |
-| Priority | (not yet built) | **urgent**: "Rent of $2,400 is due in two days, on 2026-09-02." |
-| Ranked the board first? | No | **Yes**: `rank_open_tickets` was Boss's first call |
-| Assignments | A1 🧢 Facilities, A2 🧮 Accounting, A3 👕 Customer Service; all due 2026-08-31, done on time, thanked | A1 🧢 Facilities, A2 🧮 Accounting; both **urgent**, due 2026-08-31, done on time, thanked; Boss checked in before deciding |
-| Payment requests | $840 invoice 501 **and** $2,400 rent, both pending (the invoice was filed under the wrong ticket; since fixed) | **Only the $2,400 rent**, pending. Invoice 501 is left to ticket 101, where it belongs |
-| Payments made | None | None |
-| Draft on the board | An acknowledgment to Elm City Properties | None. A rent notice needs payment, not a reply; Boss didn't ask for one |
-| Audit entries appended | 53 | 43 (file now **96** entries: both runs kept, never wiped) |
-| Model calls | 19 | 16 |
-| Input tokens (cached) | 60,039 (45,213 cached, 75%) | 66,535 (53,655 cached, 81%) |
-| Output tokens | 2,514 | 1,420 |
-| Time | 50.5 s | 44.9 s |
+| What | Run 1: first team | Run 2: with priorities | Run 3: efficiency changes | Run 4: final (efficiency + approval guard) |
+|---|---|---|---|---|
+| Boss's decision | Pay invoice 501 first, then rent | Approve the $2,400 rent before 9/2 | Approve the $2,400 rent (said "prepared") | Approve the $2,400 rent before 9/2; draft ready, not sent |
+| Priority | (not built yet) | **urgent** | **urgent** | **urgent** |
+| Assignments | Facilities, Accounting, Customer Service | Facilities, Accounting | Facilities, Customer Service | Facilities, Accounting, Customer Service |
+| Payment requests filed | 2 (rent, plus invoice 501 on the wrong ticket; since fixed) | 1 (rent) | **0** 🚩 | 1 (rent) |
+| Approvals Boss listed that are really filed | 2 of 2 | 1 of 1 | **0 of 1** 🚩 | **1 of 1** ✅ (checked by code) |
+| Drafts on the board | 1 | 0 | 1 | 1 |
+| Payments made | None | None | None | None |
+| Model calls | 19 | 16 | 14 | 20 |
+| Input tokens (cached %) | 60,039 (75%) | 66,535 (81%) | 60,214 (80%) | 88,490 (85%) |
+| Output tokens | 2,514 | 1,420 | 1,769 | 2,338 |
+| **Cost** | **$0.0032** | **$0.0025** | **$0.0026** | **$0.0032** |
 
 🚩 **What the test runs found, and what was done:**
 
-- **The model name in replies is `gpt-6-luna-global`.** That's the name Portkey reports for `gpt-6-luna`. Our code asks only for `gpt-6-luna` (`backend/config.py` refuses anything else), and no other model was called.
-- **A grammar rule was too strict (run 1).** It flagged the comma after a greeting, so the draft read "Dear Elm City Properties." **Fixed.**
-- **A request was filed under the wrong ticket (run 1).** **Fixed:** `request_payment` files each invoice or rent request under the ticket that links it, and run 2 kept invoice 501 out of ticket 102 entirely.
-- **The model once sent a garbled argument (run 2).** It called `get_cash_balance` with `{"}": ""}`. The tool refused it, and PydanticAI retried with `{}` and carried on, which shows the loop recovers from model mistakes. Both calls are in the audit trail.
+- **The model name in replies is `gpt-6-luna-global`.** That's Portkey's name for `gpt-6-luna`. Our code asks only for `gpt-6-luna`, and no other model was called.
+- **Run 1: a grammar rule was too strict** (the comma after a greeting). **Fixed.**
+- **Run 1: a request was filed under the wrong ticket.** **Fixed:** requests are filed under the ticket that links the bill.
+- **Run 2: the model sent a garbled argument once.** The tool refused it, and the loop retried cleanly.
+- **Run 3: saving tokens skipped a step.** After the efficiency changes, Boss left Accounting out, so no rent request was filed, yet Boss's decision listed it as prepared. **Fixed two ways:**
+  - The Boss prompt now says saving tokens never skips a step: payments must be filed by Accounting and confirmed on the board.
+  - New code (`run_ticket`) checks every approval Boss lists against the real pending requests, and writes a `DecisionCheck` entry to the audit trail. Run 4 passed: 1 of 1.
+- **Did the efficiency changes save calls?** Not measurably. The changes were handing Boss the ticket and ranking up front, delegating less, passing facts along, and batching tools. Calls ranged from 14 to 20 across runs, because Boss decides differently each time how many teammates to use. One run per version is too few to claim a percentage saving, so we report the range. The changes stay in: they remove repeated lookups, and the approval guard protects accuracy.
 
-#### Token use: what a ticket costs, against the limits
+#### Cost: tokens and dollars per ticket
 
-**Table 17: Token Use per Ticket Against the Limits**
+Prices are the course's `gpt-6-luna` prices (`backend/prices.json`, the same sheet as HW6): $0.10 per 1M input tokens, $0.01 per 1M cached input tokens, $0.50 per 1M output tokens. The numbers come from `python scripts/cost_report.py`.
 
-| Measure | Run 2 (one ticket) | Limit per ticket (Table 19) | Headroom |
+**Table 17: Token Use and Cost per Ticket Against the Limits** (run 4, the final team)
+
+| Measure | Run 4 (one ticket) | Limit per ticket (Table 20) | Headroom |
 |---|---|---|---|
-| Model requests | 16 | 40 | 24 spare (40% used) |
-| Total tokens (input + output) | 67,955 | 400,000 | 17% used |
+| Model requests | 20 | 40 | 20 spare (50% used) |
+| Total tokens (input + output) | 90,828 | 400,000 | 23% used |
+| Cached share of input | 85% | (none) | Each agent's prompt is reused (`openai_prompt_cache_key`) |
+| **Cost per ticket** | **$0.0032** (about a third of a cent) | (none) | Without caching it would be $0.0100, so caching saves **68%** |
+| Cost per ticket, all good runs | $0.0025 to $0.0032 | (none) | Runs 1, 2 and 4 (run 3 skipped a step) |
+| **The whole board** (3 tickets) | about **$0.010** | (none) | About 60 model calls |
+| **1,000 tickets a day for 30 days** | about **$96 a month** (range $76 to $96) | (none) | Without caching, about $301 a month |
 
-- **Caching is what keeps a ticket cheap.** About 81% of input tokens were cached, because each agent's long prompt is reused (`openai_prompt_cache_key`). Without caching, every model call would resend the full prompt.
-- **Output stays small.** Structured reports plus low reasoning effort kept output to about 1,420 tokens for the whole team.
-- **The whole board.** Three tickets at about 16 calls and 68k tokens each would come to about 48 calls and 204k tokens, well inside three tickets' worth of limits.
-- **Check-ins save tokens.** In run 2, Boss read the stored replies with `check_in_on_assignments` instead of asking a teammate again.
+#### Cost compared with the work the team did
+
+**Table 18: Cost Compared With the Work Done** (run 4, one ticket, $0.0032 in all)
+
+| Work the team did on ticket 102 | How much | Cost per unit |
+|---|---|---|
+| Ticket worked from start to `waiting_approval`: ranked, decided, and reported to the human | 1 ticket | $0.0032 |
+| Assignments given, with deadlines, done on time and thanked | 3 | $0.0011 each |
+| Shop facts looked up through MCP tools (rent, cash, ranking, lease, and so on) | 18 tool calls | $0.0002 each |
+| Payment request prepared for a human, with the amount from the database and cash checked | 1 | (part of the ticket cost) |
+| Customer message drafted, spell-checked and saved on the board, never sent | 1 | (part of the ticket cost) |
+| Audit trail entries written, so every step can be checked later | 56 | (none; no model call) |
+| Rule checks passed: deadlines, approval guard, no negative cash, nothing paid without a human | All | (none; code, not tokens) |
+
+**For the owner:** handling one ticket costs about a third of a cent. By comparison, **if** a shop manager earning $25 an hour spent 10 minutes on the same lookups, drafting and paperwork, the ticket would cost about **$4.17** in time. That's about 1,297 times the agents' cost. The $25 an hour and 10 minutes are illustrative assumptions, not shop data, so adjust them to your own numbers. The agents don't replace the human: a person still approves every payment and reads every draft. They do the legwork, so the human's time goes only to decisions.
 
 ## Safety
 
 Campus Customs' agents touch real customers and real money. These are the guardrails a real business would want, and where each one lives in this project.
 
-**Table 18: Safety Guardrails**
+**Table 19: Safety Guardrails**
 
 | Guardrail | Why a real business wants it | How it's built here |
 |---|---|---|
@@ -420,7 +441,7 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | **Secrets stay secret** | Leaked keys get abused | `PORTKEY_API_KEY` and `HUMAN_APPROVAL_CODE` live only in `.env` (git-ignored); evidence files mask the code |
 | **One model only** | Predictable cost and behavior | `backend/config.py` refuses anything but `gpt-6-luna` |
 
-**Table 19: Limits That Keep Token Use in Check**
+**Table 20: Limits That Keep Token Use in Check**
 
 | Limit | Setting | Where |
 |---|---|---|

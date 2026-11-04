@@ -411,6 +411,37 @@ I approved Boss's revised tool list (priorities, deadlines, check-ins). All five
 | 4 | Token analysis | harness Table 17: 16 calls and about 68,000 tokens per ticket (81% of input cached), against limits of 40 calls and 400,000 tokens. A full board of three tickets would be about 48 calls |
 | 5 | Harness cleanup | Tables renumbered 1–19 in page order, Table 8's 5a column points to Table 11, and the new token table is named |
 
+**Follow-up prompts (cost and efficiency):**
+
+> is there a way to improve the efficiency here
+
+> yes, add dollar amounts and the comparison to the work performed so the owner and grader can see how cost effective our operation is
+
+> yes, make the changes we both suggested and then close out problem 5b
+
+> The f-string broke in my edit. also, what was this???????
+
+**What was lacking after the first:** the token analysis had no dollar figures and no comparison with the work done, and run 2 showed repeated lookups (`get_rent_due` and `get_cash_balance` were each called 3 times on one ticket).
+
+**Outcome:**
+
+- **Efficiency changes (mine):**
+  - The backend hands Boss the ticket and the board ranking in its first message.
+  - Boss delegates only what it can't do itself, and puts the facts it already has into each assignment.
+  - Every agent is told not to re-fetch facts the request already gives it.
+  - Independent tools go out in one step (`parallel_tool_calls`).
+- 🚩 **Regression caught and fixed.** In run 3, Boss skipped Accounting, so no rent request was filed, but its decision called the request "prepared". Two fixes:
+  - **Prompt:** saving tokens never skips a step. Payments must be filed by Accounting and confirmed on the board.
+  - **Code:** `run_ticket` now checks every approval Boss lists against the real pending requests, and logs a `DecisionCheck`. Run 4 passed, 1 of 1.
+- **Honest result on efficiency.** Calls ranged from 14 to 20 across runs, because Boss chooses differently each run how many teammates to use. That's too few runs to claim a percentage saving, so the harness reports the range.
+- **Dollars (mine):** the course's gpt-6-luna prices are in `backend/prices.json`, from the same sheet as HW6, and `scripts/cost_report.py` computes each run's cost. Harness tables:
+  - **Table 16:** all four runs.
+  - **Table 17:** about **$0.0032 per ticket**. Caching saves 68%. The whole board is about $0.010, and 1,000 tickets a day comes to about **$96 a month** (range $76–$96).
+  - **Table 18: Cost Compared With the Work Done:** about $0.0011 per assignment and $0.0002 per lookup. Against an illustrative human cost of $4.17 a ticket ($25 an hour × 10 minutes, labeled as an assumption), the agents cost about 1/1,300th of that. The human still approves every payment.
+- **Renumbering:** Safety and Limits are now harness Tables 19 and 20; all 20 tables are in page order.
+- **My question about "the f-string broke":** it was a mistake in one of the vibe coder's own automated edits. While adding a tool, the edit put a real line break inside a line of Python text, so the file wouldn't run. The test caught it on the spot, it was fixed right away, and it was never committed or run broken. The same thing happened once more, to a grammar-rule line, and it was caught the same way. The vibe coder now makes those edits with direct file edits, which can't cause it.
+- **Part 5b is closed out.**
+
 **Outcome:** each 5b task is done. Table 10 lists them for the grader.
 
 **Table 10: Problem 5b Tasks**
@@ -421,7 +452,7 @@ I approved Boss's revised tool list (priorities, deadlines, check-ins). All five
 | P5b-2 | Shop facts come only from the MCP server over `campus_customs_new.db`; no second tools layer that bypasses MCP | Agents only have MCP tools plus `ask_teammate`; even `run_ticket` reads the ticket through MCP (`get_ticket`) |
 | P5b-3 | Wire the agents to append to `output/audit_trail.json` at every agent-loop step, with enough to audit later, never wiping it | `backend/audit.py` (`run_logged`, append-only); fields in harness Table 14 |
 | P5b-4 | In the harness, each agent and each MCP tool, with the table each tool uses | harness Table 11: **Agent Tools** (my title), and Table 12: MCP Tools and Their Tables |
-| P5b-5 | A short safety section: guardrails for real customers and real money, plus limits on token use | harness `## Safety`: Table 18: Safety Guardrails, and Table 19: Limits That Keep Token Use in Check |
+| P5b-5 | A short safety section: guardrails for real customers and real money, plus limits on token use | harness `## Safety`: Table 19: Safety Guardrails, and Table 20: Limits That Keep Token Use in Check |
 | P5b-6 | Update `mcp_server/README.md` so the tool list matches | All 24 tools listed, with the tables each uses |
 | P5b-7 | (mine) A Lou approval area for each agent's tool list | The "Lou's approval" column in harness Table 11, plus the approval buttons |
 | P5b-8 | (extra) Test every tool | `scripts/mcp_tool_check.py`: 41 of 41 checks, 24 of 24 tools, on a scratch database copy; `output/mcp_tool_check.json` |
