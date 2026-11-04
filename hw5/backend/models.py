@@ -222,6 +222,7 @@ class Delegation(BaseModel):
 class TeamDeps:
     """Shared state for one ticket run, passed to every agent and every hand-off."""
     ticket_id: Optional[int] = None
+    run_id: Optional[str] = None                      # ties every audit entry of one ticket run together
     chain: list[str] = field(default_factory=list)   # who is waiting on whom, e.g. ["boss", "inventory"]
     max_depth: int = 3                                # hand-offs allowed below Boss
     delegations: list[Delegation] = field(default_factory=list)

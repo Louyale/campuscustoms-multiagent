@@ -178,7 +178,7 @@ Each agent has its own symbol (`AGENT_SYMBOLS` in `backend/models.py`), used in 
 
 **Prompt approval:** I reviewed all five prompts, added my own edits (prompt log Table 8), and approved each one (☑ in `output/agent_prompts_review.md`). Each prompt is about 600–1,100 words. My edits added Boss's "How you report to the humans" rules, Customer Service's grammar and assertive-but-friendly tone, Inventory's low-stock rule (fewer than 5 units) and best-seller honesty, and Accounting's balance sheet and income statement.
 
-Each agent sees only the MCP tools its role needs (`TOOL_ACCESS` in `backend/mcp_tools.py`). For example, Customer Service can check stock but can't see invoices or cash.
+Each agent sees only the MCP tools its role needs (`TOOL_ACCESS` in `backend/mcp_tools.py`). The MCP tools column shows the 5a starting set; **Table 11 (Part 5b) has each agent's full, current tool list.** For example, Customer Service can check stock but can't see invoices or cash.
 
 ### How the agents delegate: full connectivity
 
@@ -219,3 +219,112 @@ Every hand-off is recorded (`Delegation`: from, to, task, depth, and the answer 
 - The delegation guards refuse correctly (Table 9).
 - A search of `backend/`, `mcp_server/` and `.mcp.json` finds no other model name.
 - Dependency note: `requirements.txt` uses `pydantic-ai-slim[openai,mcp]`. The workspace default is `[openai]`; the `mcp` extra is a deliberate exception, needed for `MCPToolset` to connect the agents to our MCP server.
+
+### Part 5b: more MCP tools, the audit trail, and safety (Panel B)
+
+The MCP server grew from **3 tools to 16** so the agents can work all three open tickets. Every shop fact still comes **only from the MCP server** over `data/campus_customs_new.db`: the agents never open the database, and there's no second shop-tools layer. The backend itself reads a ticket through MCP (`get_ticket` in `run_ticket`).
+
+#### Agent Tools
+
+**Table 11: Agent Tools**
+
+| Agent | MCP tools it may call (table each one uses) | Other tool | Lou's approval |
+|---|---|---|---|
+| 🕴️ **Boss** | `get_ticket` (tickets, drafts, approval_requests) · `list_tickets` (tickets) · `update_ticket_status` (tickets) · `check_stock` (inventory, pricing) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) · `list_drafts` (drafts) | `ask_teammate` | ☐ Approve · Notes: |
+| 📦 **Inventory** | `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `get_open_invoices` (invoices, vendors, desk) | `ask_teammate` | ☐ Approve · Notes: |
+| 🧮 **Accounting** | `get_cash_balance` (cash_accounts, approval_requests) · `get_open_invoices` (invoices, vendors, desk) · `get_rent_due` (leases, cash_accounts, desk) · `check_stock` (inventory, pricing) · `list_inventory` (inventory, pricing) · `list_vendors` (vendors, invoices) · `list_payments` (payments) · `list_payment_requests` (approval_requests) · **`request_payment`** (approval_requests; reads invoices, leases, vendors, pricing, inventory, cash_accounts) | `ask_teammate` | ☐ Approve · Notes: |
+| 🧢 **Facilities** | `get_rent_due` (leases, cash_accounts, desk) · `get_cash_balance` (cash_accounts, approval_requests) · `list_payment_requests` (approval_requests) | `ask_teammate` | ☐ Approve · Notes: |
+| 👕 **Customer Service** | `get_ticket` (tickets, drafts, approval_requests) · `check_stock` (inventory, pricing) · **`save_customer_draft`** (drafts) · `list_drafts` (drafts) | `ask_teammate` | ☐ Approve · Notes: |
+| 🙋 **Human (dashboard only)** | **`approve_and_pay`** (approval_requests, payments, cash_accounts, invoices, leases, desk) · **`reject_payment_request`** (approval_requests) | (none) | No agent has these tools |
+
+**Bold** marks tools that write. Every agent sees only its own tools (`TOOL_ACCESS` in `backend/mcp_tools.py`). The code refuses to start if any agent is ever given a human-only tool.
+
+#### Every MCP tool and the table it uses
+
+**Table 12: MCP Tools and Their Tables**
+
+| # | Tool | Tables it uses | Reads or writes | What it's for (ticket) |
+|---|---|---|---|---|
+| 1 | `check_stock` | inventory, pricing | reads | Stock and shortfall for one SKU and size, plus cost and price (101, 103) |
+| 2 | `get_open_invoices` | invoices, vendors, desk | reads | Unpaid bills, days overdue, blocked vendors (101) |
+| 3 | `get_rent_due` | leases, cash_accounts, desk | reads | Rent, due date, days until due, and whether cash covers it (102) |
+| 4 | `get_ticket` | tickets, drafts, approval_requests | reads | The ticket, plus anything already filed for it (all) |
+| 5 | `list_tickets` | tickets | reads | The board (all) |
+| 6 | `update_ticket_status` | tickets | **writes** `tickets.status` | Move a ticket along: in_progress, waiting_approval, blocked, resolved (all) |
+| 7 | `list_inventory` | inventory, pricing | reads | All stock, value at cost, and the reorder flag for fewer than 5 units (103, low stock, balance sheet) |
+| 8 | `list_vendors` | vendors, invoices | reads | Specialty, lead days, and blocked or not (101, 103) |
+| 9 | `get_cash_balance` | cash_accounts, approval_requests | reads | Cash, and cash still free after pending requests (101, 102, 103) |
+| 10 | `list_payments` | payments | reads | Payments actually made (income statement) |
+| 11 | `list_payment_requests` | approval_requests | reads | What's waiting for a human (all) |
+| 12 | `request_payment` | approval_requests (reads invoices, leases, vendors, pricing, inventory, cash_accounts) | **writes** a pending request | File an invoice, rent or purchase-order request for a human (101, 102, 103) |
+| 13 | `save_customer_draft` | drafts | **writes** a draft | Put a customer message on the board, never sent (101, 102, 103) |
+| 14 | `list_drafts` | drafts | reads | Drafts on the board (all) |
+| 15 | `approve_and_pay` | approval_requests, payments, cash_accounts, invoices, leases, desk | **writes** (human only) | Pay an approved request, update every table involved, refuse if cash is short |
+| 16 | `reject_payment_request` | approval_requests | **writes** (human only) | Reject a request; no money moves |
+
+`drafts` and `approval_requests` are two **board tables** the server creates in the working copy the first time they're needed. A reset (copying `campus_customs.db` back) removes them, and the original database is never touched.
+
+#### Every tool tested
+
+`scripts/mcp_tool_check.py` calls all 16 tools over the MCP protocol, on a scratch copy of the original database, and checks each answer against the database. **28 of 28 checks passed, and 16 of 16 tools were tested.** Both real databases were byte-for-byte unchanged afterwards. The checks include the refusals that matter most:
+
+- a purchase order to a vendor blocked by invoice 501
+- a duplicate request
+- a wrong approval code
+- a $264 purchase order with only $160 left, both when filing and when paying, so the balance never went negative
+- a ticket status that doesn't exist
+
+Results are in `output/mcp_tool_check.json`, with the approval code masked.
+
+#### The audit trail
+
+Every agent runs through `run_logged` (`backend/audit.py`), which walks PydanticAI's agent loop **one step at a time** and **appends** an entry to `output/audit_trail.json` right after each step. The file is never wiped: each write adds to the existing list and replaces the file in one move, so a crash can't leave it half-written.
+
+**Table 13: Audit Trail Entry Fields**
+
+| Field | What it records |
+|---|---|
+| `time`, `run_id`, `ticket_id` | When it happened, and which ticket run it belongs to (every agent on one ticket shares a `run_id`) |
+| `agent`, `symbol`, `chain`, `depth` | Which agent, and the hand-off chain that led to it (for example boss → inventory → accounting) |
+| `step`, `step_kind` | The step number within that agent's loop, and its kind: `UserPromptNode` (the request), `ModelRequestNode` (what was sent to the model), `CallToolsNode` (the model's reply), `End` (the final answer), `RunSummary` |
+| `tool_calls` | Every tool the model asked for, with its exact arguments |
+| `tool_results_sent`, `retries_sent` | Every tool result fed back to the model (shortened to 800 characters), and any retries |
+| `model`, `tokens`, `finish_reason` | The model that answered (it must be gpt-6-luna), input, cached and output tokens, and why it stopped |
+| `output` | The agent's final structured report |
+| `team_usage_so_far` | Requests and tokens used by the whole team so far on this ticket |
+
+## Safety
+
+Campus Customs' agents touch real customers and real money. These are the guardrails a real business would want, and where each one lives in this project.
+
+**Table 14: Safety Guardrails**
+
+| Guardrail | Why a real business wants it | How it's built here |
+|---|---|---|
+| **A human approves every payment** | No AI should move money on its own | Agents can only *file* requests (`request_payment`). Paying needs `approve_and_pay`, which no agent has, plus the `HUMAN_APPROVAL_CODE` from `.env`, which no agent is ever given. `payments.approved_by` names the person |
+| **No negative balances** | Overdrafts cost fees and trust | `request_payment` refuses if the cash after pending requests can't cover it. `approve_and_pay` checks again at payment time and refuses rather than overdraw. `PaymentRequest` in `models.py` rejects `cash_after < 0` |
+| **The amount comes from the database, not the AI** | A model could mistype or be tricked about an amount | `request_payment` takes the invoice amount, the lease rent or qty × unit cost from the tables, never from the agent |
+| **All or nothing** | A half-recorded payment corrupts the books | `approve_and_pay` does the payment row, the cash, the invoice or lease, and the request status in one database transaction |
+| **No double payments** | Paying the same bill twice | `request_payment` refuses a duplicate pending request; `approve_and_pay` only pays a request that is still pending |
+| **Blocked vendors stay blocked** | A vendor with an unpaid bill won't ship | `request_payment` refuses a purchase order to a vendor with an open invoice |
+| **No real contact with customers or vendors** | A wrong or premature message can't be taken back | There is no send tool at all. `save_customer_draft` stores drafts on the board, where the `drafts.status` check allows only `draft`. When the vibe coder was tested, the `outlook-mail` server was excluded (Problem 4) |
+| **Never invent data** | Made-up stock, prices or dates mislead customers | Every fact comes from an MCP tool; missing facts come back as `found: false`, and the agents list them as missing information |
+| **Least privilege** | Each worker gets only the keys they need | Each agent sees only its tools (Table 11); Customer Service can't see cash, and Facilities can't file payments |
+| **The original data is protected** | You must always be able to reset | The server refuses `campus_customs.db` and opens only the working copy; a reset copies the original back |
+| **A full audit trail** | You must be able to answer "who did what, and why?" | Every loop step is appended to `output/audit_trail.json` (Table 13), and every payment records its approver |
+| **Secrets stay secret** | Leaked keys get abused | `PORTKEY_API_KEY` and `HUMAN_APPROVAL_CODE` live only in `.env` (git-ignored); evidence files mask the code |
+| **One model only** | Predictable cost and behavior | `backend/config.py` refuses anything but `gpt-6-luna` |
+
+**Table 15: Limits That Keep Token Use in Check**
+
+| Limit | Setting | Where |
+|---|---|---|
+| Model requests per ticket, across the whole team | 40 | `TICKET_LIMITS` in `backend/team.py` |
+| Total tokens per ticket, across the whole team | 400,000 | `TICKET_LIMITS` (one usage counter shared by every hand-off) |
+| Hand-offs below the first agent | 3 | `TeamDeps.max_depth` |
+| No asking yourself; no asking an agent already waiting up the chain | Refused | `ask_teammate` (stops ping-pong loops) |
+| Retries when the output doesn't validate | 2 | `retries=2` on each agent |
+| Reasoning effort | low | `REASONING_EFFORT` in `.env` and `backend/config.py` |
+| Prompt caching | one cache key per agent | `openai_prompt_cache_key` in `settings_for()` (each agent's long prompt is reused) |
+| Structured output | one report type per agent | `NativeOutput(...)` keeps replies short and parseable |
+| Long tool results in the audit trail | Shortened to 800 characters | `MAX_TEXT` in `backend/audit.py` |

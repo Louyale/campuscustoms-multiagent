@@ -1,0 +1,869 @@
+{
+  "what": "Every MCP tool called through a FastMCP client against a scratch copy of the original database",
+  "tools_on_server": [
+    "approve_and_pay",
+    "check_stock",
+    "get_cash_balance",
+    "get_open_invoices",
+    "get_rent_due",
+    "get_ticket",
+    "list_drafts",
+    "list_inventory",
+    "list_payment_requests",
+    "list_payments",
+    "list_tickets",
+    "list_vendors",
+    "reject_payment_request",
+    "request_payment",
+    "save_customer_draft",
+    "update_ticket_status"
+  ],
+  "tools_tested": [
+    "approve_and_pay",
+    "check_stock",
+    "get_cash_balance",
+    "get_open_invoices",
+    "get_rent_due",
+    "get_ticket",
+    "list_drafts",
+    "list_inventory",
+    "list_payment_requests",
+    "list_payments",
+    "list_tickets",
+    "list_vendors",
+    "reject_payment_request",
+    "request_payment",
+    "save_customer_draft",
+    "update_ticket_status"
+  ],
+  "all_tools_tested": true,
+  "checks_passed": 28,
+  "checks_total": 28,
+  "original_db_unchanged": true,
+  "working_db_unchanged": true,
+  "checks": [
+    {
+      "tool": "get_ticket",
+      "arguments": {
+        "ticket_id": 101
+      },
+      "expected": "ticket 101 is the size S tee, linked to invoice 501",
+      "passed": true,
+      "output": {
+        "found": true,
+        "ticket": {
+          "id": 101,
+          "type": "customer_order",
+          "requester": "Tauhid Zaman",
+          "subject": "Bulldog tee",
+          "sku": "CC-TEE-WHITE",
+          "size": "S",
+          "qty": 1,
+          "lease_id": null,
+          "invoice_id": 501,
+          "status": "open",
+          "notes": "Needs a tee in size S.",
+          "created_at": "2026-08-31T09:15:00-04:00"
+        },
+        "drafts": [],
+        "payment_requests": []
+      }
+    },
+    {
+      "tool": "list_tickets",
+      "arguments": {
+        "status": "open"
+      },
+      "expected": "three open tickets: 101, 102, 103",
+      "passed": true,
+      "output": {
+        "today": "2026-08-31",
+        "count": 3,
+        "tickets": [
+          {
+            "id": 101,
+            "type": "customer_order",
+            "requester": "Tauhid Zaman",
+            "subject": "Bulldog tee",
+            "sku": "CC-TEE-WHITE",
+            "size": "S",
+            "qty": 1,
+            "lease_id": null,
+            "invoice_id": 501,
+            "status": "open",
+            "notes": "Needs a tee in size S.",
+            "created_at": "2026-08-31T09:15:00-04:00"
+          },
+          {
+            "id": 102,
+            "type": "rent_notice",
+            "requester": "Elm City Properties",
+            "subject": "Rent due",
+            "sku": null,
+            "size": null,
+            "qty": null,
+            "lease_id": 1,
+            "invoice_id": null,
+            "status": "open",
+            "notes": "Email: shop rent due in 2 days.",
+            "created_at": "2026-08-31T11:05:00-04:00"
+          },
+          {
+            "id": 103,
+            "type": "price_override",
+            "requester": "Yale AI Club",
+            "subject": "Bulk hoodie discount",
+            "sku": "CC-HOOD-NAVY",
+            "size": "M",
+            "qty": 20,
+            "lease_id": null,
+            "invoice_id": null,
+            "status": "open",
+            "notes": "Student org wants 20 hoodies, size M, asking for a bulk discount.",
+            "created_at": "2026-08-31T16:55:00-04:00"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "check_stock",
+      "arguments": {
+        "sku": "CC-HOOD-NAVY",
+        "size": "M",
+        "qty_needed": 20
+      },
+      "expected": "8 on hand, shortfall 12",
+      "passed": true,
+      "output": {
+        "found": true,
+        "sku": "CC-HOOD-NAVY",
+        "name": "Basic Hoodie Big Yale",
+        "size": "M",
+        "qty": 8,
+        "location": "Aisle A",
+        "in_stock": true,
+        "unit_cost": 22.0,
+        "list_price": 58.0,
+        "qty_needed": 20,
+        "shortfall": 12
+      }
+    },
+    {
+      "tool": "list_inventory",
+      "arguments": {
+        "low_only": true
+      },
+      "expected": "5 items under 5 units, matching the database",
+      "passed": true,
+      "output": {
+        "reorder_point": 5,
+        "items": [
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "S",
+            "qty": 4,
+            "location": "Aisle A",
+            "unit_cost": 22.0,
+            "list_price": 58.0,
+            "needs_reorder": true,
+            "value_at_cost": 88.0
+          },
+          {
+            "sku": "CC-MUG-CREST",
+            "name": "Crest Mug",
+            "size": "OS",
+            "qty": 0,
+            "location": "Aisle D",
+            "unit_cost": 3.5,
+            "list_price": 14.0,
+            "needs_reorder": true,
+            "value_at_cost": 0.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 24.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 0.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 16.0
+          }
+        ],
+        "total_value_at_cost": 128.0,
+        "missing_pricing": []
+      }
+    },
+    {
+      "tool": "list_inventory",
+      "arguments": {},
+      "expected": "inventory value at cost $1,024.00",
+      "passed": true,
+      "output": {
+        "reorder_point": 5,
+        "items": [
+          {
+            "sku": "CC-HAT-BLUE",
+            "name": "Yale Cap",
+            "size": "OS",
+            "qty": 40,
+            "location": "Aisle C",
+            "unit_cost": 6.0,
+            "list_price": 22.0,
+            "needs_reorder": false,
+            "value_at_cost": 240.0
+          },
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "L",
+            "qty": 14,
+            "location": "Aisle A",
+            "unit_cost": 22.0,
+            "list_price": 58.0,
+            "needs_reorder": false,
+            "value_at_cost": 308.0
+          },
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "M",
+            "qty": 8,
+            "location": "Aisle A",
+            "unit_cost": 22.0,
+            "list_price": 58.0,
+            "needs_reorder": false,
+            "value_at_cost": 176.0
+          },
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "S",
+            "qty": 4,
+            "location": "Aisle A",
+            "unit_cost": 22.0,
+            "list_price": 58.0,
+            "needs_reorder": true,
+            "value_at_cost": 88.0
+          },
+          {
+            "sku": "CC-HOOD-NAVY",
+            "name": "Basic Hoodie Big Yale",
+            "size": "XL",
+            "qty": 6,
+            "location": "Aisle A",
+            "unit_cost": 22.0,
+            "list_price": 58.0,
+            "needs_reorder": false,
+            "value_at_cost": 132.0
+          },
+          {
+            "sku": "CC-MUG-CREST",
+            "name": "Crest Mug",
+            "size": "OS",
+            "qty": 0,
+            "location": "Aisle D",
+            "unit_cost": 3.5,
+            "list_price": 14.0,
+            "needs_reorder": true,
+            "value_at_cost": 0.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 24.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": false,
+            "value_at_cost": 40.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 0.0
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B",
+            "unit_cost": 8.0,
+            "list_price": 28.0,
+            "needs_reorder": true,
+            "value_at_cost": 16.0
+          }
+        ],
+        "total_value_at_cost": 1024.0,
+        "missing_pricing": []
+      }
+    },
+    {
+      "tool": "list_vendors",
+      "arguments": {},
+      "expected": "3 vendors; Bulldog Print Co blocked, 5 lead days",
+      "passed": true,
+      "output": {
+        "vendors": [
+          {
+            "id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5,
+            "open_invoices": 1,
+            "open_amount": 840.0,
+            "blocked": true
+          },
+          {
+            "id": 2,
+            "name": "Elm City Gifts",
+            "specialty": "mugs and small goods",
+            "lead_days": 3,
+            "open_invoices": 0,
+            "open_amount": 0,
+            "blocked": false
+          },
+          {
+            "id": 3,
+            "name": "QuickShip CT",
+            "specialty": "local courier",
+            "lead_days": 1,
+            "open_invoices": 0,
+            "open_amount": 0,
+            "blocked": false
+          }
+        ]
+      }
+    },
+    {
+      "tool": "get_open_invoices",
+      "arguments": {
+        "invoice_id": 501
+      },
+      "expected": "invoice 501, 3 days overdue",
+      "passed": true,
+      "output": {
+        "today": "2026-08-31",
+        "open_invoices": [
+          {
+            "invoice_id": 501,
+            "vendor_id": 1,
+            "vendor_name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5,
+            "amount": 840.0,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S",
+            "days_overdue": 3,
+            "overdue": true
+          }
+        ],
+        "total_open": 840.0,
+        "blocked_vendor_ids": [
+          1
+        ],
+        "message": null
+      }
+    },
+    {
+      "tool": "get_rent_due",
+      "arguments": {
+        "lease_id": 1
+      },
+      "expected": "$2,400 due in 2 days",
+      "passed": true,
+      "output": {
+        "found": true,
+        "lease_id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400.0,
+        "next_due": "2026-09-02",
+        "notes": null,
+        "today": "2026-08-31",
+        "days_until_due": 2,
+        "overdue": false,
+        "cash_accounts": [
+          {
+            "name": "checking",
+            "balance": 3400.0,
+            "date": "2026-08-31"
+          }
+        ],
+        "cash_total": 3400.0,
+        "cash_covers_rent": true,
+        "cash_after_rent": 1000.0
+      }
+    },
+    {
+      "tool": "get_cash_balance",
+      "arguments": {},
+      "expected": "$3,400 in checking, nothing pending",
+      "passed": true,
+      "output": {
+        "today": "2026-08-31",
+        "accounts": [
+          {
+            "name": "checking",
+            "balance": 3400.0,
+            "date": "2026-08-31",
+            "pending_requests": 0,
+            "available_after_pending": 3400.0
+          }
+        ],
+        "cash_total": 3400.0
+      }
+    },
+    {
+      "tool": "list_payments",
+      "arguments": {},
+      "expected": "no payments yet",
+      "passed": true,
+      "output": {
+        "payments": [],
+        "total_paid": 0,
+        "message": "No payments have been recorded."
+      }
+    },
+    {
+      "tool": "request_payment",
+      "arguments": {
+        "kind": "purchase_order",
+        "vendor_id": 1,
+        "sku": "CC-HOOD-NAVY",
+        "size": "M",
+        "qty": 12
+      },
+      "expected": "REFUSED: vendor blocked by open invoice 501",
+      "passed": true,
+      "output": {
+        "filed": false,
+        "message": "Bulldog Print Co is blocked by open invoice 501 ($840.00); it won't ship until that is paid."
+      }
+    },
+    {
+      "tool": "request_payment",
+      "arguments": {
+        "kind": "invoice",
+        "ref_id": 501
+      },
+      "expected": "filed: $840 to Bulldog Print Co, pending; amount taken from the database",
+      "passed": true,
+      "output": {
+        "filed": true,
+        "request_id": 1,
+        "status": "pending",
+        "kind": "invoice",
+        "payee": "Bulldog Print Co",
+        "amount": 840.0,
+        "account": "checking",
+        "cash_before": 3400.0,
+        "available_after_this_request": 2560.0,
+        "message": "Waiting for a human to approve on the dashboard. Nothing has been paid."
+      }
+    },
+    {
+      "tool": "request_payment",
+      "arguments": {
+        "kind": "invoice",
+        "ref_id": 501,
+        "repeat": true
+      },
+      "expected": "REFUSED: duplicate request",
+      "passed": true,
+      "output": {
+        "filed": false,
+        "message": "Already pending as request 1."
+      }
+    },
+    {
+      "tool": "request_payment",
+      "arguments": {
+        "kind": "rent",
+        "ref_id": 1
+      },
+      "expected": "filed: $2,400 rent, pending; $160 left after both",
+      "passed": true,
+      "output": {
+        "filed": true,
+        "request_id": 2,
+        "status": "pending",
+        "kind": "rent",
+        "payee": "Elm City Properties",
+        "amount": 2400.0,
+        "account": "checking",
+        "cash_before": 3400.0,
+        "available_after_this_request": 160.0,
+        "message": "Waiting for a human to approve on the dashboard. Nothing has been paid."
+      }
+    },
+    {
+      "tool": "get_cash_balance",
+      "arguments": {
+        "after": "two requests"
+      },
+      "expected": "still $3,400; $3,240 promised to pending requests; nothing paid",
+      "passed": true,
+      "output": {
+        "today": "2026-08-31",
+        "accounts": [
+          {
+            "name": "checking",
+            "balance": 3400.0,
+            "date": "2026-08-31",
+            "pending_requests": 3240.0,
+            "available_after_pending": 160.0
+          }
+        ],
+        "cash_total": 3400.0
+      }
+    },
+    {
+      "tool": "approve_and_pay",
+      "arguments": {
+        "request_id": 1,
+        "approved_by": "Lou",
+        "approval_code": "<HUMAN_APPROVAL_CODE>"
+      },
+      "expected": "REFUSED: wrong approval code",
+      "passed": true,
+      "output": {
+        "paid": false,
+        "message": "Approval code is wrong. Only a human on the dashboard can approve payments."
+      }
+    },
+    {
+      "tool": "approve_and_pay",
+      "arguments": {
+        "request_id": 1,
+        "approved_by": "Lou",
+        "approval_code": "<HUMAN_APPROVAL_CODE>"
+      },
+      "expected": "paid: payments row (approved_by Lou), cash $3,400 to $2,560, invoice 501 paid",
+      "passed": true,
+      "output": {
+        "paid": true,
+        "payment_id": 1,
+        "request_id": 1,
+        "amount": 840.0,
+        "payee": "Bulldog Print Co",
+        "approved_by": "Lou",
+        "cash_before": 3400.0,
+        "cash_after": 2560.0,
+        "updated": "invoice 501 marked paid"
+      }
+    },
+    {
+      "tool": "list_vendors",
+      "arguments": {
+        "after": "invoice paid"
+      },
+      "expected": "Bulldog Print Co no longer blocked",
+      "passed": true,
+      "output": {
+        "vendors": [
+          {
+            "id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5,
+            "open_invoices": 0,
+            "open_amount": 0,
+            "blocked": false
+          },
+          {
+            "id": 2,
+            "name": "Elm City Gifts",
+            "specialty": "mugs and small goods",
+            "lead_days": 3,
+            "open_invoices": 0,
+            "open_amount": 0,
+            "blocked": false
+          },
+          {
+            "id": 3,
+            "name": "QuickShip CT",
+            "specialty": "local courier",
+            "lead_days": 1,
+            "open_invoices": 0,
+            "open_amount": 0,
+            "blocked": false
+          }
+        ]
+      }
+    },
+    {
+      "tool": "approve_and_pay",
+      "arguments": {
+        "request_id": 2,
+        "approved_by": "Lou",
+        "approval_code": "<HUMAN_APPROVAL_CODE>"
+      },
+      "expected": "paid: cash $2,560 to $160, lease next_due moved to 2026-10-02",
+      "passed": true,
+      "output": {
+        "paid": true,
+        "payment_id": 2,
+        "request_id": 2,
+        "amount": 2400.0,
+        "payee": "Elm City Properties",
+        "approved_by": "Lou",
+        "cash_before": 2560.0,
+        "cash_after": 160.0,
+        "updated": "lease 1 next_due moved to 2026-10-02"
+      }
+    },
+    {
+      "tool": "request_payment",
+      "arguments": {
+        "kind": "purchase_order",
+        "qty": 12
+      },
+      "expected": "REFUSED: $264 needed, $160 left (no negative balances)",
+      "passed": true,
+      "output": {
+        "filed": false,
+        "message": "Not enough cash: $264.00 needed, $160.00 available after pending requests. No negative balances."
+      }
+    },
+    {
+      "tool": "approve_and_pay",
+      "arguments": {
+        "request_id": 3,
+        "note": "a $264 request with $160 cash"
+      },
+      "expected": "REFUSED at pay time: cash stays $160, never negative",
+      "passed": true,
+      "output": {
+        "paid": false,
+        "message": "Refused: $264.00 is more than the $160.00 in checking. No negative balances."
+      }
+    },
+    {
+      "tool": "reject_payment_request",
+      "arguments": {
+        "request_id": 3
+      },
+      "expected": "nothing to reject: the refused request is no longer pending",
+      "passed": true,
+      "output": {
+        "rejected": false,
+        "message": "Request 3 is not pending."
+      }
+    },
+    {
+      "tool": "list_payment_requests",
+      "arguments": {},
+      "expected": "requests: paid, paid, refused",
+      "passed": true,
+      "output": {
+        "requests": [
+          {
+            "id": 1,
+            "ticket_id": 101,
+            "kind": "invoice",
+            "ref_id": 501,
+            "vendor_id": 1,
+            "sku": null,
+            "size": null,
+            "qty": null,
+            "payee": "Bulldog Print Co",
+            "amount": 840.0,
+            "account": "checking",
+            "reason": "pay overdue invoice",
+            "requested_by": "accounting",
+            "requested_at": "2026-11-04T23:03:09+00:00",
+            "status": "paid",
+            "decided_by": "Lou",
+            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decision_note": null,
+            "payment_id": 1
+          },
+          {
+            "id": 2,
+            "ticket_id": 102,
+            "kind": "rent",
+            "ref_id": 1,
+            "vendor_id": null,
+            "sku": null,
+            "size": null,
+            "qty": null,
+            "payee": "Elm City Properties",
+            "amount": 2400.0,
+            "account": "checking",
+            "reason": "September rent",
+            "requested_by": "accounting",
+            "requested_at": "2026-11-04T23:03:09+00:00",
+            "status": "paid",
+            "decided_by": "Lou",
+            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decision_note": null,
+            "payment_id": 2
+          },
+          {
+            "id": 3,
+            "ticket_id": 103,
+            "kind": "purchase_order",
+            "ref_id": null,
+            "vendor_id": 1,
+            "sku": "CC-HOOD-NAVY",
+            "size": "M",
+            "qty": 12,
+            "payee": "Bulldog Print Co",
+            "amount": 264.0,
+            "account": "checking",
+            "reason": "test",
+            "requested_by": "test",
+            "requested_at": "test",
+            "status": "refused",
+            "decided_by": "Lou",
+            "decided_at": "2026-11-04T23:03:09+00:00",
+            "decision_note": "not enough cash; no negative balances",
+            "payment_id": null
+          }
+        ]
+      }
+    },
+    {
+      "tool": "list_payments",
+      "arguments": {
+        "after": "two payments"
+      },
+      "expected": "two payments, $3,240 total, both approved by Lou",
+      "passed": true,
+      "output": {
+        "payments": [
+          {
+            "id": 1,
+            "kind": "invoice",
+            "ref_id": 501,
+            "amount": 840.0,
+            "account": "checking",
+            "paid_at": "2026-08-31",
+            "approved_by": "Lou"
+          },
+          {
+            "id": 2,
+            "kind": "rent",
+            "ref_id": 1,
+            "amount": 2400.0,
+            "account": "checking",
+            "paid_at": "2026-08-31",
+            "approved_by": "Lou"
+          }
+        ],
+        "total_paid": 3240.0,
+        "message": null
+      }
+    },
+    {
+      "tool": "save_customer_draft",
+      "arguments": {
+        "ticket_id": 101
+      },
+      "expected": "draft saved on the board; sent = false",
+      "passed": true,
+      "output": {
+        "saved": true,
+        "draft_id": 1,
+        "status": "draft",
+        "sent": false,
+        "message": "Saved on the board for a human to read. Nothing was sent."
+      }
+    },
+    {
+      "tool": "list_drafts",
+      "arguments": {
+        "ticket_id": 101
+      },
+      "expected": "one draft, status draft",
+      "passed": true,
+      "output": {
+        "drafts": [
+          {
+            "id": 1,
+            "ticket_id": 101,
+            "to_name": "Tauhid Zaman",
+            "subject": "Your Bulldog tee",
+            "body": "Hi Tauhid, ...",
+            "written_by": "customer_service",
+            "created_at": "2026-11-04T23:03:09+00:00",
+            "status": "draft"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "update_ticket_status",
+      "arguments": {
+        "ticket_id": 102,
+        "status": "resolved"
+      },
+      "expected": "ticket 102: open to resolved",
+      "passed": true,
+      "output": {
+        "updated": true,
+        "ticket_id": 102,
+        "from": "open",
+        "to": "resolved"
+      }
+    },
+    {
+      "tool": "update_ticket_status",
+      "arguments": {
+        "ticket_id": 102,
+        "status": "paid"
+      },
+      "expected": "REFUSED: 'paid' isn't a ticket status",
+      "passed": true,
+      "output": {
+        "updated": false,
+        "message": "Status must be one of open, in_progress, waiting_approval, blocked, resolved."
+      }
+    }
+  ]
+}

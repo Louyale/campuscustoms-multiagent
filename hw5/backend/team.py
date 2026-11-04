@@ -12,12 +12,17 @@ Three guards keep the loops from running away (multi-agent chats burn tokens fas
 - at most `max_depth` hand-offs below the first agent
 
 All agents in a run share one usage counter, so the run's request limit covers the whole team.
+Every step of every agent's loop is appended to output/audit_trail.json (backend/audit.py).
 """
 
 from __future__ import annotations
 
+import json
+import uuid
+
 from pydantic_ai import RunContext, UsageLimits
 
+from backend.audit import run_logged
 from backend.mcp_tools import mcp_toolset
 from backend.models import AGENT_NAMES, AgentName, Delegation, TeamDeps, Ticket, TicketDecision
 
@@ -66,9 +71,10 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
     ticket = f" (ticket {deps.ticket_id})" if deps.ticket_id is not None else ""
     deps.chain.append(teammate)
     try:
-        result = await registry()[teammate].run(
+        result = await run_logged(
+            registry()[teammate], teammate,
             f"Request from {who}{ticket}: {task}",
-            deps=deps,
+            deps,
             usage=ctx.usage,            # one shared counter for the whole team
             usage_limits=TICKET_LIMITS,
         )
@@ -79,13 +85,22 @@ async def ask_teammate(ctx: RunContext[TeamDeps], teammate: AgentName, task: str
     return record.answer
 
 
-async def run_ticket(ticket: Ticket) -> tuple[TicketDecision, TeamDeps]:
-    """Boss works one ticket, handing parts to teammates as needed. Returns the decision and the hand-offs."""
-    deps = TeamDeps(ticket_id=ticket.id, chain=["boss"])
+async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:
+    """Boss works one ticket, handing parts to teammates as needed. Returns the decision and the hand-offs.
+
+    The ticket itself comes from the MCP server (get_ticket), like every other shop fact.
+    """
+    deps = TeamDeps(ticket_id=ticket_id, chain=["boss"], run_id=uuid.uuid4().hex[:12])
     async with mcp_toolset:  # one MCP connection for every agent on this ticket
-        result = await registry()["boss"].run(
+        found = await mcp_toolset.direct_call_tool("get_ticket", {"ticket_id": ticket_id})
+        found = found if isinstance(found, dict) else json.loads(found)
+        if not found.get("found"):
+            raise ValueError(found.get("message", f"No ticket {ticket_id}"))
+        ticket = Ticket(**found["ticket"])
+        result = await run_logged(
+            registry()["boss"], "boss",
             f"New ticket from the board:\n{ticket.model_dump_json(indent=2)}",
-            deps=deps,
+            deps,
             usage_limits=TICKET_LIMITS,
         )
     return result.output, deps

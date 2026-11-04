@@ -17,14 +17,20 @@ MCP_SERVER = PROJECT_DIR / "mcp_server" / "server.py"
 # One stdio connection to the server, shared by every agent in a run.
 mcp_toolset = MCPToolset(MCP_SERVER)
 
-# Which MCP tools each role may call. New tools are added here as the server grows.
+# Which MCP tools each role may call (least privilege). New tools are added here as the server grows.
 TOOL_ACCESS: dict[str, set[str]] = {
-    "boss": {"check_stock", "get_open_invoices", "get_rent_due"},
-    "inventory": {"check_stock", "get_open_invoices"},
-    "accounting": {"check_stock", "get_open_invoices", "get_rent_due"},
-    "facilities": {"get_rent_due"},
-    "customer_service": {"check_stock"},
+    "boss": {"get_ticket", "list_tickets", "update_ticket_status", "check_stock", "get_open_invoices",
+             "get_rent_due", "get_cash_balance", "list_payment_requests", "list_drafts"},
+    "inventory": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices"},
+    "accounting": {"check_stock", "list_inventory", "list_vendors", "get_open_invoices", "get_rent_due",
+                   "get_cash_balance", "list_payments", "list_payment_requests", "request_payment"},
+    "facilities": {"get_rent_due", "get_cash_balance", "list_payment_requests"},
+    "customer_service": {"get_ticket", "check_stock", "save_customer_draft", "list_drafts"},
 }
+
+# Only the human approval step (the dashboard) may call these. No agent is ever given them.
+HUMAN_ONLY_TOOLS: set[str] = {"approve_and_pay", "reject_payment_request"}
+assert not any(HUMAN_ONLY_TOOLS & tools for tools in TOOL_ACCESS.values()), "an agent was given a human-only tool"
 
 
 def tools_for(agent_name: str):

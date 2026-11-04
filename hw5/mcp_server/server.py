@@ -10,10 +10,18 @@ Ground rules for every tool:
   arithmetic on database values (shortfall, days overdue, cash left). Anything
   not found comes back as found=False with a message, never a guessed value.
 - "Today" is desk.date_today, never the computer clock.
-- The three Problem 3 tools only read. Tools that write (payments, drafts) come
-  in later problems, behind human approval.
+- Money moves only after a human approves. Agents can *request* a payment
+  (request_payment). Only the human approval step can pay (approve_and_pay),
+  and it needs HUMAN_APPROVAL_CODE from .env, which no agent is given. Paying
+  refuses if the cash would go below zero.
+- Customer messages are drafts saved on the board (the drafts table). Nothing
+  is ever sent.
 
-Run later with:  python mcp_server/server.py   (not run in Problem 3)
+Tools added in Problem 5 create two board tables in the working copy if they're
+missing: drafts and approval_requests. A reset (copying the original back)
+removes them.
+
+Run:  python mcp_server/server.py
 """
 
 from __future__ import annotations
@@ -21,16 +29,23 @@ from __future__ import annotations
 import os
 import sqlite3
 from contextlib import closing
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastmcp import FastMCP
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.getenv("CAMPUS_DB", PROJECT_DIR / "data" / "campus_customs_new.db")).resolve()
 ORIGINAL_DB = (PROJECT_DIR / "data" / "campus_customs.db").resolve()
+load_dotenv(PROJECT_DIR / ".env")  # for HUMAN_APPROVAL_CODE, which is never given to any agent
 
 READ_ONLY = {"readOnlyHint": True, "destructiveHint": False, "idempotentHint": True}
+WRITES = {"readOnlyHint": False, "destructiveHint": False, "idempotentHint": False}
+HUMAN_ONLY = {"readOnlyHint": False, "destructiveHint": True, "idempotentHint": False}
+
+TICKET_STATUSES = ("open", "in_progress", "waiting_approval", "blocked", "resolved")
+REORDER_POINT = 5  # the shop owner's rule: fewer than 5 units on hand means reorder
 
 mcp = FastMCP(
     "campus-customs",
@@ -174,6 +189,386 @@ def get_rent_due(lease_id: int) -> dict:
         "cash_covers_rent": cash_total >= lease["monthly_rent"],
         "cash_after_rent": round(cash_total - lease["monthly_rent"], 2),
     }
+
+
+# ============================================================================ Problem 5: more tools
+# ---------------------------------------------------------------- board tables (created on first use)
+
+BOARD_TABLES = """
+CREATE TABLE IF NOT EXISTS drafts (
+    id INTEGER PRIMARY KEY,
+    ticket_id INTEGER NOT NULL REFERENCES tickets(id),
+    to_name TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    body TEXT NOT NULL,
+    written_by TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status = 'draft')
+);
+CREATE TABLE IF NOT EXISTS approval_requests (
+    id INTEGER PRIMARY KEY,
+    ticket_id INTEGER REFERENCES tickets(id),
+    kind TEXT NOT NULL CHECK (kind IN ('invoice', 'rent', 'purchase_order')),
+    ref_id INTEGER,
+    vendor_id INTEGER REFERENCES vendors(id),
+    sku TEXT, size TEXT, qty INTEGER,
+    payee TEXT NOT NULL,
+    amount REAL NOT NULL CHECK (amount > 0),
+    account TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    requested_by TEXT NOT NULL,
+    requested_at TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'paid', 'rejected', 'refused')),
+    decided_by TEXT, decided_at TEXT, decision_note TEXT, payment_id INTEGER
+);
+"""
+
+
+def board(conn: sqlite3.Connection) -> sqlite3.Connection:
+    """Make sure the two board tables exist in the working copy."""
+    conn.executescript(BOARD_TABLES)
+    return conn
+
+
+def now_utc() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def add_month(d: date) -> date:
+    y, m = (d.year + 1, 1) if d.month == 12 else (d.year, d.month + 1)
+    for day in (d.day, 30, 29, 28):
+        try:
+            return date(y, m, day)
+        except ValueError:
+            continue
+    raise ValueError(d)
+
+
+def cash_row(conn: sqlite3.Connection, account: str):
+    return conn.execute("SELECT name, balance, date FROM cash_accounts WHERE name = ?", (account,)).fetchone()
+
+
+def pending_total(conn: sqlite3.Connection, account: str) -> float:
+    row = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM approval_requests WHERE status = 'pending' AND account = ?", (account,)
+    ).fetchone()
+    return round(row[0], 2)
+
+
+# ---------------------------------------------------------------- tickets (Boss)
+
+@mcp.tool(annotations=READ_ONLY)
+def get_ticket(ticket_id: int) -> dict:
+    """One ticket from the board (tickets), with any drafts and payment requests already filed
+    for it (drafts, approval_requests). Boss starts every ticket here."""
+    with closing(board(connect())) as conn:
+        t = conn.execute("SELECT * FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+        if t is None:
+            return {"found": False, "ticket_id": ticket_id, "message": f"No ticket {ticket_id}."}
+        drafts = [dict(r) for r in conn.execute("SELECT * FROM drafts WHERE ticket_id = ? ORDER BY id", (ticket_id,))]
+        reqs = [dict(r) for r in conn.execute("SELECT * FROM approval_requests WHERE ticket_id = ? ORDER BY id", (ticket_id,))]
+    return {"found": True, "ticket": dict(t), "drafts": drafts, "payment_requests": reqs}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_tickets(status: str | None = None) -> dict:
+    """Tickets on the board (tickets), optionally only one status, such as 'open'."""
+    with closing(connect()) as conn:
+        today = shop_today(conn)
+        sql, args = "SELECT * FROM tickets", []
+        if status:
+            sql += " WHERE status = ?"
+            args.append(status)
+        rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
+    return {"today": today.isoformat(), "count": len(rows), "tickets": rows}
+
+
+@mcp.tool(annotations=WRITES)
+def update_ticket_status(ticket_id: int, status: str) -> dict:
+    """Move a ticket to a new status on the board (tickets.status). Allowed: open, in_progress,
+    waiting_approval, blocked, resolved. Changes nothing else."""
+    if status not in TICKET_STATUSES:
+        return {"updated": False, "message": f"Status must be one of {', '.join(TICKET_STATUSES)}."}
+    with closing(connect()) as conn:
+        row = conn.execute("SELECT status FROM tickets WHERE id = ?", (ticket_id,)).fetchone()
+        if row is None:
+            return {"updated": False, "message": f"No ticket {ticket_id}."}
+        with conn:
+            conn.execute("UPDATE tickets SET status = ? WHERE id = ?", (status, ticket_id))
+    return {"updated": True, "ticket_id": ticket_id, "from": row["status"], "to": status}
+
+
+# ---------------------------------------------------------------- stock and vendors (Inventory)
+
+@mcp.tool(annotations=READ_ONLY)
+def list_inventory(low_only: bool = False) -> dict:
+    """Every SKU and size on hand (inventory), with unit cost and list price (pricing), value at
+    cost, and a reorder flag for anything with fewer than 5 units (the shop's reorder point)."""
+    with closing(connect()) as conn:
+        rows = conn.execute(
+            "SELECT i.sku, i.name, i.size, i.qty, i.location, p.unit_cost, p.list_price "
+            "FROM inventory i LEFT JOIN pricing p ON p.sku = i.sku ORDER BY i.sku, i.size"
+        ).fetchall()
+    items = []
+    for r in rows:
+        item = dict(r)
+        item["needs_reorder"] = r["qty"] < REORDER_POINT
+        item["value_at_cost"] = round(r["qty"] * r["unit_cost"], 2) if r["unit_cost"] is not None else None
+        if not low_only or item["needs_reorder"]:
+            items.append(item)
+    return {
+        "reorder_point": REORDER_POINT,
+        "items": items,
+        "total_value_at_cost": round(sum(i["value_at_cost"] or 0 for i in items), 2),
+        "missing_pricing": sorted({i["sku"] for i in items if i["unit_cost"] is None}),
+    }
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_vendors(specialty_contains: str | None = None) -> dict:
+    """Vendors (vendors) with specialty and lead days, and whether an open invoice (invoices)
+    blocks each one from shipping. Lead times come only from this table."""
+    with closing(connect()) as conn:
+        rows = conn.execute(
+            "SELECT v.id, v.name, v.specialty, v.lead_days, "
+            "COUNT(i.id) AS open_invoices, COALESCE(SUM(i.amount), 0) AS open_amount "
+            "FROM vendors v LEFT JOIN invoices i ON i.vendor_id = v.id AND i.status = 'open' "
+            "GROUP BY v.id ORDER BY v.id"
+        ).fetchall()
+    vendors = [{**dict(r), "blocked": r["open_invoices"] > 0} for r in rows]
+    if specialty_contains:
+        vendors = [v for v in vendors if specialty_contains.lower() in v["specialty"].lower()]
+    return {"vendors": vendors}
+
+
+# ---------------------------------------------------------------- cash and payments (Accounting)
+
+@mcp.tool(annotations=READ_ONLY)
+def get_cash_balance() -> dict:
+    """Cash on hand in every account (cash_accounts), and how much is already promised to
+    pending payment requests (approval_requests), so no money is counted twice."""
+    with closing(board(connect())) as conn:
+        today = shop_today(conn)
+        accounts = [dict(r) for r in conn.execute("SELECT name, balance, date FROM cash_accounts")]
+        for a in accounts:
+            a["pending_requests"] = pending_total(conn, a["name"])
+            a["available_after_pending"] = round(a["balance"] - a["pending_requests"], 2)
+    return {"today": today.isoformat(), "accounts": accounts,
+            "cash_total": round(sum(a["balance"] for a in accounts), 2)}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_payments() -> dict:
+    """Payments actually made (payments), each one approved by a human. Used for income statements."""
+    with closing(connect()) as conn:
+        rows = [dict(r) for r in conn.execute("SELECT * FROM payments ORDER BY id")]
+    return {"payments": rows, "total_paid": round(sum(r["amount"] for r in rows), 2),
+            "message": None if rows else "No payments have been recorded."}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_payment_requests(status: str | None = None) -> dict:
+    """Payment requests waiting for, or already decided by, a human (approval_requests)."""
+    with closing(board(connect())) as conn:
+        sql, args = "SELECT * FROM approval_requests", []
+        if status:
+            sql += " WHERE status = ?"
+            args.append(status)
+        rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
+    return {"requests": rows}
+
+
+@mcp.tool(annotations=WRITES)
+def request_payment(kind: str, ticket_id: int, reason: str, requested_by: str,
+                    ref_id: int | None = None, vendor_id: int | None = None,
+                    sku: str | None = None, size: str | None = None, qty: int | None = None,
+                    account: str = "checking") -> dict:
+    """File a payment request for a human to approve (approval_requests). This does NOT pay.
+
+    The amount always comes from the database, never from the agent:
+    - kind 'invoice': ref_id is an open invoice id; the amount is that invoice's amount.
+    - kind 'rent': ref_id is a lease id; the amount is the lease's monthly_rent.
+    - kind 'purchase_order': vendor_id, sku, size and qty; the amount is qty x pricing.unit_cost.
+      Refused if that vendor has an open invoice (a blocked vendor won't ship).
+    Refused if the account can't cover it after other pending requests (no negative balances),
+    or if the same item is already pending.
+    """
+    with closing(board(connect())) as conn:
+        acct = cash_row(conn, account)
+        if acct is None:
+            return {"filed": False, "message": f"No cash account named {account!r}."}
+        if conn.execute("SELECT 1 FROM tickets WHERE id = ?", (ticket_id,)).fetchone() is None:
+            return {"filed": False, "message": f"No ticket {ticket_id}."}
+
+        if kind == "invoice":
+            inv = conn.execute(
+                "SELECT i.*, v.name AS vendor FROM invoices i JOIN vendors v ON v.id = i.vendor_id WHERE i.id = ?", (ref_id,)
+            ).fetchone()
+            if inv is None or inv["status"] != "open":
+                return {"filed": False, "message": f"Invoice {ref_id} is not an open invoice."}
+            payee, amount, vendor_id = inv["vendor"], inv["amount"], inv["vendor_id"]
+        elif kind == "rent":
+            lease = conn.execute("SELECT * FROM leases WHERE id = ?", (ref_id,)).fetchone()
+            if lease is None:
+                return {"filed": False, "message": f"No lease {ref_id}."}
+            payee, amount = lease["landlord"], lease["monthly_rent"]
+        elif kind == "purchase_order":
+            vendor = conn.execute("SELECT * FROM vendors WHERE id = ?", (vendor_id,)).fetchone()
+            price = conn.execute("SELECT unit_cost FROM pricing WHERE sku = ?", (sku,)).fetchone()
+            if vendor is None or price is None or not size or not qty or qty <= 0:
+                return {"filed": False, "message": "A purchase order needs a real vendor_id, a priced sku, a size, and qty above 0."}
+            if conn.execute("SELECT 1 FROM inventory WHERE sku = ? AND size = ?", (sku, size)).fetchone() is None:
+                return {"filed": False, "message": f"{sku} size {size} is not a stocked item."}
+            blocker = conn.execute(
+                "SELECT id, amount FROM invoices WHERE vendor_id = ? AND status = 'open'", (vendor_id,)
+            ).fetchone()
+            if blocker:
+                return {"filed": False, "message": f"{vendor['name']} is blocked by open invoice {blocker['id']} "
+                                                   f"(${blocker['amount']:.2f}); it won't ship until that is paid."}
+            payee, amount, ref_id = vendor["name"], round(qty * price["unit_cost"], 2), None
+        else:
+            return {"filed": False, "message": "kind must be invoice, rent or purchase_order."}
+
+        dup = conn.execute(
+            "SELECT id FROM approval_requests WHERE status = 'pending' AND kind = ? "
+            "AND COALESCE(ref_id, -1) = COALESCE(?, -1) AND COALESCE(sku, '') = COALESCE(?, '') "
+            "AND COALESCE(size, '') = COALESCE(?, '')",
+            (kind, ref_id, sku, size),
+        ).fetchone()
+        if dup:
+            return {"filed": False, "message": f"Already pending as request {dup['id']}."}
+        available = round(acct["balance"] - pending_total(conn, account), 2)
+        if amount > available:
+            return {"filed": False, "message": f"Not enough cash: ${amount:.2f} needed, ${available:.2f} available "
+                                               "after pending requests. No negative balances."}
+        with conn:
+            cur = conn.execute(
+                "INSERT INTO approval_requests (ticket_id, kind, ref_id, vendor_id, sku, size, qty, payee, amount, "
+                "account, reason, requested_by, requested_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (ticket_id, kind, ref_id, vendor_id, sku, size, qty, payee, amount, account, reason, requested_by, now_utc()),
+            )
+    return {"filed": True, "request_id": cur.lastrowid, "status": "pending", "kind": kind, "payee": payee,
+            "amount": amount, "account": account, "cash_before": acct["balance"],
+            "available_after_this_request": round(available - amount, 2),
+            "message": "Waiting for a human to approve on the dashboard. Nothing has been paid."}
+
+
+# ---------------------------------------------------------------- drafts (Customer Service)
+
+@mcp.tool(annotations=WRITES)
+def save_customer_draft(ticket_id: int, to_name: str, subject: str, body: str, written_by: str) -> dict:
+    """Save a message draft on the board (drafts). It is never sent; there is no send tool."""
+    with closing(board(connect())) as conn:
+        if conn.execute("SELECT 1 FROM tickets WHERE id = ?", (ticket_id,)).fetchone() is None:
+            return {"saved": False, "message": f"No ticket {ticket_id}."}
+        with conn:
+            cur = conn.execute(
+                "INSERT INTO drafts (ticket_id, to_name, subject, body, written_by, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (ticket_id, to_name, subject, body, written_by, now_utc()),
+            )
+    return {"saved": True, "draft_id": cur.lastrowid, "status": "draft", "sent": False,
+            "message": "Saved on the board for a human to read. Nothing was sent."}
+
+
+@mcp.tool(annotations=READ_ONLY)
+def list_drafts(ticket_id: int | None = None) -> dict:
+    """Message drafts on the board (drafts)."""
+    with closing(board(connect())) as conn:
+        sql, args = "SELECT * FROM drafts", []
+        if ticket_id is not None:
+            sql += " WHERE ticket_id = ?"
+            args.append(ticket_id)
+        rows = [dict(r) for r in conn.execute(sql + " ORDER BY id", args)]
+    return {"drafts": rows}
+
+
+# ---------------------------------------------------------------- human approval only (no agent has these)
+
+def human_check(approval_code: str, person: str) -> str | None:
+    expected = os.getenv("HUMAN_APPROVAL_CODE")
+    if not expected:
+        return "HUMAN_APPROVAL_CODE is not set in .env, so no payment can be approved."
+    if approval_code != expected:
+        return "Approval code is wrong. Only a human on the dashboard can approve payments."
+    if not person or not person.strip():
+        return "The approver must be named."
+    return None
+
+
+@mcp.tool(annotations=HUMAN_ONLY)
+def approve_and_pay(request_id: int, approved_by: str, approval_code: str) -> dict:
+    """HUMAN ONLY (dashboard). Pay one pending request after a person approves it.
+
+    Refuses if the code is wrong, the request isn't pending, or the account would go below zero.
+    If paid, all of this happens in one transaction:
+    - a payments row is added, with approved_by
+    - cash_accounts.balance goes down, and its date becomes desk.date_today
+    - the invoice is marked paid, or the lease's next_due moves forward one month
+    - the request is marked paid
+    """
+    problem = human_check(approval_code, approved_by)
+    if problem:
+        return {"paid": False, "message": problem}
+    with closing(board(connect())) as conn:
+        today = shop_today(conn)
+        req = conn.execute("SELECT * FROM approval_requests WHERE id = ?", (request_id,)).fetchone()
+        if req is None or req["status"] != "pending":
+            return {"paid": False, "message": f"Request {request_id} is not pending."}
+        acct = cash_row(conn, req["account"])
+        balance = acct["balance"] if acct else 0.0
+        if balance < req["amount"]:
+            with conn:
+                conn.execute(
+                    "UPDATE approval_requests SET status = 'refused', decided_by = ?, decided_at = ?, decision_note = ? WHERE id = ?",
+                    (approved_by, now_utc(), "not enough cash; no negative balances", request_id),
+                )
+            return {"paid": False, "message": f"Refused: ${req['amount']:.2f} is more than the ${balance:.2f} in "
+                                              f"{req['account']}. No negative balances."}
+        with conn:  # one transaction: all of it happens, or none of it
+            new_balance = round(balance - req["amount"], 2)
+            ref = req["ref_id"] if req["kind"] in ("invoice", "rent") else req["id"]
+            cur = conn.execute(
+                "INSERT INTO payments (kind, ref_id, amount, account, paid_at, approved_by) VALUES (?, ?, ?, ?, ?, ?)",
+                (req["kind"], ref, req["amount"], req["account"], today.isoformat(), approved_by),
+            )
+            conn.execute("UPDATE cash_accounts SET balance = ?, date = ? WHERE name = ?",
+                         (new_balance, today.isoformat(), req["account"]))
+            if req["kind"] == "invoice":
+                conn.execute("UPDATE invoices SET status = 'paid' WHERE id = ?", (req["ref_id"],))
+                change = f"invoice {req['ref_id']} marked paid"
+            elif req["kind"] == "rent":
+                lease = conn.execute("SELECT next_due FROM leases WHERE id = ?", (req["ref_id"],)).fetchone()
+                nxt = add_month(date.fromisoformat(lease["next_due"])).isoformat()
+                conn.execute("UPDATE leases SET next_due = ? WHERE id = ?", (nxt, req["ref_id"]))
+                change = f"lease {req['ref_id']} next_due moved to {nxt}"
+            else:
+                change = f"purchase order for {req['qty']} x {req['sku']} {req['size']} paid to {req['payee']}"
+            conn.execute(
+                "UPDATE approval_requests SET status = 'paid', decided_by = ?, decided_at = ?, payment_id = ? WHERE id = ?",
+                (approved_by, now_utc(), cur.lastrowid, request_id),
+            )
+    return {"paid": True, "payment_id": cur.lastrowid, "request_id": request_id, "amount": req["amount"],
+            "payee": req["payee"], "approved_by": approved_by, "cash_before": balance,
+            "cash_after": new_balance, "updated": change}
+
+
+@mcp.tool(annotations=HUMAN_ONLY)
+def reject_payment_request(request_id: int, rejected_by: str, approval_code: str, reason: str = "") -> dict:
+    """HUMAN ONLY (dashboard). Reject a pending payment request. No money moves."""
+    problem = human_check(approval_code, rejected_by)
+    if problem:
+        return {"rejected": False, "message": problem}
+    with closing(board(connect())) as conn:
+        req = conn.execute("SELECT status FROM approval_requests WHERE id = ?", (request_id,)).fetchone()
+        if req is None or req["status"] != "pending":
+            return {"rejected": False, "message": f"Request {request_id} is not pending."}
+        with conn:
+            conn.execute(
+                "UPDATE approval_requests SET status = 'rejected', decided_by = ?, decided_at = ?, decision_note = ? WHERE id = ?",
+                (rejected_by, now_utc(), reason, request_id),
+            )
+    return {"rejected": True, "request_id": request_id}
 
 
 if __name__ == "__main__":
