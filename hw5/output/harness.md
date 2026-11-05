@@ -517,6 +517,9 @@ Every Panel A bullet maps to a route, and every route is named for the dashboard
 | 9 | `GET /cash` | The current **checking balance** from `cash_accounts`, with its as-of date, what's promised to pending requests, and what's still free | "Return the current checking balance from `cash_accounts`" | Cash tile |
 | 10 | `POST /reset` | Resets the database to the original values (copies `campus_customs.db` over the working copy). Refused while a run is active, and logged in the audit trail | "Reset the database to the original values when you want to try a fresh run" | Reset button |
 | 11 | `GET /` and `GET /health` | `/` lists every route; `/health` shows the model (`gpt-6-luna`) and the MCP tool count (25) | (for the grader and the dashboard's status light) | Header status |
+| 12 | `GET /tickets/{ticket_id}/summary` | A short summary of what each agent did on the ticket's latest run (its job, the tools it used, its model steps and its final word), from the audit trail. Added in Problem 8 | (Problem 8: "Show a short summary of what each agent did on that ticket") | The legal pad |
+| 13 | `GET /calendar` | Every date that matters, through MCP: today (`desk.date_today`), rent due dates and invoice due dates, each with how many days away it is. Added in Problem 8 | (Problem 8 extra: the wall calendar) | The wall calendar |
+| 14 | `POST /drawer/unlock` | Checks the locked drawer's PIN against `DESK_PIN` in `.env`, on the server, never in the browser; 403 on a wrong PIN. Added in Problem 8 | (Problem 8 extra: the locked drawer for sensitive papers) | The drawer's keypad |
 
 `/docs` shows every route with its **named response type** (`TicketsOut`, `RunOut`, `EventsOut`, `CashOut`, `ResetOut`) and an example approver, so the grader can see exactly what each route returns, and try it.
 
@@ -648,7 +651,7 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 
 **What changed hands:** no real money or email moved. Payments update only the practice database, and Customer Service's messages stayed as drafts on the board.
 
-**Where it's recorded:** the run appended **182 entries** to `output/audit_trail.json`. The results are in `output/resolved_tickets.json`, built by `scripts/build_resolved.py` from the database and the audit trail, with nothing hand-typed.
+**Where it's recorded:** the run appended **184 entries** to `output/audit_trail.json`, counting Boss's two payment approvals and his ticket 103 decision. The results are in `output/resolved_tickets.json`, built by `scripts/build_resolved.py` from the database and the audit trail, with nothing hand-typed.
 
 **Table 28: The Full Run, Ticket by Ticket**
 
@@ -656,7 +659,7 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 |---|---|---|---|---|---|---|---|
 | **101** Bulldog tee | urgent | Inventory | Boss→Inventory → Boss→Accounting → Boss→Customer Service → Boss→Customer Service | Boss, Inventory, Accounting, Customer Service | invoice $840 approved by Boss (Mr. D'Onofrio) | **resolved** | 25 · $0.0050 |
 | **102** Rent due | urgent | Facilities | Boss→Facilities → Boss→Customer Service | Boss, Facilities, Customer Service | rent $2,400 approved by Boss (Mr. D'Onofrio) | **resolved** | 14 · $0.0019 |
-| **103** Bulk hoodie discount | normal | Inventory | Boss→Inventory → Boss→Accounting → Accounting→Inventory → (Accounting→Boss, ⛔ refused by the loop guard) → Boss→Customer Service | Boss, Inventory, Accounting, Customer Service | none needed | **blocked** | 22 · $0.0035 |
+| **103** Bulk hoodie discount | normal | Inventory | Boss→Inventory → Boss→Accounting → Accounting→Inventory → (Accounting→Boss, ⛔ refused by the loop guard) → Boss→Customer Service | Boss, Inventory, Accounting, Customer Service | none for payments; Boss (Mr. D'Onofrio) made the discount decision, with no money moved | **resolved** (the team set it to blocked; Boss's decision resolved it) | 22 · $0.0035 |
 
 All three model-call counts together: 61 calls, about $0.0105 for the whole board, on `gpt-6-luna`.
 
@@ -698,7 +701,7 @@ The ticket tabs of `output/desk_tickets.html` show Expected and Actual side by s
     - The tool check added a revision test, and passes 44 of 44.
     - A live run of ticket 101 on a scratch database gave one hand-off to Customer Service, one save, and one draft opening "Dear Professor Zaman,".
   - **The Problem 9 records above are unchanged:** they show the run as it happened.
-- **Ticket 103 is `blocked` in the database.** The team's work is done, so the board shows it resolved, but the discount is a human decision, and the 12-hoodie restock ($264) won't fit the $160 left.
+- **Ticket 103 needed a human decision.** The team set it to `blocked`: the discount is a human call, and the 12-hoodie restock ($264) won't fit the $160 left. Boss (Mr. D'Onofrio) then decided: no bulk discount for now, and a quote follows once the restock is funded and confirmed. `scripts/human_decision.py` recorded the decision through the MCP status tool, with `HumanDecision` and `TicketResolved` entries in the audit trail, and **103 is resolved**. No money moved: checking stayed $160.00.
 
 ☑ **Approved by Boss (Mr. D'Onofrio), 2026-11-05:** the Actual sections, the Cash itemization, and both payments.
 

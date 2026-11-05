@@ -731,6 +731,31 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - **Backend:** `GET /calendar`, `POST /drawer/unlock` (`DESK_PIN` in `.env`, never shown), and token counts in `/events`.
 - **Screenshots:** `output/dashboard_screens/office_day.png`, `office_night.png`, `office_narrow.png`.
 
+**Follow-up prompt (Problem 8 close-out):**
+
+> yes run it and if it checks, we'll wrap up problem 8
+
+**Outcome:**
+
+- **The full route check was rerun** after the new routes, on the real app and agents.
+- **The first run scored 20 of 21.** Step 18 (the whole-board run) failed only because the check required ticket 102 to run. In fact, while working ticket 101, the team had already filed the rent request under ticket 102, so the re-run guard correctly skipped 102 instead of spending tokens on a duplicate run.
+- **The check was corrected** to accept "run, or skipped because its bill already waits on you". The rerun passed **21 of 21**.
+- **Cash after the board run:** $3,400, with $3,240 pending and $160 free.
+- **The database ends equal to the original.**
+- **Problem 8 is complete.**
+
+**Follow-up prompt (two touch-ups):**
+
+> done but move the plant onto the table, and have the professor's chair read as possessive
+
+**Outcome:** the plant now sits on the round table, with the papers moved to the table's edges, and the guest chair reads **"Professor Tauhid Zaman's chair"**. A name ending in "s" gets just an apostrophe ("Elm City Properties' chair"). The screenshots in `output/dashboard_screens/` were refreshed.
+
+**Follow-up prompt (reset before Problem 9):**
+
+> Yes, reset
+
+**Outcome:** reset the database to a fresh day (it matches the original SHA-256; checking $3,400; 0 pending; tickets 101–103 open). This cleared the two unsigned requests from the 04:27 run on ticket 101. The reset is recorded in the audit trail.
+
 ---
 
 ## Problem 9: Resolve the tickets
@@ -916,6 +941,30 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
   - the clone's test `.env` was ignored by git
 - **GitHub:** signed in as Louyale. The proposed new public repo, `Louyale/campuscustoms-multiagent`, is free.
 
+**Follow-up prompts (a final audit before the push):**
+
+> and before we do that, let;s have you audit everything we did and compare it to the screen shots and my instructions, tell me the grade.  if its not 100/100, recommend improvements that are realistic and fixable without redoing everything now.  let me know that and I'll review your recommendations if any.  then we'll contiue with the problem 11 push as you've prepared, but can also modify those here if needed
+
+> yes, do all five and yes to leave the log just as it is- we are permitted to post the screen shots as long as we type the tasks in our own words, one problem at a time and follow up with you to work on it together- so leave the log as is.  go ahead with the 5 fixes and then we'll push and I'll give you problem 11
+
+> fix 3 text is fine
+
+**What was lacking after the first:** the audit found four small gaps worth closing before the push.
+
+**Outcome:**
+
+- **The audit:** every Problem 1–10 requirement was checked against the screenshots, and projected about 98/100 before the fixes.
+- **Fix 1:** the three Problem 8 follow-up prompts (the close-out, the two touch-ups and the reset) were moved, word for word, from the end of this log into the Problem 8 section.
+- **Fix 2:** harness Table 22 now lists all 14 routes. It adds `GET /tickets/{ticket_id}/summary`, `GET /calendar` and `POST /drawer/unlock`, from Problem 8.
+- **Fix 3:** I made the ticket 103 decision as the human: "No bulk discount for now. Campus Customs will send the Yale AI Club a quote once the 12-hoodie restock is funded and confirmed; nothing is promised before then."
+  - `scripts/human_decision.py` recorded it through the MCP status tool, with `HumanDecision` and `TicketResolved` entries in the audit trail.
+  - **103 is resolved.** No money moved: checking stayed **$160.00**.
+  - The resolved tickets JSON, the desk tickets page, the resolved board and the harness were rebuilt or updated.
+- **Fix 4:** the README now leads with the assignment's start command (`cd backend`, then `uvicorn main:app --reload --port 8000`, tested from a fresh clone). It also has a grader note that `gpt-6-luna-global` in the run logs is Portkey's reply name for `gpt-6-luna`.
+- **Fix 5** is for the push: Problem 11 gets its own section here, with the file tree.
+- **The log otherwise stays as it is.** We're permitted to share the screenshots, because each task was typed in my own words, one problem at a time.
+- **Rechecked:** `check_submission.py` passes 28 of 28.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**
@@ -994,29 +1043,3 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
 > yes, don't do anything to make anything stop matching, everything needs to work as before
 
 **Outcome:** added one courtesy rule to the Customer Service prompt: a draft for ticket 101's requester opens "Dear Professor Zaman,". The draft's `to_name` stays exactly as the database has it ("Tauhid Zaman"), so drafts still match the database. Everything was rechecked and works as before: 43 of 43 tool checks pass, the five agents build, the greeting passes the spelling check, and both databases are unchanged.
-
-**Follow-up prompt (Problem 8 close-out):**
-
-> yes run it and if it checks, we'll wrap up problem 8
-
-**Outcome:**
-
-- **The full route check was rerun** after the new routes, on the real app and agents.
-- **The first run scored 20 of 21.** Step 18 (the whole-board run) failed only because the check required ticket 102 to run. In fact, while working ticket 101, the team had already filed the rent request under ticket 102, so the re-run guard correctly skipped 102 instead of spending tokens on a duplicate run.
-- **The check was corrected** to accept "run, or skipped because its bill already waits on you". The rerun passed **21 of 21**.
-- **Cash after the board run:** $3,400, with $3,240 pending and $160 free.
-- **The database ends equal to the original.**
-- **Problem 8 is complete.**
-
-**Follow-up prompt (two touch-ups):**
-
-> done but move the plant onto the table, and have the professor's chair read as possessive
-
-**Outcome:** the plant now sits on the round table, with the papers moved to the table's edges, and the guest chair reads **"Professor Tauhid Zaman's chair"**. A name ending in "s" gets just an apostrophe ("Elm City Properties' chair"). The screenshots in `output/dashboard_screens/` were refreshed.
-
-
-**Follow-up prompt:**
-
-> Yes, reset
-
-**Outcome:** reset the database to a fresh day (it matches the original SHA-256; checking $3,400; 0 pending; tickets 101–103 open). This cleared the two unsigned requests from the 04:27 run on ticket 101. The reset is recorded in the audit trail.

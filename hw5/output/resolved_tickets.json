@@ -219,6 +219,7 @@
           "reason": "Pay overdue invoice 501 for rush reprint CC-TEE-WHITE size S; vendor must be unblocked before restock order."
         }
       ],
+      "human_decisions": [],
       "cash_change": -840.0,
       "drafts_on_board": [
         {
@@ -360,6 +361,7 @@
           "reason": "Reserve rent due 2026-09-02 (ticket 102); imminent due date takes priority before discretionary restock. (raised while working ticket 101)"
         }
       ],
+      "human_decisions": [],
       "cash_change": -2400.0,
       "drafts_on_board": [
         {
@@ -384,7 +386,7 @@
       "id": 103,
       "subject": "Bulk hoodie discount",
       "requester": "Yale AI Club",
-      "final_status": "blocked",
+      "final_status": "resolved",
       "board_state": "resolved",
       "priority": "normal",
       "outcome": "Ask Yale AI Club to provide its proposed discounted price; do not promise a discount or availability.",
@@ -398,7 +400,7 @@
         "recommended": "blocked",
         "set_to": "blocked"
       },
-      "fully_resolved_when": null,
+      "fully_resolved_when": "Boss (Mr. D'Onofrio) made the human decision the team left open: No bulk discount for now. Campus Customs will send the Yale AI Club a quote once the 12-hoodie restock is funded and confirmed; nothing is promised before then.",
       "boss_called_first": "Inventory",
       "agents": [
         {
@@ -542,6 +544,15 @@
         }
       ],
       "human_approvals": [],
+      "human_decisions": [
+        {
+          "decided_by": "Boss (Mr. D'Onofrio)",
+          "decision": "No bulk discount for now. Campus Customs will send the Yale AI Club a quote once the 12-hoodie restock is funded and confirmed; nothing is promised before then.",
+          "decided_at": "2026-11-05T16:20:40+00:00",
+          "status_before": "blocked",
+          "money_moved": false
+        }
+      ],
       "cash_change": 0,
       "drafts_on_board": [
         {
@@ -564,7 +575,7 @@
     }
   ],
   "audit_trail": {
-    "entries_in_this_run": 182,
+    "entries_in_this_run": 184,
     "from_index": 1387
   },
   "nothing_sent": "No email, call or real payment: drafts stay on the board, and payments only update the practice database."

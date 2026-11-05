@@ -200,7 +200,7 @@ COMPARE = {
             "Inventory's answer to Accounting misread the shortfall as 4 short ($88). The real numbers are 20 requested, 8 on hand, 12 short, and $264 at cost. Boss's decision didn't rely on it.",
             "The draft asks the club for its proposed price instead of offering 8 hoodies now.",
         ],
-        "after": "The team finished; the discount is Boss's decision. The ticket is set to blocked: the 12-hoodie restock ($264 at cost) won't fit the $160 left.",
+        "after": "The team finished and set the ticket to blocked: the discount is a human call, and the 12-hoodie restock ($264 at cost) won't fit the $160 left. Boss (Mr. D'Onofrio) then made the call (no bulk discount for now; a quote follows once the restock is funded and confirmed), and the ticket is resolved. No money moved.",
     },
 }
 
@@ -228,6 +228,7 @@ def actual_block(tid: int, R: dict | None) -> str:
         f'<li>{chip(agent_key(a["agent"]))}<ul class="tools">' + "".join(f"<li><code>{html.escape(x['tool'])}{' ×' + str(x['times']) if x['times'] > 1 else ''}</code></li>" for x in a["tools"]) + "</ul></li>"
         for a in t["agents"])
     did = "".join(f"<li><b>{a['symbol']} {html.escape(a['agent'])}:</b> {html.escape(a['contributed'] or '')}</li>" for a in t["agents"])
+    decs = "".join(f"<li>🖊️ <b>Decided by {html.escape(d['decided_by'])}:</b> {html.escape(d['decision'])} No money moved.</li>" for d in t.get("human_decisions", []))
     pays = "".join(f"<li>✍️ <b>Approved by {html.escape(p['approved_by'])}:</b> {html.escape(p['kind'])} ${p['amount']:,.2f} to {html.escape(p['payee'])}; checking ${p['cash_before']:,.2f} → ${p['cash_after']:,.2f}</li>" for p in t["human_approvals"]) or "<li>No payment or purchase: nothing to approve</li>"
     cmp_ = COMPARE[tid]
     matched = "".join(f"<li>✅ {html.escape(x)}</li>" for x in cmp_["matched"])
@@ -243,7 +244,7 @@ def actual_block(tid: int, R: dict | None) -> str:
       </ol>
       <div class="outcome">
         <h4>What each agent did</h4><ul>{did}</ul>
-        <h4>Human approvals and drafts</h4><ul>{pays}{drafts}</ul>
+        <h4>Human approvals, decisions and drafts</h4><ul>{pays}{decs}{drafts}</ul>
         <h4>Result</h4><ul><li><b>{html.escape(t['outcome'] or '')}</b></li>
           <li>Final status: <b>{html.escape(t['final_status'])}</b> · cash change <b>{'−$' + format(-t['cash_change'], ',.2f') if t['cash_change'] else '$0.00'}</b> · {t['run']['model_calls']} model calls · ${t['run']['cost_usd']:.4f}</li>
           <li>{html.escape(cmp_['after'])}</li></ul>

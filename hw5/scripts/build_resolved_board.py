@@ -44,7 +44,7 @@ def money(n: float) -> str:
 
 
 def card(t: dict) -> str:
-    pays = "".join(f"<li>✍️ Approved by <b>{html.escape(p['approved_by'])}</b>: {html.escape(p['kind'])} {money(p['amount'])} to {html.escape(p['payee'])} · checking {money(p['cash_before'])} → {money(p['cash_after'])}</li>" for p in t["human_approvals"]) or "<li>No payment or purchase: nothing to approve</li>"
+    pays = "".join(f"<li>✍️ Approved by <b>{html.escape(p['approved_by'])}</b>: {html.escape(p['kind'])} {money(p['amount'])} to {html.escape(p['payee'])} · checking {money(p['cash_before'])} → {money(p['cash_after'])}</li>" for p in t["human_approvals"]) + "".join(f"<li>🖊️ Decided by <b>{html.escape(d['decided_by'])}</b>: {html.escape(d['decision'])} No money moved.</li>" for d in t.get("human_decisions", [])) or "<li>No payment or purchase: nothing to approve</li>"
     agents = "".join(f"<li>{a['symbol']} <b>{html.escape(a['agent'])}</b>: {html.escape((a['contributed'] or '')[:180])}{'…' if len(a['contributed'] or '') > 180 else ''}</li>" for a in t["agents"])
     status = "complete" if t["final_status"] == "resolved" else "the team is done; " + ("waiting on a human decision" if t["final_status"] == "blocked" else t["final_status"])
     return f"""
@@ -63,7 +63,7 @@ def card(t: dict) -> str:
         <li><span>Boss called first</span><b>{html.escape(t['boss_called_first'] or '')}</b></li>
         <li><span>Run</span><b>{t['run']['model_calls']} model calls · ${t['run']['cost_usd']:.4f} · gpt-6-luna</b></li></ul>
       <h3>What each agent did</h3><ul>{agents}</ul>
-      <h3>Human approvals</h3><ul>{pays}</ul>
+      <h3>Human approvals and decisions</h3><ul>{pays}</ul>
     </div>
   </div>
 </section>"""

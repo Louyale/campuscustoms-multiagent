@@ -43188,5 +43188,25 @@
     "agent": "human",
     "step_kind": "TicketResolved",
     "why": "its last pending request (2) was approved"
+  },
+  {
+    "time": "2026-11-05T16:20:40+00:00",
+    "run_id": null,
+    "ticket_id": 103,
+    "agent": "human",
+    "step_kind": "HumanDecision",
+    "decided_by": "Boss (Mr. D'Onofrio)",
+    "decision": "No bulk discount for now. Campus Customs will send the Yale AI Club a quote once the 12-hoodie restock is funded and confirmed; nothing is promised before then.",
+    "status_before": "blocked",
+    "money_moved": false,
+    "cash_before": 160.0
+  },
+  {
+    "time": "2026-11-05T16:20:40+00:00",
+    "run_id": null,
+    "ticket_id": 103,
+    "agent": "human",
+    "step_kind": "TicketResolved",
+    "why": "Boss (Mr. D'Onofrio) made the human decision the team left open: No bulk discount for now. Campus Customs will send the Yale AI Club a quote once the 12-hoodie restock is funded and confirmed; nothing is promised before then."
   }
 ]

@@ -39,11 +39,14 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
 
 ## Run it
 
-1. **The backend**, at http://localhost:8000. Its API docs are at `/docs`.
+1. **The backend**, at http://localhost:8000. Its API docs are at `/docs`. This is the assignment's command, run from the `backend/` folder:
 
    ```powershell
-   uvicorn main:app --app-dir backend --port 8000
+   cd backend
+   uvicorn main:app --reload --port 8000
    ```
+
+   It works the same from `hw5/` with `uvicorn main:app --app-dir backend --port 8000`.
 
 2. **The dashboard**, at http://localhost:5173. Use a second terminal:
 
@@ -56,6 +59,10 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
 3. **Pick a ticket** and press **Start the team**, or **Run the whole board**. Watch the agents at Terminal 2, then approve a payment from the in-tray and watch checking drop on Terminal 3.
 
 **One ticket from the command line:** `python scripts/run_ticket.py --ticket 102 --reset-before`
+
+**A human decision that isn't a payment** (like ticket 103's discount call): `python scripts/human_decision.py --ticket 103 --by "Your name" --decision "..."`. It resolves the ticket through the MCP status tool, logs the decision in the audit trail, and never moves money.
+
+**Note for the grader:** every AI call asks for `gpt-6-luna` (`backend/config.py`), through Portkey. In the recorded runs (`output/audit_trail.json`), the model name in each reply is **`gpt-6-luna-global`**. That's Portkey's name for `gpt-6-luna` in its responses, not a different model. No other model is named anywhere in the code.
 
 ## Checks
 
@@ -171,7 +178,9 @@ hw5/
 │   ├── build_desk_tickets.py
 │   ├── build_resolved.py
 │   ├── build_resolved_board.py
+│   ├── check_submission.py
 │   ├── cost_report.py
+│   ├── human_decision.py
 │   ├── make_avatars.py
 │   ├── make_tree.py
 │   ├── mcp_smoke.py

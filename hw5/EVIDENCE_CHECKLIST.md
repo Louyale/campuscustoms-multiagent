@@ -137,7 +137,7 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 ## Problem 9: Resolve the tickets
 
 - [x] Working database reset first; starting checking $3,400.00
-- [x] All three tickets run on the board: 101 resolved, 102 resolved, 103 blocked (waiting on a human discount decision; resolved on the board)
+- [x] All three tickets run on the board and resolved: 101 and 102 after the payment approvals; 103 after Boss's discount decision (`scripts/human_decision.py`, no money moved)
 - [x] Both payments approved by the human (Boss, Mr. D'Onofrio): $840 invoice 501, $2,400 rent. No real money or email
 - [x] `output/desk_tickets.html`: Actual sections filled in (agents, delegations, MCP tools), Expected kept
 - [x] Cash tab itemized: $3,400.00 − $840.00 − $2,400.00 = $160.00, matching `cash_accounts`

@@ -105,6 +105,9 @@ def main() -> dict:
                                 "approved_by": p["approved_by"], "approved_at": ap["time"], "paid_on_shop_date": p["paid_at"],
                                 "cash_before": ap["result"]["cash_before"], "cash_after": ap["result"]["cash_after"],
                                 "requested_by": r["requested_by"], "reason": r["reason"]})
+        decisions = [{"decided_by": e["decided_by"], "decision": e["decision"], "decided_at": e["time"],
+                      "status_before": e.get("status_before"), "money_moved": e.get("money_moved", False)}
+                     for e in window if e.get("step_kind") == "HumanDecision" and e.get("ticket_id") == tid]
         cost = ((tokens["input"] - tokens["cached_input"]) * PRICE["input"] + tokens["cached_input"] * PRICE["cached"] + tokens["output"] * PRICE["output"]) / 1e6
         out_tickets.append({
             "id": tid,
@@ -126,6 +129,7 @@ def main() -> dict:
             "delegations": handoffs,
             "refused_hand_offs": refused,
             "human_approvals": my_pays,
+            "human_decisions": decisions,
             "cash_change": round(-sum(p["amount"] for p in my_pays), 2),
             "drafts_on_board": [{"id": d["id"], "to": d["to_name"], "subject": d["subject"], "body": d["body"], "sent": False}
                                 for d in drafts if d["ticket_id"] == tid],
