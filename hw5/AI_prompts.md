@@ -881,6 +881,12 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 
 The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
 
+**Follow-up prompt:**
+
+> Looks good
+
+**Outcome:** the new Intern Squad avatars are approved. **Problem 10 is complete.**
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**

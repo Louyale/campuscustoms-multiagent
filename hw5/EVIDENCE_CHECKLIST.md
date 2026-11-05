@@ -157,3 +157,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] All five answers (Q1–Q5) approved by Boss (Mr. D'Onofrio)
 - [x] The Intern Squad avatars (SOM MBA, engineering undergrad, lacrosse player) in Q5, Table 8 (`assets/agents/intern_*.svg`)
 - [x] Receivables: `find_outstanding_receivables` for Sales & Receivables; follow-up drafts added to Customer Service as a related duty (`backend/prompts/customer_service.md`)
+- [x] Intern Squad avatars redrawn and approved
+- [x] **Problem 10 closed out**
