@@ -22,8 +22,21 @@ WHO = {"Tauhid Zaman": "Professor Tauhid Zaman"}
 
 
 def img(tid: int) -> str:
-    data = base64.b64encode((SHOTS / f"board_{tid}.png").read_bytes()).decode()
-    return f'<img src="data:image/png;base64,{data}" alt="The React board with ticket {tid} resolved" loading="lazy">'
+    """Embed the screenshot as a compressed JPEG (1000 px wide; it shows at about 700 px), so the page stays light enough to open anywhere.
+    Falls back to the full PNG if Pillow isn't installed."""
+    png = SHOTS / f"board_{tid}.png"
+    try:
+        import io
+        from PIL import Image
+        im = Image.open(png).convert("RGB")
+        if im.width > 1000:
+            im = im.resize((1000, round(im.height * 1000 / im.width)), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=74, optimize=True, progressive=True)
+        mime, raw = "image/jpeg", buf.getvalue()
+    except ImportError:
+        mime, raw = "image/png", png.read_bytes()
+    return f'<img src="data:{mime};base64,{base64.b64encode(raw).decode()}" alt="The React board with ticket {tid} resolved">'
 
 
 def money(n: float) -> str:
