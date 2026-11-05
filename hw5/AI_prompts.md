@@ -1009,6 +1009,31 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
 | P11-5 | The expected file layout | `README.md` "File layout" (one tree, exactly as shown) |
 | P11-6 | README: clean-run copy, start the MCP server, backend and board, reset before a full run | `README.md` "The two databases" and "Run it" |
 
+**Follow-up prompt:**
+
+> are you sure the readme is 100% accurate with what is requested, pls check
+
+**What was lacking after the first:** a line-by-line check against Problem 11 and the code found small inaccuracies in the README.
+
+**Outcome:**
+
+- **Fixed in `README.md`:**
+  - **The Node version:** Vite 8 needs Node 20.19+ or 22.12+, not just "20 or newer".
+  - **The board's real names:** the **Signature tray** with **Sign & pay** (it had said "in-tray"), **↺ Reset to the original**, **Start the team on #…**, and Terminals 1–3 by their on-screen titles.
+  - **A plain copy command** for "copy the original DB to the working copy", next to `scripts/reset_db.py`.
+  - **A warning:** resetting, or running the route check, replaces the committed Problem 9 working copy, and `git checkout -- data/campus_customs_new.db` brings it back.
+  - **The standalone MCP server** waits quietly for a client over stdio (Ctrl+C to stop).
+  - **`frontend/.env.example` is optional.**
+- **Verified:**
+  - Both new commands were run in a scratch clone: the plain copy makes a clean working copy, and `git checkout` restores the Problem 9 copy byte for byte.
+  - `check_submission.py` still passes 31 of 31.
+- **Every item Problem 11 lists for the README is covered:**
+  - the clean-run copy
+  - starting the MCP server
+  - starting the FastAPI backend
+  - starting the React board
+  - resetting before a full three-ticket run
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**

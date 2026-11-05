@@ -19,7 +19,7 @@ Campus Customs is a Yale campus apparel shop. Its open tickets land on a board: 
 
 ## Setup
 
-You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
+You need Python 3.12 (what we used) and Node.js 20.19+ or 22.12+ (Vite 8 needs one of those). Run these from this `hw5/` folder.
 
 1. Create and activate a virtual environment, then install the packages:
 
@@ -29,7 +29,12 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
    pip install -r requirements.txt
    ```
 
-2. Copy `.env.example` to `.env`, and fill in `PORTKEY_API_KEY`, `HUMAN_APPROVAL_CODE` (used only by the dashboard's approval step) and `DESK_PIN` (the dashboard's locked drawer). Never commit `.env`.
+2. Copy `.env.example` to `.env`, and fill in:
+   - `PORTKEY_API_KEY`
+   - `HUMAN_APPROVAL_CODE`, used only by the dashboard's **Sign & pay** step
+   - `DESK_PIN`, for the dashboard's locked drawer
+
+   Never commit `.env`. The board's own `frontend/.env.example` is optional: without it, the board calls http://localhost:8000.
 
 ## The two databases
 
@@ -37,13 +42,17 @@ Both are in `data/`:
 - **`data/campus_customs.db`** is the original shop database. Nothing ever changes it.
 - **`data/campus_customs_new.db`** is the working copy that the MCP server and the backend use. It's committed as our Problem 9 run left it: all three tickets resolved, two human-approved payments, and checking at $160.00.
 
-**For a clean run, copy the original over the working copy** with this command:
+**For a clean run, copy the original over the working copy.** Any one of these does it:
 
 ```powershell
 python scripts/reset_db.py
 ```
 
-The dashboard's reset (`POST /reset`) does the same thing.
+- `python scripts/reset_db.py` copies the file and checks that the copy matches the original byte for byte.
+- A plain copy works too: `copy data\campus_customs.db data\campus_customs_new.db` (PowerShell or cmd).
+- On the board, the **↺ Reset to the original** button does the same thing, through `POST /reset`.
+
+Resetting replaces the committed Problem 9 working copy. To bring that copy back, run `git checkout -- data/campus_customs_new.db`.
 
 ## Run it
 
@@ -52,6 +61,8 @@ The dashboard's reset (`POST /reset`) does the same thing.
    ```powershell
    python mcp_server/server.py
    ```
+
+   It talks over stdio, so on its own it waits quietly for a client to connect. Press Ctrl+C to stop it. You don't need to start it before the backend.
 
 2. **The FastAPI backend**, at http://localhost:8000. Its API docs are at `/docs`. This is the assignment's command, run from the `backend/` folder:
 
@@ -71,12 +82,12 @@ The dashboard's reset (`POST /reset`) does the same thing.
    ```
 
 4. **A full three-ticket run:**
-   1. **Reset the database first:** `python scripts/reset_db.py`, or the board's reset.
-   2. Pick a ticket and press **Start the team**, or press **Run the whole board**.
-   3. Watch the agents at Terminal 2.
-   4. Approve each payment from the in-tray, and watch checking drop on Terminal 3.
+   1. **Reset the database first:** `python scripts/reset_db.py`, or **↺ Reset to the original** on the board.
+   2. In **Terminal 1 · Ticket inbox**, pick a ticket and press **Start the team on #…**, or press **Run the whole board**.
+   3. Watch the agents in **Terminal 2 · The team**.
+   4. Approve each payment in the **Signature tray** with **Sign & pay**, and watch checking drop in **Terminal 3 · Checking**.
 
-**One ticket from the command line:** `python scripts/run_ticket.py --ticket 102 --reset-before`
+**One ticket from the command line:** `python scripts/run_ticket.py --ticket 102 --reset-before`. The `--reset-before` flag resets the working copy first.
 
 **A human decision that isn't a payment** (like ticket 103's discount call): `python scripts/human_decision.py --ticket 103 --by "Your name" --decision "..."`. It resolves the ticket through the MCP status tool, logs the decision in the audit trail, and never moves money.
 
@@ -87,8 +98,8 @@ The dashboard's reset (`POST /reset`) does the same thing.
 | Command | What it proves | Model calls |
 |---|---|---|
 | `python scripts/mcp_tool_check.py` | Every MCP tool works over the real MCP protocol (44 of 44 checks, 25 of 25 tools), on a scratch copy of the database | None |
-| `python scripts/route_check.py` | Every backend route works on the real app and agents (21 of 21). It resets the database at the start and at the end | Yes, about a cent (`--no-board` for less) |
-| `python scripts/check_submission.py` | The repo is complete and safe to share: files, secrets, model name, outputs, cash math | None |
+| `python scripts/route_check.py` | Every backend route works on the real app and agents (21 of 21). It resets the working copy at the start and at the end, so afterward the working copy is fresh (`git checkout -- data/campus_customs_new.db` brings back the Problem 9 copy) | Yes, about a cent (`--no-board` for less) |
+| `python scripts/check_submission.py` | The repo is complete and safe to share: files, secrets, model name, outputs, cash math (31 of 31). Run it on the committed working copy | None |
 
 ## Where each problem's work is
 
