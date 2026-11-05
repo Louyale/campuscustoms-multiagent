@@ -89,3 +89,13 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Dollar cost per ticket and per month, and cost compared with the work done (harness Tables 17–19; `scripts/cost_report.py`)
 - [x] Boss's listed approvals are checked against the board by code (`DecisionCheck`; run 4: 1 of 1)
 - [x] **Part 5b closed out**
+
+## Problem 6: Plan the three tickets (8 points)
+- [x] `output/desk_tickets.html` opens by double-click, with one tab per ticket (101, 102, 103)
+- [x] Empty Cash and Reflection tabs, with a "coming later" note
+- [x] Each ticket tab has an Expected section, with room for an Actual section
+- [x] Expected: who Boss calls first, and why
+- [x] Expected: every delegation, in order (not "Boss calls everyone"), with the agents not called and why
+- [x] Expected: the MCP tools we expect the run to use
+- [x] Not every specialist on every ticket (page Table 1)
+- [ ] My review and approval of the three plans

@@ -31,6 +31,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 4 | Add the MCP server to vibe coder and test each tool | Add the server to this project in `.mcp.json`; test all three tools; a Tool Test Evidence table with the prompt, tool name and output; outputs must match the database | Sign in to the command-line copy of Claude Code, then pick up and confirm nothing was lost | `.mcp.json`, `scripts/mcp_smoke.py`, `output/mcp_smoke.json`, `output/harness.md` (Table 7) |
 | 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | My edits: Boss reports to the humans; Customer Service grammar and tone; Inventory low stock (below 5) and best sellers; Accounting balance sheet and income statement | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
 | 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | Boss: encourage_teammate; Accounting: balance sheet and income statement tools; Customer Service: spelling and grammar gate; Facilities: lease and building-request tools | `mcp_server/server.py` (24 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–18) |
+| 6 | Plan the three tickets | A double-click page with tabs for 101–103 plus Cash and Reflection; an Expected section (Boss's first call, every delegation, MCP tools) in ordered bullets I can edit; the right agents only; room for Actual | What "All the delegations, not Boss calls everyone" means | `output/desk_tickets.html`, `scripts/build_desk_tickets.py` |
 
 ---
 
@@ -481,6 +482,48 @@ I approved Problem 5 as complete.
 - The amount always comes from the database.
 - Paying refuses rather than going below zero.
 - Drafts go to a `drafts` board table and are never sent.
+
+---
+
+## Problem 6: Plan the three tickets
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> now we'll record team expectations for problem 6.  build the page we can double click for each open ticket 101-103.  add the cash and reflection tabs with a coming later note.  fill an expected sectrion and leave room for the actual section.  in the expected section write all three bullets with language that i can change and order them with bullets so it's clear.  don;t send every specialist on every ticket.  we want to score high.  send the correct agents for the task.  be able to make the later comparison to the actual resolution
+
+**Follow-up prompt:**
+
+> and tell me what you think this means
+
+(with a screenshot of the Panel B bullet: "**All** the agent delegations you expect — not 'Boss calls everyone'")
+
+**What was lacking after the first:** I wanted to be sure we read that bullet the way the grader means it.
+
+**Outcome:** each Problem 6 task is done. Table 13 lists them for the grader.
+
+**Table 13: Problem 6 Tasks**
+
+| Task | Panel | What was asked | Where it's done |
+|---|---|---|---|
+| P6-1 | A | Before wiring the backend, write down what we expect the team to do on each open ticket | `output/desk_tickets.html`, Expected sections |
+| P6-2 | A | A page you can double-click, with one tab per ticket (101, 102, 103) | `output/desk_tickets.html`: one self-contained file, with no internet, scripts or downloads |
+| P6-3 | A | Empty Cash and Reflection tabs, with a "coming later" note | Both tabs have a short "Coming later" note |
+| P6-4 | A | Fill an Expected section only, and leave room for an Actual section | Each ticket tab has Expected (filled) beside Actual (empty slots in the same three parts, for a line-by-line comparison) |
+| P6-5 | B | Who Boss should call first, and why | Part 1 of each Expected section: 101 → Inventory, 102 → Facilities, 103 → Inventory |
+| P6-6 | B | All the delegations we expect, not "Boss calls everyone" | Part 2: each hand-off listed in order, with its task and the answer we expect, plus which agents are **not** called and why |
+| P6-7 | B | Which MCP tools we expect that run to use | Part 3: tools grouped by agent, with their arguments |
+| P6-8 | B | Don't send every specialist on every ticket | Page Table 1: Agents Planned per Ticket. 101 uses 3 of the 4 specialists, 102 uses 2, and 103 uses 3; Facilities only on 102, Inventory and Customer Service not on 102 |
+| P6-9 | (mine) | Wording I can change, as ordered bullets | The plans are written in plain words in `PLANS` in `scripts/build_desk_tickets.py`; edit and rerun to rebuild the page |
+
+**Expected plans (summary):**
+
+**Table 14: Expected Plan per Ticket**
+
+| Ticket | Boss calls first | Delegations, in order | Not called | Expected result |
+|---|---|---|---|---|
+| 101 Tee order | 📦 Inventory (stock by size; it finds size S at 0 and the vendor blocked) | Boss → Inventory; Boss → Accounting (file invoice 501, $840); Boss → Customer Service (draft to Tauhid, no date promised) | 🧢 Facilities | urgent; $840 request pending; draft on the board; waiting_approval |
+| 102 Rent | 🧢 Facilities (owns the lease; confirms it from the record, not the email) | Boss → Facilities; Boss → Accounting (file $2,400 rent) | 📦 Inventory, 👕 Customer Service | urgent; $2,400 request pending; waiting_approval |
+| 103 Bulk discount | 📦 Inventory (can we fill 20 size M? 8 on hand, 12 short) | Boss → Inventory; Boss → Accounting (margins: $36 a hoodie, 62%; restock won't fit); Boss → Customer Service (8 now, the rest after a restock, discount under review) | 🧢 Facilities | normal; no payment request; the discount decision goes to a human; draft on the board |
 
 ---
 
