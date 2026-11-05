@@ -1,3 +1,5 @@
+# pydantic-ai-slim with [openai] (Portkey speaks the OpenAI API) and [mcp] (the agents reach the shop only
+# through our MCP server, via MCPToolset). Deliberately not the full pydantic-ai package.
 fastmcp==4.1.6
 pydantic-ai-slim[openai,mcp]==2.65.0
 openai==3.42.1

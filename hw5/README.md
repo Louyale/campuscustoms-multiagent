@@ -95,13 +95,17 @@ Resetting replaces the committed Problem 9 working copy. To bring that copy back
 
 ## Checks
 
+**Table 1: Checks a Grader Can Run**
+
 | Command | What it proves | Model calls |
 |---|---|---|
 | `python scripts/mcp_tool_check.py` | Every MCP tool works over the real MCP protocol (44 of 44 checks, 25 of 25 tools), on a scratch copy of the database | None |
-| `python scripts/route_check.py` | Every backend route works on the real app and agents (21 of 21). It resets the working copy at the start and at the end, so afterward the working copy is fresh (`git checkout -- data/campus_customs_new.db` brings back the Problem 9 copy) | Yes, about a cent (`--no-board` for less) |
+| `python scripts/route_check.py` | The backend routes work on the real app and agents (21 of 21 steps). It calls the 11 Problem 7 routes and confirms the app lists all 14. The 3 routes added in Problem 8 (`/tickets/{id}/summary`, `/calendar`, `/drawer/unlock`) and reject's refusal were checked live before submission, with no model calls. It resets the working copy at the start and at the end, so afterward the working copy is fresh (`git checkout -- data/campus_customs_new.db` brings back the Problem 9 copy) | Yes, about a cent (`--no-board` for less) |
 | `python scripts/check_submission.py` | The repo is complete and safe to share: files, secrets, model name, outputs, cash math (31 of 31). Run it on the committed working copy | None |
 
 ## Where each problem's work is
+
+**Table 2: Where Each Problem's Work Is**
 
 | Problem | Where |
 |---|---|

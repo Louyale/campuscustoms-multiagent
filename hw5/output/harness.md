@@ -26,6 +26,7 @@ The harness covers every part of the system, problem by problem. Use this map to
 | **Safety rules** | The Safety section: Table 20 (guardrails) and Table 21 (token limits) | Throughout; summarized there |
 | **Cost** | Problem 5: Tables 16–19 (test runs, cost per ticket, cost vs. work, the owner's summary) | `scripts/cost_report.py` |
 | **The full run** | Problem 9: Table 28 (each ticket), Table 29 (cash, itemized), Table 30 (MCP tools each agent used), then Expected vs. Actual; the Problem 6 plan is in `output/desk_tickets.html` | `output/resolved_tickets.json`, `output/desk_tickets.html`, `output/resolved_board.html` |
+| **The reflection and the submission** | Problems 10 and 11 | `output/desk_tickets.html` (Reflection tab), `README.md` (file layout), `output/github_url.txt` |
 | **The audit trail** | Problem 5: Table 14 (entry fields); Problem 9 (entries added by the full run) | `backend/audit.py`, `output/audit_trail.json` |
 
 ## Problem 2: Study the Campus Customs database
@@ -586,7 +587,7 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 
 | # | Panel | The assignment's bullet | Route(s) | Result | Test steps |
 |---|---|---|---|---|---|
-| 1 | A | In `backend/main.py`, use **FastAPI** and add routes | `backend/main.py` (FastAPI 0.162.0), 11 routes | ✅ The app starts and lists all 11 routes | 3 |
+| 1 | A | In `backend/main.py`, use **FastAPI** and add routes | `backend/main.py` (FastAPI 0.162.0), 11 routes (14 after Problem 8 added 3; Table 22) | ✅ The app starts and lists all 11 routes | 3 |
 | 2 | A | Return the three tickets and whether each is open or resolved | `GET /tickets` | ✅ 101, 102 and 103 returned as `open`, with the detailed board status beside each | 4, 19 |
 | 3 | A | Take a ticket id and run your agent team on that ticket | `POST /tickets/{ticket_id}/run`, `GET /runs/{run_id}`, `POST /board/run` | ✅ Ticket 102 ran on `gpt-6-luna` (Boss chose urgent; the rent request was filed); 999 returned 404; a re-run while waiting on you returned 409 with no tokens spent; the whole board ran most-urgent first | 6, 7, 8, 9, 18 |
 | 4 | A | Return recent agent events (what each agent said and which tools they used) so the board can refresh | `GET /events?since=&run_id=` | ✅ One run's steps by `run_id`, and the newest events by `since`, including the human approval | 15, 16 |
@@ -701,7 +702,8 @@ The ticket tabs of `output/desk_tickets.html` show Expected and Actual side by s
     - The tool check added a revision test, and passes 44 of 44.
     - A live run of ticket 101 on a scratch database gave one hand-off to Customer Service, one save, and one draft opening "Dear Professor Zaman,".
   - **The Problem 9 records above are unchanged:** they show the run as it happened.
-- **Ticket 103 needed a human decision.** The team set it to `blocked`: the discount is a human call, and the 12-hoodie restock ($264) won't fit the $160 left. Boss (Mr. D'Onofrio) then decided: no bulk discount for now, and a quote follows once the restock is funded and confirmed. `scripts/human_decision.py` recorded the decision through the MCP status tool, with `HumanDecision` and `TicketResolved` entries in the audit trail, and **103 is resolved**. No money moved: checking stayed $160.00.
+
+**Ticket 103's human decision:** the team set it to `blocked`: the discount is a human call, and the 12-hoodie restock ($264) won't fit the $160 left. Boss (Mr. D'Onofrio) then decided: no bulk discount for now, and a quote follows once the restock is funded and confirmed. `scripts/human_decision.py` recorded the decision through the MCP status tool, with `HumanDecision` and `TicketResolved` entries in the audit trail, and **103 is resolved**. No money moved: checking stayed $160.00.
 
 ☑ **Approved by Boss (Mr. D'Onofrio), 2026-11-05:** the Actual sections, the Cash itemization, and both payments.
 

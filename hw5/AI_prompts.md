@@ -1034,6 +1034,26 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
   - starting the React board
   - resetting before a full three-ticket run
 
+**Follow-up prompts (the final check):**
+
+> check everything again from my instructions and the panels and do one final push to github with any last corections
+
+> tell me if we're at or above a 100% grade on this - pls confirm again
+
+**What was lacking after the first:** one more full pass against every panel and my standing rules found a few last details to correct.
+
+**Outcome:**
+
+- **Swept the repo** for my rules: Yale blue and white only (no pink anywhere), "Professor Tauhid Zaman" in our own text (database values and the agents' recorded words stay as recorded), a bold name on every table, 🚩 only for problems, gpt-6-luna only, and no secrets.
+- **Corrections:**
+  - The README's two tables now have bold names: **Table 1: Checks a Grader Can Run** and **Table 2: Where Each Problem's Work Is**.
+  - The README now says the route check calls the 11 Problem 7 routes and confirms the app lists all 14. The other 4 (`/tickets/{id}/summary`, `/calendar`, `/drawer/unlock`, and reject's refusal) were tested live in a scratch clone, with no model calls and no change to cash: the calendar and summary answered (200), the drawer refused a wrong PIN (403) and opened with the right one (200), and reject refused an already-paid request (409).
+  - Harness Table 26 notes that 11 routes became 14 in Problem 8.
+  - In the harness, ticket 103's resolution moved out from under the 🚩 findings, because it's no longer a problem.
+  - Harness Table 0 gained a row for the reflection and the submission.
+  - `requirements.txt` documents why it uses `pydantic-ai-slim[openai,mcp]`.
+- **`check_submission.py` passes 31 of 31.** This was the final push, verified from a fresh GitHub clone.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**
