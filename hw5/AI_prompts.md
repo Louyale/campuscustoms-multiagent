@@ -545,6 +545,20 @@ I approved Problem 5 as complete.
 
 I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6 is complete.
 
+**Follow-up prompts (banner):**
+
+> all set, just add the Yale Y to the upper left, make campus customs larger font, and create a desk with tickets on it in the upper banner to the right of the camous customs.  next to Boss, say (Mr. D'Onofrio)
+
+> show me the visual
+
+**Outcome:**
+
+- **Yale Y:** the Yale block Y (the same shape as the HW6 page) sits upper left, in Yale blue on a white box.
+- **Bigger title:** "Campus Customs" went from 26 to 40 pt, with "Desk Tickets" below it.
+- **Desk art:** a drawing of a desk with tickets 101, 102 and 103 on it (plus a lamp) sits to the right of the title, in white and light Yale blue.
+- **Boss's name:** Boss now reads **Boss (Mr. D'Onofrio)** everywhere on the page.
+- **Screenshots:** every tab in `output/desk_tickets_screens/` was re-rendered and shown to me.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)

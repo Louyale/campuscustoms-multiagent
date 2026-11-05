@@ -23,7 +23,7 @@ OUT = PROJECT / "output" / "desk_tickets.html"
 AVATARS = PROJECT / "assets" / "agents"
 
 AGENTS = {
-    "boss": ("🕴️", "Boss"), "inventory": ("📦", "Inventory"), "accounting": ("🧮", "Accounting"),
+    "boss": ("🕴️", "Boss (Mr. D'Onofrio)"), "inventory": ("📦", "Inventory"), "accounting": ("🧮", "Accounting"),
     "facilities": ("🧢", "Facilities"), "customer_service": ("👕", "Customer Service"),
 }
 
@@ -113,6 +113,40 @@ PLANS = {
 }
 
 
+YALE_Y = (
+    '<div class="yale" aria-label="Yale"><svg viewBox="0 0 100 100" width="58" height="58" role="img" aria-label="Yale block Y">'
+    '<polygon fill="#00356b" points="6,8 44,8 44,20 38,20 50,44 62,20 56,20 56,8 94,8 94,20 84,20 61,60 61,84 74,84 '
+    '74,94 26,94 26,84 39,84 39,60 16,20 6,20"/></svg></div>'
+)
+
+
+def desk_art(today: str) -> str:
+    """A desk with tickets 101, 102 and 103 on it, drawn in white and light Yale blue for the banner."""
+    def card(x, y, rot, num, label):
+        return (f'<g transform="translate({x},{y}) rotate({rot})">'
+                f'<rect x="-30" y="-20" width="60" height="40" rx="4" fill="#ffffff" stroke="#9cc0ea" stroke-width="1.5"/>'
+                f'<rect x="-30" y="-20" width="60" height="9" rx="4" fill="#286dc0"/>'
+                f'<text x="0" y="5" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="800" fill="#00356b">{num}</text>'
+                f'<text x="0" y="15" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="7" fill="#5b6474">{label}</text></g>')
+    return (
+        '<svg class="desk" viewBox="0 0 300 110" width="380" height="139" role="img" '
+        'aria-label="A desk with tickets 101, 102 and 103 on it">'
+        # lamp
+        '<path d="M262,28 L250,62" stroke="#cfe0f5" stroke-width="3" stroke-linecap="round"/>'
+        '<path d="M244,22 L280,22 L270,34 L254,34 Z" fill="#ffffff"/><circle cx="262" cy="38" r="6" fill="#fff6c9" opacity=".8"/>'
+        '<rect x="242" y="60" width="18" height="4" rx="2" fill="#cfe0f5"/>'
+        # desk top and legs
+        '<rect x="14" y="64" width="272" height="10" rx="3" fill="#ffffff"/>'
+        '<rect x="14" y="74" width="272" height="4" fill="#9cc0ea"/>'
+        '<rect x="28" y="78" width="10" height="28" fill="#cfe0f5"/><rect x="262" y="78" width="10" height="28" fill="#cfe0f5"/>'
+        '<rect x="196" y="78" width="60" height="22" rx="2" fill="#cfe0f5"/><rect x="220" y="86" width="12" height="3" rx="1.5" fill="#00356b"/>'
+        # the three tickets
+        + card(62, 46, -8, "101", "Tee order") + card(128, 42, 3, "102", "Rent") + card(194, 46, -4, "103", "Bulk discount")
+        + f'<text x="150" y="104" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#d6e2f3">the desk · {today}</text>'
+        '</svg>'
+    )
+
+
 def ticket_facts() -> dict[int, dict]:
     with sqlite3.connect(f"file:{DB.as_posix()}?mode=ro", uri=True) as c:
         c.row_factory = sqlite3.Row
@@ -188,7 +222,7 @@ def ticket_tab(tid: int, facts: dict) -> str:
 CSS = """
 :root{--yale:#00356b;--yale2:#286dc0;--bg:#f4f7fb;--card:#ffffff;--tint:#eef3fb;--line:#d5deea;--text:#16202e;--muted:#5b6474;--ok:#00356b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",system-ui,-apple-system,Arial,sans-serif}
-header{padding:26px 36px 18px;display:flex;align-items:center;gap:16px;background:var(--yale);color:#fff}header h1{margin:0;font-size:26px;letter-spacing:.2px}
+header{padding:20px 36px 18px;display:flex;align-items:center;gap:22px;background:var(--yale);color:#fff;flex-wrap:wrap}header h1{margin:0;font-size:40px;line-height:1.05;letter-spacing:.3px;font-weight:800}.h1sub{font-size:19px;font-weight:600;color:#d6e2f3;margin-top:2px}.yale{background:#fff;border-radius:12px;padding:6px;display:flex;box-shadow:0 1px 4px rgba(0,0,0,.25)}.desk{flex:0 0 auto;margin-left:8px}
 header .sub{color:#d6e2f3;margin:2px 0 0}.team{margin-left:auto;display:flex;gap:6px}
 input[name=tab]{position:absolute;opacity:0;pointer-events:none}
 .tabs{display:flex;gap:6px;padding:14px 36px 0;border-bottom:2px solid var(--yale);flex-wrap:wrap;background:var(--bg)}
@@ -244,8 +278,8 @@ def main() -> None:
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Campus Customs: Desk Tickets (Expected plans)</title><style>{CSS}</style></head>
 <body>
-<header><div><h1>Campus Customs Desk Tickets</h1><p class="sub">Problem 6 plan, written before the agents resolve the tickets · shop date {facts[101]['today']}</p></div>
-<div class="team" aria-label="The agent team">{team}</div></header>
+<header>{YALE_Y}<div class="titles"><h1>Campus Customs</h1><div class="h1sub">Desk Tickets</div><p class="sub">Problem 6 plan, written before the agents resolve the tickets · shop date {facts[101]['today']}</p></div>
+{desk_art(facts[101]['today'])}<div class="team" aria-label="The agent team">{team}</div></header>
 <input type="radio" name="tab" id="r101" checked><input type="radio" name="tab" id="r102"><input type="radio" name="tab" id="r103">
 <input type="radio" name="tab" id="rcash"><input type="radio" name="tab" id="rrefl">
 <nav class="tabs" aria-label="Tickets"><label for="r101">101 · Tee order</label><label for="r102">102 · Rent</label>
