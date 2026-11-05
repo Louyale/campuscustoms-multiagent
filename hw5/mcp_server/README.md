@@ -56,7 +56,7 @@ MCP (Model Context Protocol) is a standard way for an AI agent to call tools. Ea
 
 **Drafts**
 - **`check_spelling_grammar(subject, body)`**: reads `inventory`, `tickets`, `vendors` and `leases` for the shop's own words. Offline spelling dictionary plus grammar rules: repeated words, a/an, capital letters, a lone "i", "could of", spacing, punctuation and brackets.
-- **`save_customer_draft(ticket_id, to_name, subject, body, written_by)`**: writes to `drafts`. The message stays on the board, and nothing is ever sent. It refuses any draft that doesn't pass `check_spelling_grammar`.
+- **`save_customer_draft(ticket_id, to_name, subject, body, written_by)`**: writes to `drafts`. The message stays on the board, and nothing is ever sent. It refuses any draft that doesn't pass `check_spelling_grammar`. If the same writer already has a draft on the ticket, saving again revises that draft in place, so a revision never leaves a duplicate.
 - **`list_drafts(ticket_id)`**: reads `drafts`.
 
 **Human approval only** (the dashboard; no agent is given these, and the vibe coder's profile, `CAMPUS_MCP_PROFILE=vibe_coder` in `.mcp.json`, hides them)

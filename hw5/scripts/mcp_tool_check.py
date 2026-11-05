@@ -202,6 +202,10 @@ async def main() -> None:
         # --- board: drafts and ticket status ---
         r = await call("save_customer_draft", ticket_id=101, to_name="Professor Tauhid Zaman", subject=good_subject, body=good_body, written_by="customer_service")
         check("save_customer_draft", {"ticket_id": 101}, r, r["saved"] and r["sent"] is False, "draft saved on the board; sent = false")
+        first_id = r["draft_id"]
+        r = await call("save_customer_draft", ticket_id=101, to_name="Professor Tauhid Zaman", subject=good_subject, body=good_body, written_by="customer_service")
+        n = len((await call("list_drafts", ticket_id=101))["drafts"])
+        check("save_customer_draft", {"ticket_id": 101, "again": "a revision"}, r, r["revised"] and r["draft_id"] == first_id and n == 1, "a revision updates the same draft: still one draft on the ticket")
         r = await call("list_drafts", ticket_id=101)
         check("list_drafts", {"ticket_id": 101}, r, len(r["drafts"]) == 1 and r["drafts"][0]["status"] == "draft", "one draft, status draft")
         r = await call("update_ticket_status", ticket_id=102, status="resolved")

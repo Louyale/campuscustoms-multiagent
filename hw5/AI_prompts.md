@@ -780,6 +780,31 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 | P9-9 | (mine) Yale colors, the Yale logo, Campus Customs, and "Resolved!" in a happy font | `output/resolved_board.html` header |
 | P9-10 | (mine) Approve the payments myself, with no real cash or email | Both approvals by Boss (Mr. D'Onofrio); drafts stay on the board |
 
+**Follow-up prompt:**
+
+> and we should fix the reason why customer service ran the ticket twice
+
+**Outcome:**
+
+- **The cause:** Customer Service's prompt had my "Dear Professor Zaman," rule, but Boss's prompt didn't. So Boss called the title unsupported and asked for a revision, and the draft tool saved the revision as a second draft.
+- **The fix:**
+  - Boss's prompt now has the same owner-approved title rule.
+  - `save_customer_draft` now revises the writer's earlier draft for the ticket in place, so there's one draft per ticket.
+- **Tested:**
+  - The tool check passes 44 of 44, including the new revision test.
+  - A live run of ticket 101 on a scratch database gave one hand-off to Customer Service, one save, and one draft, opening "Dear Professor Zaman,".
+- 🚩 **A slip, caught and undone:** my first live test reached the working database, because the MCP server doesn't inherit `CAMPUS_DB`. It changed three things: ticket 101's status, a new pending $8 request, and draft 2's text. No money moved. I put all three back, and the rebuilt `output/resolved_tickets.json` is identical to the committed one. The retest locked the working database read-only.
+
+**Follow-up prompt:**
+
+> and tell me what the sounds are on our dashboard
+
+**Outcome:** there are four gentle sounds, made in the browser with Web Audio. They're off by default, and the 🔊 button turns them on:
+- the stamp, when I approve or reject a request
+- the phone ring, when a new request lands in the tray
+- a soft key click, when an agent uses a tool
+- a three-note chime and "That was easy!" from the red button
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**

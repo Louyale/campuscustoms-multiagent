@@ -284,7 +284,7 @@ The MCP server grew from **3 tools to 25** so the agents can work all three open
 | 18 | `list_building_requests` | building_requests | reads | Building requests on the board (Facilities) |
 | 19 | `update_building_request` | building_requests | **writes** its status | open, in_progress, waiting_approval, done (Facilities) |
 | 20 | `check_spelling_grammar` | inventory, tickets, vendors, leases (the shop's own words) | reads | Offline spelling dictionary plus grammar rules for a draft (101, 102, 103) |
-| 21 | `save_customer_draft` | drafts | **writes** a draft | Put a customer message on the board, never sent; refused unless the spelling and grammar check passes (101, 102, 103) |
+| 21 | `save_customer_draft` | drafts | **writes** a draft | Put a customer message on the board, never sent; refused unless the spelling and grammar check passes; a second save by the same writer revises the draft in place (101, 102, 103) |
 | 22 | `list_drafts` | drafts | reads | Drafts on the board (all) |
 | 23 | `approve_and_pay` | approval_requests, payments, cash_accounts, invoices, leases, desk | **writes** (human only) | Pay an approved request, update every table involved, refuse if cash is short |
 | 24 | `reject_payment_request` | approval_requests | **writes** (human only) | Reject a request; no money moves |
@@ -691,6 +691,13 @@ The ticket tabs of `output/desk_tickets.html` show Expected and Actual side by s
 🚩 **Honest findings from the run:**
 - **A shortfall misread.** In ticket 103, Inventory's answer to Accounting's follow-up misread the shortfall as "4 short ($88)". The real numbers are 20 requested, 8 on hand, 12 short, $264 at cost. Boss's decision (ask the club for its proposed price, promise nothing) didn't rely on it.
 - **A duplicate draft.** In ticket 101, Customer Service saved its draft twice: once "Dear Professor Zaman," then, after Boss asked for a revision, "Dear Tauhid Zaman," because Boss treated the title as unverified data. Both drafts are on the board, and neither was sent.
+  - **Why it happened:** Customer Service's prompt had the owner's "Dear Professor Zaman," rule, but Boss's prompt didn't. Boss saw a title the database doesn't record, called it unsupported, and asked for a revision. `save_customer_draft` always added a new row, so the revision became a second draft.
+  - **Fixed after the run:**
+    - Boss's prompt now has the same owner-approved title rule.
+    - `save_customer_draft` revises the writer's earlier draft for the ticket in place.
+    - The tool check added a revision test, and passes 44 of 44.
+    - A live run of ticket 101 on a scratch database gave one hand-off to Customer Service, one save, and one draft opening "Dear Professor Zaman,".
+  - **The Problem 9 records above are unchanged:** they show the run as it happened.
 - **Ticket 103 is `blocked` in the database.** The team's work is done, so the board shows it resolved, but the discount is a human decision, and the 12-hoodie restock ($264) won't fit the $160 left.
 
 **The files:**

@@ -666,7 +666,8 @@ def check_spelling_grammar(subject: str, body: str) -> dict:
 @mcp.tool(annotations=WRITES)
 def save_customer_draft(ticket_id: int, to_name: str, subject: str, body: str, written_by: str) -> dict:
     """Save a message draft on the board (drafts). It is never sent; there is no send tool.
-    Refused unless the subject and body pass check_spelling_grammar."""
+    Refused unless the subject and body pass check_spelling_grammar. If this writer already has a draft
+    on the ticket, saving again revises that draft in place, so a revision never leaves a duplicate."""
     check = check_text(subject, body)
     if not check["passed"]:
         return {"saved": False, "message": "Fix the spelling and grammar issues first, then save again.",
@@ -674,13 +675,20 @@ def save_customer_draft(ticket_id: int, to_name: str, subject: str, body: str, w
     with closing(board(connect())) as conn:
         if conn.execute("SELECT 1 FROM tickets WHERE id = ?", (ticket_id,)).fetchone() is None:
             return {"saved": False, "message": f"No ticket {ticket_id}."}
+        earlier = conn.execute("SELECT id FROM drafts WHERE ticket_id = ? AND written_by = ? ORDER BY id DESC LIMIT 1",
+                               (ticket_id, written_by)).fetchone()
         with conn:
-            cur = conn.execute(
-                "INSERT INTO drafts (ticket_id, to_name, subject, body, written_by, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-                (ticket_id, to_name, subject, body, written_by, now_utc()),
-            )
-    return {"saved": True, "draft_id": cur.lastrowid, "status": "draft", "sent": False,
-            "message": "Saved on the board for a human to read. Nothing was sent."}
+            if earlier:
+                conn.execute("UPDATE drafts SET to_name = ?, subject = ?, body = ?, created_at = ? WHERE id = ?",
+                             (to_name, subject, body, now_utc(), earlier["id"]))
+                draft_id = earlier["id"]
+            else:
+                draft_id = conn.execute(
+                    "INSERT INTO drafts (ticket_id, to_name, subject, body, written_by, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    (ticket_id, to_name, subject, body, written_by, now_utc()),
+                ).lastrowid
+    return {"saved": True, "draft_id": draft_id, "revised": bool(earlier), "status": "draft", "sent": False,
+            "message": ("Revised your earlier draft" if earlier else "Saved") + " on the board for a human to read. Nothing was sent."}
 
 
 @mcp.tool(annotations=READ_ONLY)
