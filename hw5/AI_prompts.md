@@ -887,6 +887,35 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
 
 **Outcome:** the new Intern Squad avatars are approved. **Problem 10 is complete.**
 
+**Follow-up prompt (getting ready for Problem 11):**
+
+> and pls show me the new reflections
+
+> perfect, when i come back from some legal work, we'll wrap up HW5 with the problem 11 push to the github repo.  pls prep for that as we've done recently.  i'll give further instructions when i come back and after your prep
+
+**Outcome (prep only, nothing pushed):**
+
+- **`README.md` in `hw5/`**, for the grader:
+  - setup: the venv, `pip install`, `.env` from `.env.example`, and `python scripts/reset_db.py`
+  - how to run the backend and the dashboard
+  - the checks, with their model-call costs
+  - where each problem's work is
+  - the file tree, from `scripts/make_tree.py`
+- **`scripts/check_submission.py`**: 28 of 28 checks pass. It covers:
+  - files, ignore rules, and no secret value in any shared file
+  - only gpt-6-luna named (Portkey's "gpt-6-luna-global" reply name is explained in the harness)
+  - pinned `pydantic-ai-slim`, and the original database byte-identical
+  - self-contained pages, and the cash math matching `cash_accounts`
+  - the prompt log sections 1–10, harness Tables 0–30, and the Reflection approvals
+- **A fresh-clone test,** set up exactly as the README says:
+  - 98 files, and the original database byte-identical
+  - the reset works, and 28 of 28 checks pass
+  - the MCP tool check passes 44 of 44, with no model calls
+  - the backend's `/health` reports gpt-6-luna with 25 tools, and the three tickets load
+  - the dashboard installs and builds
+  - the clone's test `.env` was ignored by git
+- **GitHub:** signed in as Louyale. The proposed new public repo, `Louyale/campuscustoms-multiagent`, is free.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**
