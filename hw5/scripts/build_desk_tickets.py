@@ -22,6 +22,10 @@ DB = PROJECT / "data" / "campus_customs.db"
 OUT = PROJECT / "output" / "desk_tickets.html"
 AVATARS = PROJECT / "assets" / "agents"
 
+# How a requester's name is shown on this page. The database stores "Tauhid Zaman"; Boss asked
+# that the professor be shown as "Professor Tauhid Zaman".
+DISPLAY_NAMES = {"Tauhid Zaman": "Professor Tauhid Zaman"}
+
 AGENTS = {
     "boss": ("🕴️", "Boss (Mr. D'Onofrio)"), "inventory": ("📦", "Inventory"), "accounting": ("🧮", "Accounting"),
     "facilities": ("🧢", "Facilities"), "customer_service": ("👕", "Customer Service"),
@@ -40,7 +44,7 @@ PLANS = {
             ("boss", "accounting", "Prepare the payment that unblocks the vendor: file invoice 501 ($840 to Bulldog Print Co, 3 days overdue) "
                                    "for human approval, and confirm cash covers it ($3,400 in checking). The $8 reprint order can only follow "
                                    "once the invoice is paid, so no purchase order yet."),
-            ("boss", "customer_service", "Draft a friendly reply to Tauhid Zaman: size S is out of stock, a restock is being arranged, and the shop "
+            ("boss", "customer_service", "Draft a friendly reply to Professor Tauhid Zaman: size S is out of stock, a restock is being arranged, and the shop "
                                          "will confirm timing. No delivery date is promised while the vendor is blocked."),
         ],
         "not_called": [("facilities", "Nothing on this ticket touches the lease, rent or the building.")],
@@ -53,7 +57,7 @@ PLANS = {
         "outcome": [
             "Priority urgent: invoice 501 is 3 days overdue, and a customer is waiting.",
             "One pending payment request: $840 to Bulldog Print Co. Nothing is paid until a human approves.",
-            "One draft to Tauhid Zaman on the board, never sent.",
+            "One draft to Professor Tauhid Zaman on the board, never sent.",
             "Ticket status waiting_approval (the restock is blocked until invoice 501 is paid).",
         ],
     },
@@ -188,7 +192,7 @@ def ticket_tab(tid: int, facts: dict) -> str:
   <div class="ticket-head">
     <div><div class="kicker">Ticket {tid} · {html.escape(f['type'].replace('_', ' '))}</div>
       <h2>{html.escape(f['subject'])}</h2>
-      <p class="muted">From <b>{html.escape(f['requester'])}</b> · “{html.escape(f['notes'] or '')}”</p></div>
+      <p class="muted">From <b>{html.escape(DISPLAY_NAMES.get(f['requester'], f['requester']))}</b> · “{html.escape(f['notes'] or '')}”</p></div>
     <dl class="facts"><div><dt>Item</dt><dd>{html.escape(item)}</dd></div><div><dt>Linked</dt><dd>{html.escape(link)}</dd></div>
       <div><dt>Shop date</dt><dd>{f['today']}</dd></div><div><dt>Agents planned</dt><dd>{len(used)} of 5</dd></div></dl>
   </div>

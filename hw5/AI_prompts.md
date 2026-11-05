@@ -521,7 +521,7 @@ I approved Problem 5 as complete.
 
 | Ticket | Boss calls first | Delegations, in order | Not called | Expected result |
 |---|---|---|---|---|
-| 101 Tee order | 📦 Inventory (stock by size; it finds size S at 0 and the vendor blocked) | Boss → Inventory; Boss → Accounting (file invoice 501, $840); Boss → Customer Service (draft to Tauhid, no date promised) | 🧢 Facilities | urgent; $840 request pending; draft on the board; waiting_approval |
+| 101 Tee order | 📦 Inventory (stock by size; it finds size S at 0 and the vendor blocked) | Boss → Inventory; Boss → Accounting (file invoice 501, $840); Boss → Customer Service (draft to Professor Tauhid Zaman, no date promised) | 🧢 Facilities | urgent; $840 request pending; draft on the board; waiting_approval |
 | 102 Rent | 🧢 Facilities (owns the lease; confirms it from the record, not the email) | Boss → Facilities; Boss → Accounting (file $2,400 rent) | 📦 Inventory, 👕 Customer Service | urgent; $2,400 request pending; waiting_approval |
 | 103 Bulk discount | 📦 Inventory (can we fill 20 size M? 8 on hand, 12 short) | Boss → Inventory; Boss → Accounting (margins: $36 a hoodie, 62%; restock won't fit); Boss → Customer Service (8 now, the rest after a restock, discount under review) | 🧢 Facilities | normal; no payment request; the discount decision goes to a human; draft on the board |
 
@@ -624,3 +624,12 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - Saved as a standing rule. No agent gets a real email, text or phone tool, and no mail connector is wired in.
 - Customer Service and the other agents only write drafts, which stay on the board.
 - The full shop rule list gets re-read before each problem and each full run.
+
+**Reminder 2 (before Problem 7):**
+
+> bef we pick back up, whereever you wrote my professor's name in the code or output, write, "Professor Tauhid Zaman"
+
+**Outcome:**
+
+- **Changed to "Professor Tauhid Zaman"** everywhere the vibe coder wrote the name: the Problem 6 plan table in this log, `mcp_server/README.md`, two lines in `output/harness.md`, the ticket 101 plan and header in `desk_tickets.html` (rebuilt), and the test drafts in `scripts/mcp_tool_check.py`. The test draft now opens "Dear Professor Zaman". The tool check was rerun, and 43 of 43 checks pass.
+- **Left exactly as recorded:** the database stores the requester as "Tauhid Zaman", so copies of database rows (`output/data_overview.md`) and recorded runs (`output/audit_trail.json`, the `test_run_102*.json` files, and the tool outputs in `output/mcp_tool_check.json`) keep that value. Hand-editing them would break "the output must match the database" and the append-only audit trail.

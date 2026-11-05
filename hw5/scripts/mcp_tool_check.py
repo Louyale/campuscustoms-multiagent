@@ -186,21 +186,21 @@ async def main() -> None:
               "invoice 501 paid, so no liabilities; still balances")
 
         # --- spelling and grammar (Customer Service) ---
-        good_subject, good_body = "Your Classic Bulldog Tee", ("Hi Tauhid,\n\nThanks for your order of a Classic Bulldog Tee in size S. "
+        good_subject, good_body = "Your Classic Bulldog Tee", ("Dear Professor Zaman,\n\nThanks for your order of a Classic Bulldog Tee in size S. "
                                                               "We're arranging a restock and will confirm timing soon.\n\nCampus Customs")
-        bad_body = "Hi Tauhid,\n\nwe recieve alot of orders and i think the the tee could of shipped  soon ."
+        bad_body = "Dear Professor Zaman,\n\nwe recieve alot of orders and i think the the tee could of shipped  soon ."
         r = await call("check_spelling_grammar", subject=good_subject, body=good_body)
-        check("check_spelling_grammar", {"draft": "clean"}, r, r["passed"], "clean draft passes (shop names like Bulldog and Tauhid accepted)")
+        check("check_spelling_grammar", {"draft": "clean"}, r, r["passed"], "clean draft passes (shop names like Bulldog and Zaman accepted)")
         r = await call("check_spelling_grammar", subject="your tee", body=bad_body)
         found = {i["text"].lower() for i in r["issues"]}
         check("check_spelling_grammar", {"draft": "with mistakes"}, r,
               not r["passed"] and {"recieve", "alot", "the the", "could of", "i"} <= found,
               f"{len(r['issues'])} issues caught: recieve, alot, the the, could of, lowercase i and sentence starts, spacing")
-        r = await call("save_customer_draft", ticket_id=101, to_name="Tauhid Zaman", subject="your tee", body=bad_body, written_by="customer_service")
+        r = await call("save_customer_draft", ticket_id=101, to_name="Professor Tauhid Zaman", subject="your tee", body=bad_body, written_by="customer_service")
         check("save_customer_draft", {"draft": "with mistakes"}, r, r["saved"] is False and r["issues"], "REFUSED: won't save a draft with spelling or grammar issues")
 
         # --- board: drafts and ticket status ---
-        r = await call("save_customer_draft", ticket_id=101, to_name="Tauhid Zaman", subject=good_subject, body=good_body, written_by="customer_service")
+        r = await call("save_customer_draft", ticket_id=101, to_name="Professor Tauhid Zaman", subject=good_subject, body=good_body, written_by="customer_service")
         check("save_customer_draft", {"ticket_id": 101}, r, r["saved"] and r["sent"] is False, "draft saved on the board; sent = false")
         r = await call("list_drafts", ticket_id=101)
         check("list_drafts", {"ticket_id": 101}, r, len(r["drafts"]) == 1 and r["drafts"][0]["status"] == "draft", "one draft, status draft")
