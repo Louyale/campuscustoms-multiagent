@@ -525,6 +525,20 @@ I approved Problem 5 as complete.
 | 102 Rent | 🧢 Facilities (owns the lease; confirms it from the record, not the email) | Boss → Facilities; Boss → Accounting (file $2,400 rent) | 📦 Inventory, 👕 Customer Service | urgent; $2,400 request pending; waiting_approval |
 | 103 Bulk discount | 📦 Inventory (can we fill 20 size M? 8 on hand, 12 short) | Boss → Inventory; Boss → Accounting (margins: $36 a hoodie, 62%; restock won't fit); Boss → Customer Service (8 now, the rest after a restock, discount under review) | 🧢 Facilities | normal; no payment request; the discount decision goes to a human; draft on the board |
 
+**Follow-up prompts (colors):**
+
+> off the bat- the colors should be in yale blue and white.  take out that pink.  you should have remenbered that...
+
+> show me all visuals here
+
+**What was lacking after the first:** the page and the agent avatars used the workspace's default black and pink, not my Yale blue-and-white style.
+
+**Outcome:**
+
+- `desk_tickets.html` and all five agent avatars were recolored in **Yale blue (#00356b) and white**, with a lighter Yale blue (#286dc0) accent. No pink is left; a search of the page, avatars and scripts confirms it.
+- Screenshots of every tab are saved in `output/desk_tickets_screens/` (tabs 101, 102, 103, Cash, Reflection), along with the avatar sheet `assets/agents/all_agents.png`, and all were shown to me.
+- The vibe coder's notes now say Yale blue and white for every homework visual, overriding the workspace default.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)

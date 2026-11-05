@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>

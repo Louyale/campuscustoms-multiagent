@@ -1,51 +1,51 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Campus Customs: Desk Tickets (Expected plans)</title><style>
-:root{--bg:#0b0b0f;--panel:#14141b;--card:#1b1b24;--line:#2a2a36;--text:#f4f4f7;--muted:#a8a8b8;--pink:#ff4fa3;--pink2:#ff86c0;--ok:#34d399}
+:root{--yale:#00356b;--yale2:#286dc0;--bg:#f4f7fb;--card:#ffffff;--tint:#eef3fb;--line:#d5deea;--text:#16202e;--muted:#5b6474;--ok:#00356b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",system-ui,-apple-system,Arial,sans-serif}
-header{padding:28px 36px 8px;display:flex;align-items:center;gap:16px}header h1{margin:0;font-size:26px;letter-spacing:.2px}
-header .sub{color:var(--muted);margin:2px 0 0}.team{margin-left:auto;display:flex;gap:6px}
-.tabs{display:flex;gap:6px;padding:14px 36px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+header{padding:26px 36px 18px;display:flex;align-items:center;gap:16px;background:var(--yale);color:#fff}header h1{margin:0;font-size:26px;letter-spacing:.2px}
+header .sub{color:#d6e2f3;margin:2px 0 0}.team{margin-left:auto;display:flex;gap:6px}
 input[name=tab]{position:absolute;opacity:0;pointer-events:none}
-.tabs label{padding:10px 18px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;color:var(--muted);cursor:pointer;background:var(--panel);font-weight:600}
-.tabs label:hover{color:var(--text)}
+.tabs{display:flex;gap:6px;padding:14px 36px 0;border-bottom:2px solid var(--yale);flex-wrap:wrap;background:var(--bg)}
+.tabs label{padding:10px 18px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;color:var(--yale);cursor:pointer;background:#fff;font-weight:600}
+.tabs label:hover{background:var(--tint)}
 main{padding:24px 36px 48px}.panel{display:none}
 #r101:checked~main #t101,#r102:checked~main #t102,#r103:checked~main #t103,#rcash:checked~main #tcash,#rrefl:checked~main #trefl{display:block}
-#r101:checked~.tabs label[for=r101],#r102:checked~.tabs label[for=r102],#r103:checked~.tabs label[for=r103],#rcash:checked~.tabs label[for=rcash],#rrefl:checked~.tabs label[for=rrefl]{color:#0b0b0f;background:var(--pink);border-color:var(--pink)}
+#r101:checked~.tabs label[for=r101],#r102:checked~.tabs label[for=r102],#r103:checked~.tabs label[for=r103],#rcash:checked~.tabs label[for=rcash],#rrefl:checked~.tabs label[for=rrefl]{color:#fff;background:var(--yale);border-color:var(--yale)}
 .ticket-head{display:flex;gap:24px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
-.kicker{color:var(--pink2);text-transform:uppercase;font-size:12px;letter-spacing:1.4px;font-weight:700}h2{margin:4px 0 6px;font-size:24px}
-.facts{display:grid;grid-template-columns:repeat(4,auto);gap:10px 22px;margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px}
-.facts dt{color:var(--muted);font-size:12px}.facts dd{margin:0;font-weight:600}
+.kicker{color:var(--yale2);text-transform:uppercase;font-size:12px;letter-spacing:1.4px;font-weight:700}h2{margin:4px 0 6px;font-size:24px;color:var(--yale)}
+.facts{display:grid;grid-template-columns:repeat(4,auto);gap:10px 22px;margin:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+.facts dt{color:var(--muted);font-size:12px}.facts dd{margin:0;font-weight:600;color:var(--yale)}
 .cols{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}@media(max-width:1000px){.cols{grid-template-columns:1fr}.facts{grid-template-columns:repeat(2,auto)}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}.card h3{margin:0 0 12px;font-size:17px;display:flex;gap:10px;align-items:center}
-.tag{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}.tag.exp{background:var(--pink);color:#0b0b0f}.tag.act{border:1px dashed var(--muted);color:var(--muted)}
-.plan{padding-left:20px;margin:0}.plan>li{margin:0 0 18px}.plan>li::marker{color:var(--pink);font-weight:700}h4{margin:0 0 6px;font-size:15px;color:var(--pink2)}
-.chip{display:inline-flex;align-items:center;gap:6px;background:#22222e;border:1px solid var(--line);border-radius:999px;padding:2px 10px 2px 3px;font-weight:600;font-size:13.5px;vertical-align:middle}
-.av{display:block}.arrow{color:var(--pink);font-weight:700;margin:0 4px}.lead{margin:2px 0 6px}
-.deleg{padding-left:20px}.deleg li{margin:0 0 12px}.deleg li::marker{color:var(--muted)}.deleg p{margin:6px 0 0;color:#dcdce6}.flow{display:inline-flex;align-items:center;flex-wrap:wrap}
-.notcalled{list-style:none;padding:0;margin:8px 0 0}.notcalled li{margin:6px 0;opacity:.75}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,53,107,.06)}.card h3{margin:0 0 12px;font-size:17px;display:flex;gap:10px;align-items:center;color:var(--yale)}
+.tag{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}.tag.exp{background:var(--yale);color:#fff}.tag.act{border:1px dashed var(--muted);color:var(--muted)}
+.plan{padding-left:20px;margin:0}.plan>li{margin:0 0 18px}.plan>li::marker{color:var(--yale);font-weight:700}h4{margin:0 0 6px;font-size:15px;color:var(--yale)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:2px 10px 2px 3px;font-weight:600;font-size:13.5px;vertical-align:middle;color:var(--yale)}
+.av{display:block}.arrow{color:var(--yale2);font-weight:700;margin:0 4px}.lead{margin:2px 0 6px}
+.deleg{padding-left:20px}.deleg li{margin:0 0 12px}.deleg li::marker{color:var(--muted)}.deleg p{margin:6px 0 0}.flow{display:inline-flex;align-items:center;flex-wrap:wrap}
+.notcalled{list-style:none;padding:0;margin:8px 0 0}.notcalled li{margin:6px 0;opacity:.8}
 .toolgroups{list-style:none;padding:0;margin:0}.toolgroups>li{margin:0 0 10px}.tools{margin:6px 0 0 34px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}.tools li{margin:0}
-code{background:#101017;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px;color:#ffd1e6}
+code{background:var(--tint);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px;color:var(--yale)}
 .outcome{border-top:1px solid var(--line);padding-top:12px;margin-top:6px}.outcome ul{margin:0;padding-left:20px}
-.slot{border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--muted);font-style:italic}.muted{color:var(--muted)}
-.later{max-width:760px;background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:28px}.later h2{margin-top:0}
-.summary{width:100%;border-collapse:collapse;margin:0 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.slot{border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--muted);font-style:italic;background:#fafcff}.muted{color:var(--muted)}
+.later{max-width:760px;background:#fff;border:1px dashed var(--line);border-radius:14px;padding:28px}.later h2{margin-top:0}
+.summary{width:100%;border-collapse:collapse;margin:0 0 22px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .summary th,.summary td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:center}.summary th:first-child,.summary td:first-child{text-align:left}
-.summary th{color:var(--muted);font-weight:600;font-size:13px}.yes{color:var(--ok);font-weight:700}.no{color:#55556a}
-caption{caption-side:top;text-align:left;font-weight:700;padding:0 0 8px;color:var(--text)}
+.summary th{color:#fff;background:var(--yale);font-weight:600;font-size:13px}.yes{color:var(--ok);font-weight:800}.no{color:#a9b3c2}
+caption{caption-side:top;text-align:left;font-weight:700;padding:0 0 8px;color:var(--yale)}
 #rcash:checked~main .matrix,#rrefl:checked~main .matrix{display:none}
 footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </style></head>
 <body>
 <header><div><h1>Campus Customs Desk Tickets</h1><p class="sub">Problem 6 plan, written before the agents resolve the tickets · shop date 2026-08-31</p></div>
-<div class="team" aria-label="The agent team"><svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<div class="team" aria-label="The agent team"><svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-36"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-36)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -58,7 +58,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-36"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-36)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -76,7 +76,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-36"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-36)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -85,7 +85,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -96,7 +96,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-36"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-36)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -113,19 +113,19 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <svg width="36" height="36" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-36"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-36)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 </div></header>
@@ -134,14 +134,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 <nav class="tabs" aria-label="Tickets"><label for="r101">101 · Tee order</label><label for="r102">102 · Rent</label>
 <label for="r103">103 · Bulk discount</label><label for="rcash">Cash</label><label for="rrefl">Reflection</label></nav>
 <main>
-<div class="matrix"><table class="summary"><caption>Table 1: Agents Planned per Ticket (not every specialist on every ticket)</caption><tr><th>Agent</th><th>101 Tee order</th><th>102 Rent</th><th>103 Bulk discount</th></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<div class="matrix"><table class="summary"><caption>Table 1: Agents Planned per Ticket (not every specialist on every ticket)</caption><tr><th>Agent</th><th>101 Tee order</th><th>102 Rent</th><th>103 Bulk discount</th></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -154,7 +154,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -172,7 +172,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span></td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -181,7 +181,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -192,7 +192,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Accounting</span></span></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -209,19 +209,19 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Facilities</span></span></td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td></tr><tr><td><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span></td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td></tr></table></div>
@@ -239,14 +239,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
       <h3><span class="tag exp">Expected</span> What we expect the team to do</h3>
       <ol class="plan">
         <li><h4>Who Boss calls first, and why</h4>
-          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -259,7 +259,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -277,14 +277,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span></p>
           <p>Ticket 101 is a customer order for one Classic Bulldog Tee in size S, so the first question is whether it&#x27;s on the shelf and, if not, who can restock it. Inventory owns stock by SKU and size, and it&#x27;s the agent that will find that size S is at 0 and that the reprint vendor is blocked.</p></li>
-        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -297,7 +297,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -313,14 +313,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     
   </g>
 </svg>
-<span>Inventory</span></span></span><p>Check CC-TEE-WHITE size S for 1 unit, find the restock vendor, its lead time, and whether anything blocks it. Expected answer: 0 on hand, 1 short; Bulldog Print Co (apparel reprint, 5 lead days) is blocked by open invoice 501.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<span>Inventory</span></span></span><p>Check CC-TEE-WHITE size S for 1 unit, find the restock vendor, its lead time, and whether anything blocks it. Expected answer: 0 on hand, 1 short; Bulldog Print Co (apparel reprint, 5 lead days) is blocked by open invoice 501.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -333,7 +333,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -342,7 +342,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -351,14 +351,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <circle cx="54" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="66" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><path d="M59,48 L61,48" stroke="#222" stroke-width="1.5"/>
   </g>
 </svg>
-<span>Accounting</span></span></span><p>Prepare the payment that unblocks the vendor: file invoice 501 ($840 to Bulldog Print Co, 3 days overdue) for human approval, and confirm cash covers it ($3,400 in checking). The $8 reprint order can only follow once the invoice is paid, so no purchase order yet.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<span>Accounting</span></span></span><p>Prepare the payment that unblocks the vendor: file invoice 501 ($840 to Bulldog Print Co, 3 days overdue) for human approval, and confirm cash covers it ($3,400 in checking). The $8 reprint order can only follow once the invoice is paid, so no purchase order yet.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -371,25 +371,25 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span></span><p>Draft a friendly reply to Tauhid Zaman: size S is out of stock, a restock is being arranged, and the shop will confirm timing. No delivery date is promised while the vendor is blocked.</p></li></ol>
           <ul class="notcalled"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -405,14 +405,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
   </g>
 </svg>
 <span>Facilities</span></span> <span class="muted">not called: Nothing on this ticket touches the lease, rent or the building.</span></li></ul></li>
-        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -425,7 +425,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span><ul class="tools"><li><code>get_ticket</code></li><li><code>rank_open_tickets</code></li><li><code>update_ticket_status</code></li><li><code>check_in_on_assignments</code></li><li><code>list_payment_requests</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -443,7 +443,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span><ul class="tools"><li><code>check_stock (CC-TEE-WHITE, S, 1)</code></li><li><code>list_vendors</code></li><li><code>get_open_invoices (invoice 501)</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -452,7 +452,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -463,19 +463,19 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Accounting</span></span><ul class="tools"><li><code>get_cash_balance</code></li><li><code>get_open_invoices (invoice 501)</code></li><li><code>request_payment (invoice 501)</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span><ul class="tools"><li><code>check_spelling_grammar</code></li><li><code>save_customer_draft</code></li></ul></li></ul></li>
@@ -507,14 +507,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
       <h3><span class="tag exp">Expected</span> What we expect the team to do</h3>
       <ol class="plan">
         <li><h4>Who Boss calls first, and why</h4>
-          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -527,7 +527,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -544,14 +544,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Facilities</span></span></p>
           <p>Ticket 102 is the landlord&#x27;s rent notice for lease 1. Facilities owns the lease, so it confirms the rent, the landlord and the due date from the lease record, not from the email, before any money is lined up.</p></li>
-        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -564,7 +564,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -579,14 +579,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <path d="M42,42 C42,26 78,26 78,42 Z" fill="#00356b"/><path d="M40,42 L86,42 C86,46 80,47 74,46 L40,46 Z" fill="#00356b"/><text x="60" y="40" font-family="Georgia, serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Y</text>
   </g>
 </svg>
-<span>Facilities</span></span></span><p>Confirm lease 1 from the record: the Chapel Street shop, Elm City Properties, $2,400, due 2026-09-02 (2 days away). Check that the notice matches the record.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<span>Facilities</span></span></span><p>Confirm lease 1 from the record: the Chapel Street shop, Elm City Properties, $2,400, due 2026-09-02 (2 days away). Check that the notice matches the record.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -599,7 +599,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -608,7 +608,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -620,7 +620,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 <span>Accounting</span></span></span><p>File the $2,400 rent payment request for human approval, and check cash. If invoice 501&#x27;s $840 is also pending, $3,400 − $840 − $2,400 leaves $160, still not negative.</p></li></ol>
           <ul class="notcalled"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -638,30 +638,30 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span> <span class="muted">not called: No product is involved.</span></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span> <span class="muted">not called: The landlord needs to be paid, not written to. A human can send thanks after paying, if wanted.</span></li></ul></li>
-        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -674,7 +674,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span><ul class="tools"><li><code>get_ticket</code></li><li><code>rank_open_tickets</code></li><li><code>update_ticket_status</code></li><li><code>check_in_on_assignments</code></li><li><code>list_payment_requests</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -691,7 +691,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Facilities</span></span><ul class="tools"><li><code>get_rent_due (lease 1)</code></li><li><code>get_lease (lease 1)</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -700,7 +700,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -738,14 +738,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
       <h3><span class="tag exp">Expected</span> What we expect the team to do</h3>
       <ol class="plan">
         <li><h4>Who Boss calls first, and why</h4>
-          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+          <p class="lead"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -758,7 +758,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -776,14 +776,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span></p>
           <p>Ticket 103 asks for 20 Basic Hoodies in size M at a bulk discount. Before anyone talks price, the shop needs to know whether it can fill 20. Inventory checks size M and the restock path.</p></li>
-        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>Every delegation we expect, in order</h4><ol class="deleg"><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -796,7 +796,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -812,14 +812,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     
   </g>
 </svg>
-<span>Inventory</span></span></span><p>Check CC-HOOD-NAVY size M for 20 units. Expected answer: 8 on hand, 12 short; restock from Bulldog Print Co (5 lead days), which is blocked by open invoice 501.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<span>Inventory</span></span></span><p>Check CC-HOOD-NAVY size M for 20 units. Expected answer: 8 on hand, 12 short; restock from Bulldog Print Co (5 lead days), which is blocked by open invoice 501.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -832,7 +832,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -841,7 +841,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -850,14 +850,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <circle cx="54" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="66" cy="48" r="5" fill="none" stroke="#222" stroke-width="1.5"/><path d="M59,48 L61,48" stroke="#222" stroke-width="1.5"/>
   </g>
 </svg>
-<span>Accounting</span></span></span><p>Check margins for a bulk discount: unit cost $22, list price $58, so the margin is $36 a hoodie (62%). Recommend a discount range that stays above cost, and say whether the 12-hoodie restock ($264 at cost) fits in cash. It won&#x27;t while the vendor is blocked, or if rent and invoice 501 leave only $160.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+<span>Accounting</span></span></span><p>Check margins for a bulk discount: unit cost $22, list price $58, so the margin is $36 a hoodie (62%). Recommend a discount range that stays above cost, and say whether the 12-hoodie restock ($264 at cost) fits in cash. It won&#x27;t while the vendor is blocked, or if rent and invoice 501 leave only $160.</p></li><li><span class="flow"><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -870,25 +870,25 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span> <span class="arrow">→</span> <span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span></span><p>Draft a reply to the Yale AI Club: 8 hoodies are ready now, the rest after a restock, and the discount is being reviewed. No price or date is promised until a human approves.</p></li></ol>
           <ul class="notcalled"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
   <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-facilities-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-facilities-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
@@ -904,14 +904,14 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
   </g>
 </svg>
 <span>Facilities</span></span> <span class="muted">not called: No lease, rent or building issue.</span></li></ul></li>
-        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit and tie">
-  <title>Boss: in a suit and tie</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+        <li><h4>MCP tools we expect this run to use</h4><ul class="toolgroups"><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Boss: in a suit with a Yale-blue tie">
+  <title>Boss: in a suit with a Yale-blue tie</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-boss-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-boss-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#ff4fa3"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="#286dc0"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
@@ -924,7 +924,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Boss</span></span><ul class="tools"><li><code>get_ticket</code></li><li><code>rank_open_tickets</code></li><li><code>update_ticket_status</code></li><li><code>check_in_on_assignments</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Inventory: in an apron, carrying a box">
   <title>Inventory: in an apron, carrying a box</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-inventory-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-inventory-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#6b7280"/>
@@ -942,7 +942,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Inventory</span></span><ul class="tools"><li><code>check_stock (CC-HOOD-NAVY, M, 20)</code></li><li><code>list_vendors</code></li><li><code>get_open_invoices</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Accounting: in a cardigan and glasses, with a calculator">
   <title>Accounting: in a cardigan and glasses, with a calculator</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-accounting-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-accounting-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#5a6b7d"/>
@@ -951,7 +951,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="#ff4fa3"/>
+    <rect x="81" y="104" width="2" height="10" fill="#286dc0"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
@@ -962,19 +962,19 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 </svg>
 <span>Accounting</span></span><ul class="tools"><li><code>check_stock (pricing)</code></li><li><code>get_cash_balance</code></li><li><code>list_payment_requests</code></li></ul></li><li><span class="chip"><svg width="26" height="26" class="av" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Customer Service: in Campus Customs gear, a CC shop tee and headset">
   <title>Customer Service: in Campus Customs gear, a CC shop tee and headset</title>
-  <circle cx="60" cy="60" r="58" fill="#16161c" stroke="#ff4fa3" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c-customer_service-26"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c-customer_service-26)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="#00356b" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="#ff4fa3" stroke-width="2"/>
+    <path d="M48,112 L72,112" stroke="#286dc0" stroke-width="2"/>
     <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
     <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
     <path d="M42,50 C38,24 82,24 78,50 C77,40 72,37 64,38 C58,34 48,37 42,50 Z" fill="#3b2a20"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#ff4fa3"/>
+    <path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/><rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/><path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="#286dc0"/>
   </g>
 </svg>
 <span>Customer Service</span></span><ul class="tools"><li><code>check_spelling_grammar</code></li><li><code>save_customer_draft</code></li></ul></li></ul></li>

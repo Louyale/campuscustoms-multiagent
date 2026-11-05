@@ -1,6 +1,6 @@
 """Draw the five agent avatars as SVG (assets/agents/*.svg) plus a one-page overview.
 
-- Boss: a suit and tie
+- Boss: a suit and a Yale-blue tie
 - Inventory: an apron, carrying a box
 - Accounting: a cardigan and glasses, with a calculator
 - Facilities: Yale gear (a Yale-blue hoodie with a block Y, and a Yale cap)
@@ -14,10 +14,10 @@ from pathlib import Path
 OUT = Path(__file__).resolve().parent.parent / "assets" / "agents"
 
 YALE_BLUE = "#00356b"
-PINK = "#ff4fa3"
+ACCENT = "#286dc0"  # lighter Yale blue (no pink: Lou's Yale blue-and-white rule)
 SKIN = "#f1c8a5"
 HAIR = "#3b2a20"
-CARD = "#16161c"
+CARD = "#eaf1fb"   # near-white Yale-blue tint
 
 TORSO = "M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z"
 
@@ -25,7 +25,7 @@ TORSO = "M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z"
 def frame(inner: str, title: str) -> str:
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="{title}">
   <title>{title}</title>
-  <circle cx="60" cy="60" r="58" fill="{CARD}" stroke="{PINK}" stroke-width="3"/>
+  <circle cx="60" cy="60" r="58" fill="{CARD}" stroke="{YALE_BLUE}" stroke-width="3"/>
   <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c)">
 {inner}
@@ -47,10 +47,10 @@ def head(hair: bool = True, extra: str = "") -> str:
 def boss() -> str:
     body = f'''    <path d="{TORSO}" fill="#2b2f3a"/>
     <path d="M50,77 L60,100 L70,77 Z" fill="#ffffff"/>
-    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="{PINK}"/>
+    <path d="M57,79 L63,79 L61.5,84 L64,100 L60,104 L56,100 L58.5,84 Z" fill="{ACCENT}"/>
     <path d="M50,77 L44,84 L56,104 Z M70,77 L76,84 L64,104 Z" fill="#20232c"/>
     <rect x="72" y="96" width="9" height="3" rx="1" fill="#ffffff" opacity=".85"/>'''
-    return frame(body + "\n" + head(), "Boss: in a suit and tie")
+    return frame(body + "\n" + head(), "Boss: in a suit with a Yale-blue tie")
 
 
 def inventory() -> str:
@@ -72,7 +72,7 @@ def accounting() -> str:
     <rect x="66" y="92" width="20" height="26" rx="3" fill="#1f2937" stroke="#e5e7eb" stroke-width="1"/>
     <rect x="69" y="95" width="14" height="6" rx="1" fill="#a7f3d0"/>
     <g fill="#e5e7eb"><rect x="69" y="104" width="4" height="4"/><rect x="75" y="104" width="4" height="4"/><rect x="69" y="110" width="4" height="4"/><rect x="75" y="110" width="4" height="4"/></g>
-    <rect x="81" y="104" width="2" height="10" fill="{PINK}"/>'''
+    <rect x="81" y="104" width="2" height="10" fill="{ACCENT}"/>'''
     return frame(body + "\n" + head(extra=glasses), "Accounting: in a cardigan and glasses, with a calculator")
 
 
@@ -90,11 +90,11 @@ def facilities() -> str:
 def customer_service() -> str:
     headset = (f'<path d="M42,47 C42,26 78,26 78,47" stroke="#222" stroke-width="3" fill="none"/>'
                f'<rect x="38" y="43" width="7" height="11" rx="3" fill="#222"/><rect x="75" y="43" width="7" height="11" rx="3" fill="#222"/>'
-               f'<path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="{PINK}"/>')
+               f'<path d="M41,54 C41,62 48,63 52,61" stroke="#222" stroke-width="2" fill="none"/><circle cx="53" cy="61" r="2" fill="{ACCENT}"/>')
     body = f'''    <path d="{TORSO}" fill="#f8fafc"/>
     <path d="M50,77 Q60,84 70,77" stroke="#cbd5e1" stroke-width="2" fill="none"/>
     <text x="60" y="108" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="800" fill="{YALE_BLUE}" text-anchor="middle">CC</text>
-    <path d="M48,112 L72,112" stroke="{PINK}" stroke-width="2"/>'''
+    <path d="M48,112 L72,112" stroke="{ACCENT}" stroke-width="2"/>'''
     return frame(body + "\n" + head(extra=headset), "Customer Service: in Campus Customs gear, a CC shop tee and headset")
 
 
@@ -116,9 +116,9 @@ def main() -> None:
         inner = svg.split("\n", 1)[1].rsplit("</svg>", 1)[0].replace('id="c"', f'id="c{i}"').replace("url(#c)", f"url(#c{i})")
         x = 20 + i * 150
         tiles.append(f'<g transform="translate({x},20)"><svg width="120" height="120" viewBox="0 0 120 120">{inner}</svg>'
-                     f'<text x="60" y="146" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#f5f5f7" text-anchor="middle">{label}</text></g>')
+                     f'<text x="60" y="146" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#00356b" text-anchor="middle">{label}</text></g>')
     sheet = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 770 170" width="770" height="170">'
-             '<rect width="770" height="170" fill="#0b0b0f"/>' + "".join(tiles) + "</svg>\n")
+             '<rect width="770" height="170" fill="#ffffff"/>' + "".join(tiles) + "</svg>\n")
     (OUT / "all_agents.svg").write_text(sheet, encoding="utf-8")
     print("wrote", ", ".join(f"{k}.svg" for k in AVATARS), "and all_agents.svg")
 
