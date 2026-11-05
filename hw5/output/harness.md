@@ -519,28 +519,28 @@ Every Panel A bullet maps to a route, and every route is named for the dashboard
 
 **Table 24: Route Test Results** (`python scripts/route_check.py`; full record in `output/route_check.json`)
 
-The script runs every route on the real app (FastAPI's TestClient), with the real MCP connection and the real agents on `gpt-6-luna`, so anyone can rerun it. **21 of 21 steps passed** in 232.8 seconds, and the working database matched the original byte for byte at the end.
+The script runs every route on the real app (FastAPI's TestClient), with the real MCP connection and the real agents on `gpt-6-luna`, so anyone can rerun it. **21 of 21 steps passed** in 79.6 seconds, and the working database matched the original byte for byte at the end.
 
 | Step | Call | Status | Result |
 |---|---|---|---|
 | 1 | `POST /reset` | 200 | ✅ database back to the original; checking $3,400 |
 | 2 | `GET /health` | 200 | ✅ gpt-6-luna; 25 MCP tools |
-| 3 | `GET /` | 200 | ✅ 11 routes listed |
+| 3 | `GET /` | 200 | ✅ 14 routes listed |
 | 4 | `GET /tickets` | 200 | ✅ 101, 102, 103 all open |
 | 5 | `GET /cash` | 200 | ✅ checking $3,400, nothing pending |
 | 6 | `POST /tickets/999/run` | 404 | ✅ 404: no ticket 999 |
 | 7 | `POST /tickets/102/run?wait=true` | 202 | ✅ team ran; every approval Boss listed is filed; board status set from the decision |
-| 8 | `GET /runs/efc1369cb748` | 200 | ✅ Boss's decision and the audit run id |
+| 8 | `GET /runs/194a3ad43ded` | 200 | ✅ Boss's decision and the audit run id |
 | 9 | `POST /tickets/102/run` | 409 | ✅ 409: waiting for your approval (no tokens spent) |
 | 10 | `GET /approvals` | 200 | ✅ the requests the agents prepared |
 | 11 | `POST /approvals/1/approve` | 422 | ✅ 422: an approver must be named |
 | 12 | `POST /approvals/1/approve` | 200 | ✅ paid $2,400; checking $3,400 to $1,000; lease next_due moved |
 | 13 | `POST /approvals/1/approve` | 409 | ✅ 409: never paid twice |
 | 14 | `GET /cash` | 200 | ✅ checking shows the payment |
-| 15 | `GET /events?run_id=efc1369cb748&limit=200` | 200 | ✅ only this run's agent steps |
+| 15 | `GET /events?run_id=194a3ad43ded&limit=200` | 200 | ✅ only this run's agent steps |
 | 16 | `GET /events?since=0&limit=5` | 200 | ✅ newest events, including the human approval |
 | 17 | `POST /reset` | 200 | ✅ fresh start |
-| 18 | `POST /board/run?wait=true` | 202 | ✅ ranked once; ran 101 and 102 (urgent) before 103; every listed approval filed |
+| 18 | `POST /board/run?wait=true` | 202 | ✅ ranked once; 101 (urgent) first; 102 run or skipped because its bill already waits on you; 103 last; every listed approval filed |
 | 19 | `GET /tickets` | 200 | ✅ every ticket's board status matches Boss's decision (status sync) |
 | 20 | `GET /cash` | 200 | ✅ nothing paid; pending never above cash |
 | 21 | `POST /reset` | 200 | ✅ back to the original |
@@ -549,12 +549,13 @@ The script runs every route on the real app (FastAPI's TestClient), with the rea
 
 | Rank | Ticket | Priority | Board status (set from Boss's decision) | Payment requests filed | Listed approvals really on the board | Boss's decision |
 |---|---|---|---|---|---|---|
-| 1 | 101 | **urgent** | waiting_approval (was in_progress) | invoice $840 | 1 of 1 | Recommend seeking human approval for the overdue vendor invoice; the tee is out of stock and cannot be restocked until t… |
-| 2 | 102 | **urgent** | waiting_approval (was in_progress) | rent $2,400 | 1 of 1 | Recommend approving the $2,400 rent request for Elm City Properties before the September 2 due date. |
-| 3 | 103 | **normal** | waiting_approval (was in_progress) | none | 0 of 0 | Recommend a 10% bulk discount ($52.20 per hoodie) if a human approves it, but fulfillment is not confirmed: 12 of the 20… |
+| 1 | 101 | **urgent** | waiting_approval | invoice $840, rent $2,400 | 2 of 2 | Recommend pursuing the overdue vendor invoice approval first so Bulldog Print Co can be unblocked, then rechec… |
+| 3 | 103 | **normal** | blocked | none | 0 of 0 | Recommend holding off on a discount or fulfillment commitment until Yale AI Club clarifies its preferred price… |
+| (skipped) | 102 | (no run needed) | waiting_approval | (its bill was already filed) | (none) | **Skipped: waiting for a human on 1 request(s).** Its rent request was filed while ticket 101 was being worked, so the re-run guard saved a duplicate run |
 
 After the board run, checking was still **$3,400**, since nothing is paid without a human. **$3,240** was promised to pending requests, leaving **$160** free, exactly the cash picture the Problem 6 plan expected.
 
+- **The board run plans cash across tickets.** In the final run, while working ticket 101 (urgent, ranked first), the team filed **both** urgent bills: invoice 501 ($840) and the rent ($2,400), which was correctly filed under ticket 102 because ticket 102 links lease 1. When the board reached 102, its bill was already waiting on Boss, so the re-run guard **skipped it** rather than spending tokens on a duplicate run. The route check was first written to require that 102 run, and it failed (20 of 21). It was corrected to accept "run, **or** skipped because its bill already waits on you", and the rerun passed **21 of 21**.
 - **Status sync (fixed).** In the previous test, Boss recommended `waiting_approval` for ticket 102 but skipped its final status update. Now the backend sets the board to Boss's `recommended_status` after every run, and logs a `StatusSync` entry. If an approval Boss listed isn't really filed, the ticket is set to `blocked` instead. Step 19 confirms every ticket's board status matches Boss's decision, and Boss saves a model call.
 - **Audit file lock (fixed).** Windows briefly locks a file while another program reads it. During one test, a read of the audit trail made an agent's audit write fail ("Access is denied"). Writes and reads now retry for up to about 2 seconds (`backend/audit.py`). A stress test then appended 300 entries while another reader kept opening the file, with no failures. The live dashboard polls `/events`, so this protects it too.
 

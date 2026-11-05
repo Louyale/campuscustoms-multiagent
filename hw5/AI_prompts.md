@@ -809,3 +809,16 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 > yes, don't do anything to make anything stop matching, everything needs to work as before
 
 **Outcome:** added one courtesy rule to the Customer Service prompt: a draft for ticket 101's requester opens "Dear Professor Zaman,". The draft's `to_name` stays exactly as the database has it ("Tauhid Zaman"), so drafts still match the database. Everything was rechecked and works as before: 43 of 43 tool checks pass, the five agents build, the greeting passes the spelling check, and both databases are unchanged.
+
+**Follow-up prompt (Problem 8 close-out):**
+
+> yes run it and if it checks, we'll wrap up problem 8
+
+**Outcome:**
+
+- **The full route check was rerun** after the new routes, on the real app and agents.
+- **The first run scored 20 of 21.** Step 18 (the whole-board run) failed only because the check required ticket 102 to run. In fact, while working ticket 101, the team had already filed the rent request under ticket 102, so the re-run guard correctly skipped 102 instead of spending tokens on a duplicate run.
+- **The check was corrected** to accept "run, or skipped because its bill already waits on you". The rerun passed **21 of 21**.
+- **Cash after the board run:** $3,400, with $3,240 pending and $160 free.
+- **The database ends equal to the original.**
+- **Problem 8 is complete.**

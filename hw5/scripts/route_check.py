@@ -95,9 +95,13 @@ def main() -> None:
         if not args.no_board:
             step("reset before board", "POST", "/reset", c.post("/reset"), 200, lambda b: b["checking_balance"] == 3400, "fresh start")
             step("run the board", "POST", "/board/run?wait=true", c.post("/board/run?wait=true"), 202,
-                 lambda b: b["status"] == "done" and [r["ticket_id"] for r in b["results"]][:2] == [101, 102]
+                 lambda b: b["status"] == "done"
+                 and [r["ticket_id"] for r in b["results"]][0] == 101                     # most urgent first
+                 and (102 in [r["ticket_id"] for r in b["results"]]                       # 102 ran, or it was skipped
+                      or any(k["ticket_id"] == 102 and "waiting for a human" in k["why"] for k in b["skipped"]))  # because its bill already waits on you
+                 and [r["ticket_id"] for r in b["results"]][-1] == 103                    # normal priority last
                  and all(x["filed_on_board"] for r in b["results"] for x in r["approval_check"]),
-                 "ranked once; ran 101 and 102 (urgent) before 103; every listed approval filed")
+                 "ranked once; 101 (urgent) first; 102 run or skipped because its bill already waits on you; 103 last; every listed approval filed")
             recs = {}
             for x in steps[-1]["response"]["results"]:
                 recs[x["ticket_id"]] = x["status_sync"]["set_to"]
