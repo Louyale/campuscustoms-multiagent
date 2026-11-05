@@ -244,6 +244,7 @@ def actual_block(tid: int, R: dict | None) -> str:
           <li>Final status: <b>{html.escape(t['final_status'])}</b> · cash change <b>{'−$' + format(-t['cash_change'], ',.2f') if t['cash_change'] else '$0.00'}</b> · {t['run']['model_calls']} model calls · ${t['run']['cost_usd']:.4f}</li>
           <li>{html.escape(cmp_['after'])}</li></ul>
         <h4>Compared with Expected</h4><ul class="cmp">{matched}{different}</ul>
+        <p class="signed">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</p>
       </div>"""
 
 
@@ -274,6 +275,7 @@ def cash_tab(R: dict | None) -> str:
   <table class="summary cash-table"><caption>Table 3: The payments Table in the Working Database</caption>
     <tr><th>id</th><th>kind</th><th>ref_id</th><th>amount</th><th>approved_by</th><th>paid_at (shop date)</th></tr>{pays}
   </table>
+  <p class="signed">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</p>
 </div>"""
 
 
@@ -370,7 +372,7 @@ main{padding:24px 36px 48px}.panel{display:none}
 .cols{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}@media(max-width:1000px){.cols{grid-template-columns:1fr}.facts{grid-template-columns:repeat(2,auto)}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,53,107,.06)}.card h3{margin:0 0 12px;font-size:17px;display:flex;gap:10px;align-items:center;color:var(--yale)}
 .tag{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}.tag.exp{background:var(--yale);color:#fff}.tag.act{background:var(--yale2);color:#fff}
-.tagline{font-size:11.5px;color:var(--muted);margin-left:6px}.refused{color:#8a2a2a}.cmp li{margin:3px 0}
+.tagline{font-size:11.5px;color:var(--muted);margin-left:6px}.refused{color:#8a2a2a}.signed{display:inline-block;margin-top:10px;background:#eaf1fb;color:#00356b;border:1px solid #00356b;border-radius:8px;padding:4px 10px;font-weight:700}.cmp li{margin:3px 0}
 .cashbox{max-width:980px}.cashbox h2{color:var(--yale);margin-top:0}.cash-bullets li{margin:6px 0}.num{text-align:right;font-variant-numeric:tabular-nums}
 .cash-table td:nth-child(2){text-align:left}.cash-table tr.end td{background:var(--tint);font-weight:700}
 .plan{padding-left:20px;margin:0}.plan>li{margin:0 0 18px}.plan>li::marker{color:var(--yale);font-weight:700}h4{margin:0 0 6px;font-size:15px;color:var(--yale)}

@@ -817,6 +817,15 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 
 **Outcome:** confirmed: `output/resolved_board.html` opens.
 
+**Follow-up prompt:**
+
+> everything is approved, let's close this out
+
+**Outcome:**
+- **Approved:** the Actual sections and the Cash tab are marked ☑ Approved by Boss (Mr. D'Onofrio).
+- **Problem 9 is closed.** It's committed locally, ready to push in Problem 10.
+- **The working database stays in its Problem 9 end state** as evidence: checking $160.00; 101 and 102 resolved; 103 blocked on the discount decision.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**

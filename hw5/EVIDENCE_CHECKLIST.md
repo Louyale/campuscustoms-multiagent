@@ -146,3 +146,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Real runs appended to `output/audit_trail.json`
 - [x] `output/harness.md` finished: Table 0 map, plus Problem 9 Tables 28–30
 - [x] Duplicate-draft cause fixed (Boss's title rule; `save_customer_draft` revises in place); tool check 44 of 44; live scratch test: one draft
+- [x] Actual sections and Cash tab approved by Boss (Mr. D'Onofrio)
+- [x] **Problem 9 closed out**

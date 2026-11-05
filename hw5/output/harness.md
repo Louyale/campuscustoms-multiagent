@@ -700,6 +700,8 @@ The ticket tabs of `output/desk_tickets.html` show Expected and Actual side by s
   - **The Problem 9 records above are unchanged:** they show the run as it happened.
 - **Ticket 103 is `blocked` in the database.** The team's work is done, so the board shows it resolved, but the discount is a human decision, and the 12-hoodie restock ($264) won't fit the $160 left.
 
+☑ **Approved by Boss (Mr. D'Onofrio), 2026-11-05:** the Actual sections, the Cash itemization, and both payments.
+
 **The files:**
 - `output/desk_tickets.html`: Actual sections, and the Cash tab
 - `output/resolved_tickets.json`
