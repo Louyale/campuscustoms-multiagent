@@ -829,3 +829,9 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 
 **Outcome:** the plant now sits on the round table, with the papers moved to the table's edges, and the guest chair reads **"Professor Tauhid Zaman's chair"**. A name ending in "s" gets just an apostrophe ("Elm City Properties' chair"). The screenshots in `output/dashboard_screens/` were refreshed.
 
+
+**Follow-up prompt:**
+
+> Yes, reset
+
+**Outcome:** reset the database to a fresh day (it matches the original SHA-256; checking $3,400; 0 pending; tickets 101–103 open). This cleared the two unsigned requests from the 04:27 run on ticket 101. The reset is recorded in the audit trail.
