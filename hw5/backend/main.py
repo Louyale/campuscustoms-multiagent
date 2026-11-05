@@ -36,7 +36,7 @@ from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from pydantic import BaseModel, Field  # noqa: E402
 
-from backend.audit import AUDIT_TRAIL, append_entry, now  # noqa: E402
+from backend.audit import append_entry, now, read_trail  # noqa: E402
 from backend.config import MODEL_NAME  # noqa: E402
 from backend.mcp_tools import mcp_toolset  # noqa: E402
 from backend.team import run_ticket  # noqa: E402
@@ -107,6 +107,7 @@ class RunOut(BaseModel):
     approval_check: list[dict[str, Any]] = Field(default=[], description="Each approval Boss listed, and whether it is filed")
     results: list[dict[str, Any]] = Field(default=[], description="Board runs: one decision per ticket, in priority order")
     skipped: list[dict[str, Any]] = Field(default=[], description="Board runs: tickets skipped, and why")
+    status_sync: dict[str, Any] = Field(default={}, description="The board status the backend set from Boss's decision")
     error: Optional[str] = None
 
 
@@ -202,7 +203,7 @@ async def _run_ticket(run_id: str, ticket_id: int) -> None:
             RUNS[run_id].update(status="done", finished_at=now(), agent_run_ids=[deps.run_id],
                                 decision=decision.model_dump(),
                                 assignments=[a.model_dump(exclude={"report"}) for a in deps.assignments],
-                                approval_check=deps.approval_check)
+                                approval_check=deps.approval_check, status_sync=deps.status_sync)
         except Exception as exc:  # a failed run is reported, never hidden
             _fail(run_id, exc, ticket_id)
 
@@ -252,7 +253,8 @@ async def _run_board(run_id: str) -> None:
                 results.append({"rank": item["rank"], "ticket_id": tid, "priority": decision.priority,
                                 "summary": decision.summary, "status": decision.recommended_status,
                                 "approvals": [{"kind": a.kind, "payee": a.payee, "amount": a.amount} for a in decision.approvals_needed],
-                                "approval_check": deps.approval_check, "agent_run_id": deps.run_id})
+                                "approval_check": deps.approval_check, "status_sync": deps.status_sync,
+                                "agent_run_id": deps.run_id})
             RUNS[run_id].update(status="done", finished_at=now(), results=results, skipped=skipped)
         except Exception as exc:
             _fail(run_id, exc, None)
@@ -307,6 +309,8 @@ def _said(e: dict) -> str | None:
         return f"{e.get('rejected_by')} rejected request {e.get('request_id')}"
     if kind == "DatabaseReset":
         return "Database reset to the original values"
+    if kind == "StatusSync":
+        return f"Board status set to {e.get('set_to')} (Boss recommended {e.get('recommended')}; it was {e.get('was')})"
     if kind == "RunFailed":
         return f"The run failed: {e.get('error')}"
     return None
@@ -323,7 +327,7 @@ async def recent_events(since: int = 0, limit: int = 50, ticket_id: int | None =
     run_ids: set[str] | None = None
     if run_id:
         run_ids = set(RUNS[run_id]["agent_run_ids"]) if run_id in RUNS else {run_id}
-    entries = json.loads(AUDIT_TRAIL.read_text(encoding="utf-8")) if AUDIT_TRAIL.exists() else []
+    entries = read_trail()  # safe even while the agents are appending
     events = []
     for i, e in enumerate(entries):
         if i < since or (ticket_id is not None and e.get("ticket_id") != ticket_id) or (run_ids is not None and e.get("run_id") not in run_ids):

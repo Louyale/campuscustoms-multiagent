@@ -519,7 +519,7 @@ Every Panel A bullet maps to a route, and every route is named for the dashboard
 
 **Table 24: Route Test Results** (`python scripts/route_check.py`; full record in `output/route_check.json`)
 
-The script runs every route on the real app (FastAPI's TestClient), with the real MCP connection and the real agents on `gpt-6-luna`, so anyone can rerun it. **21 of 21 steps passed** in 237.8 seconds, and the working database matched the original byte for byte at the end.
+The script runs every route on the real app (FastAPI's TestClient), with the real MCP connection and the real agents on `gpt-6-luna`, so anyone can rerun it. **21 of 21 steps passed** in 232.8 seconds, and the working database matched the original byte for byte at the end.
 
 | Step | Call | Status | Result |
 |---|---|---|---|
@@ -529,33 +529,53 @@ The script runs every route on the real app (FastAPI's TestClient), with the rea
 | 4 | `GET /tickets` | 200 | ✅ 101, 102, 103 all open |
 | 5 | `GET /cash` | 200 | ✅ checking $3,400, nothing pending |
 | 6 | `POST /tickets/999/run` | 404 | ✅ 404: no ticket 999 |
-| 7 | `POST /tickets/102/run?wait=true` | 202 | ✅ team ran; every approval Boss listed is filed |
-| 8 | `GET /runs/ebf3bcdedcd9` | 200 | ✅ Boss's decision and the audit run id |
+| 7 | `POST /tickets/102/run?wait=true` | 202 | ✅ team ran; every approval Boss listed is filed; board status set from the decision |
+| 8 | `GET /runs/efc1369cb748` | 200 | ✅ Boss's decision and the audit run id |
 | 9 | `POST /tickets/102/run` | 409 | ✅ 409: waiting for your approval (no tokens spent) |
 | 10 | `GET /approvals` | 200 | ✅ the requests the agents prepared |
 | 11 | `POST /approvals/1/approve` | 422 | ✅ 422: an approver must be named |
 | 12 | `POST /approvals/1/approve` | 200 | ✅ paid $2,400; checking $3,400 to $1,000; lease next_due moved |
 | 13 | `POST /approvals/1/approve` | 409 | ✅ 409: never paid twice |
 | 14 | `GET /cash` | 200 | ✅ checking shows the payment |
-| 15 | `GET /events?run_id=ebf3bcdedcd9&limit=200` | 200 | ✅ only this run's agent steps |
+| 15 | `GET /events?run_id=efc1369cb748&limit=200` | 200 | ✅ only this run's agent steps |
 | 16 | `GET /events?since=0&limit=5` | 200 | ✅ newest events, including the human approval |
 | 17 | `POST /reset` | 200 | ✅ fresh start |
 | 18 | `POST /board/run?wait=true` | 202 | ✅ ranked once; ran 101 and 102 (urgent) before 103; every listed approval filed |
-| 19 | `GET /tickets` | 200 | ✅ statuses after the board run |
+| 19 | `GET /tickets` | 200 | ✅ every ticket's board status matches Boss's decision (status sync) |
 | 20 | `GET /cash` | 200 | ✅ nothing paid; pending never above cash |
 | 21 | `POST /reset` | 200 | ✅ back to the original |
 
 **Table 25: Board Run Results** (step 18, `POST /board/run`: ranked once, most urgent first)
 
-| Rank | Ticket | Priority | Status Boss recommended | Payment requests filed | Listed approvals really on the board |
+| Rank | Ticket | Priority | Board status (set from Boss's decision) | Payment requests filed | Listed approvals really on the board | Boss's decision |
+|---|---|---|---|---|---|---|
+| 1 | 101 | **urgent** | waiting_approval (was in_progress) | invoice $840 | 1 of 1 | Recommend seeking human approval for the overdue vendor invoice; the tee is out of stock and cannot be restocked until t… |
+| 2 | 102 | **urgent** | waiting_approval (was in_progress) | rent $2,400 | 1 of 1 | Recommend approving the $2,400 rent request for Elm City Properties before the September 2 due date. |
+| 3 | 103 | **normal** | waiting_approval (was in_progress) | none | 0 of 0 | Recommend a 10% bulk discount ($52.20 per hoodie) if a human approves it, but fulfillment is not confirmed: 12 of the 20… |
+
+After the board run, checking was still **$3,400**, since nothing is paid without a human. **$3,240** was promised to pending requests, leaving **$160** free, exactly the cash picture the Problem 6 plan expected.
+
+- **Status sync (fixed).** In the previous test, Boss recommended `waiting_approval` for ticket 102 but skipped its final status update. Now the backend sets the board to Boss's `recommended_status` after every run, and logs a `StatusSync` entry. If an approval Boss listed isn't really filed, the ticket is set to `blocked` instead. Step 19 confirms every ticket's board status matches Boss's decision, and Boss saves a model call.
+- **Audit file lock (fixed).** Windows briefly locks a file while another program reads it. During one test, a read of the audit trail made an agent's audit write fail ("Access is denied"). Writes and reads now retry for up to about 2 seconds (`backend/audit.py`). A stress test then appended 300 entries while another reader kept opening the file, with no failures. The live dashboard polls `/events`, so this protects it too.
+
+**Table 26: Assignment Bullets and Results**
+
+Each Problem 7 bullet, in the assignment's own words, with the route that does it and what the test showed.
+
+| # | Panel | The assignment's bullet | Route(s) | Result | Test steps |
 |---|---|---|---|---|---|
-| 1 | 101 | **urgent** | waiting_approval | invoice $840 | 1 of 1 |
-| 2 | 102 | **urgent** | waiting_approval | rent $2,400 | 1 of 1 |
-| 3 | 103 | **normal** | blocked | none | 0 of 0 |
+| 1 | A | In `backend/main.py`, use **FastAPI** and add routes | `backend/main.py` (FastAPI 0.162.0), 11 routes | ✅ The app starts and lists all 11 routes | 3 |
+| 2 | A | Return the three tickets and whether each is open or resolved | `GET /tickets` | ✅ 101, 102 and 103 returned as `open`, with the detailed board status beside each | 4, 19 |
+| 3 | A | Take a ticket id and run your agent team on that ticket | `POST /tickets/{ticket_id}/run`, `GET /runs/{run_id}`, `POST /board/run` | ✅ Ticket 102 ran on `gpt-6-luna` (Boss chose urgent; the rent request was filed); 999 returned 404; a re-run while waiting on you returned 409 with no tokens spent; the whole board ran most-urgent first | 6, 7, 8, 9, 18 |
+| 4 | A | Return recent agent events (what each agent said and which tools they used) so the board can refresh | `GET /events?since=&run_id=` | ✅ One run's steps by `run_id`, and the newest events by `since`, including the human approval | 15, 16 |
+| 5 | A | Approve a payment or purchase after a human clicks approve (agents only prepare the pay; this route is what actually changes cash) | `GET /approvals`, `POST /approvals/{id}/approve` (and `/reject`) | ✅ The pending rent request was listed; no name returned 422; **approving as "Boss (Mr. D'Onofrio)" paid $2,400, and checking went $3,400 → $1,000**; approving again returned 409, so nothing is paid twice | 10–14 |
+| 6 | A | Return the current checking balance from `cash_accounts` | `GET /cash` | ✅ $3,400 at the start; $1,000 after the approval; after the board run, $3,400 with $3,240 pending and $160 free | 5, 14, 20 |
+| 7 | A | Reset the database to the original values when you want to try a fresh run | `POST /reset` | ✅ Back to the original (SHA-256 `23686a90…`) three times; the working copy equals the original at the end | 1, 17, 21 |
+| 8 | B | From the `backend/` folder, start the server with `uvicorn main:app --reload --port 8000` | `backend/main.py` exposes `app` | ✅ `main:app` loads from `backend/`; the server ran on `http://localhost:8000` (manual browser test) | (manual) |
+| 9 | B | In `output/harness.md`, list each route in one line (what URL / what it does) | (documentation) | ✅ Table 22: Backend Route Ledger, numbered 1–11 | (n/a) |
+| ★ | Rule | Use your `PORTKEY_API_KEY` and only `gpt-6-luna` | All agents | ✅ `/health` reports `gpt-6-luna`; every logged model call answered as `gpt-6-luna-global`, Portkey's name for it | 2 |
 
-After the board run, checking was still **$3,400**, since nothing is paid without a human. **$3,240** was promised to pending requests, leaving **$160** free, exactly the cash picture the Problem 6 plan expected. 🚩 One thing to watch: Boss recommended `waiting_approval` for ticket 102, but the board still showed `in_progress`, because Boss didn't make its final `update_ticket_status` call on that run. The decision itself was right, and the dashboard shows both values.
-
-The first manual test (in the browser preview, on port 8000) also passed. That server was stopped afterwards: port 8000 is free, and no uvicorn process is left running.
+**All 21 of 21 test steps passed, so every Problem 7 bullet is met.**
 
 **Notes:**
 - **Approval is the human's click.** The approval code never leaves the backend: the agents can't see it, and the browser never sends it.

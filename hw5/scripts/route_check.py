@@ -62,8 +62,9 @@ def main() -> None:
         step("unknown ticket", "POST", "/tickets/999/run", c.post("/tickets/999/run"), 404, lambda b: True, "404: no ticket 999")
 
         run = step("run ticket 102", "POST", "/tickets/102/run?wait=true", c.post("/tickets/102/run?wait=true"), 202,
-                   lambda b: b["status"] == "done" and all(x["filed_on_board"] for x in b["approval_check"]),
-                   "team ran; every approval Boss listed is filed")
+                   lambda b: b["status"] == "done" and all(x["filed_on_board"] for x in b["approval_check"])
+                   and b["status_sync"]["set_to"] in ("waiting_approval", "blocked", "in_progress", "resolved"),
+                   "team ran; every approval Boss listed is filed; board status set from the decision")
         step("run status", "GET", f"/runs/{run['run_id']}", c.get(f"/runs/{run['run_id']}"), 200,
              lambda b: b["decision"]["ticket_id"] == 102 and b["agent_run_ids"], "Boss's decision and the audit run id")
         step("re-run guard", "POST", "/tickets/102/run", c.post("/tickets/102/run"), 409,
@@ -97,7 +98,12 @@ def main() -> None:
                  lambda b: b["status"] == "done" and [r["ticket_id"] for r in b["results"]][:2] == [101, 102]
                  and all(x["filed_on_board"] for r in b["results"] for x in r["approval_check"]),
                  "ranked once; ran 101 and 102 (urgent) before 103; every listed approval filed")
-            step("tickets after board", "GET", "/tickets", c.get("/tickets"), 200, lambda b: True, "statuses after the board run")
+            recs = {}
+            for x in steps[-1]["response"]["results"]:
+                recs[x["ticket_id"]] = x["status_sync"]["set_to"]
+            step("tickets after board", "GET", "/tickets", c.get("/tickets"), 200,
+                 lambda b: all(t["status"] == recs[t["id"]] for t in b["tickets"] if t["id"] in recs),
+                 "every ticket's board status matches Boss's decision (status sync)")
             step("cash after board", "GET", "/cash", c.get("/cash"), 200,
                  lambda b: b["balance"] == 3400 and b["available_after_pending"] >= 0, "nothing paid; pending never above cash")
 

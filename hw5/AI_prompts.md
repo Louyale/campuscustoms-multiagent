@@ -614,6 +614,29 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - **Token savers** are listed in harness Table 23.
 - 🚩 **Noted:** in the board run, Boss recommended `waiting_approval` for 102 but didn't make its final status update.
 
+**Follow-up prompts (status fix, results by bullet, model check):**
+
+> Yes, fix it
+
+> also show me the bullets from the assignment as the results table
+
+> and confirming that were using gpt-6-luna as requested?
+
+**What was lacking after the first:** the board could show a stale status when Boss skipped its last tool call, and the test results weren't laid out by the assignment's own bullets.
+
+**Outcome:**
+
+- **Status sync:** after every run, the backend sets the board to Boss's recommended status (or `blocked` if a listed approval isn't really filed) and logs it. Boss no longer needs that last call.
+- **Audit file-lock fix:** found during testing. Audit writes and reads now retry briefly on Windows file locks, and a 300-entry stress test passed.
+- **Route check rerun:** **21 of 21 steps passed**. All three tickets' board statuses now match Boss's decisions.
+- **Results by assignment bullet:** harness **Table 26: Assignment Bullets and Results**. Every Panel A and B bullet is met.
+- **gpt-6-luna confirmed five ways:**
+  - the model lock in `backend/config.py`
+  - `OPENAI_MODEL=gpt-6-luna` in `.env`
+  - a code search found no other model name
+  - all five agents report `gpt-6-luna`
+  - all 188 logged model calls were answered as `gpt-6-luna-global`, Portkey's name for it
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)

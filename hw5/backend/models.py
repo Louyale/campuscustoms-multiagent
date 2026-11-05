@@ -249,3 +249,4 @@ class TeamDeps:
     shop_today: Optional[str] = None                  # desk.date_today, used for assignment deadlines
     assignments: list["Assignment"] = field(default_factory=list)
     approval_check: list[dict] = field(default_factory=list)  # each approval Boss listed, and whether it's really filed
+    status_sync: dict = field(default_factory=dict)          # the board status the backend set from Boss's decision

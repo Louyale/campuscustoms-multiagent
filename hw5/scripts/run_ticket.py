@@ -21,7 +21,7 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT))
 
-from backend.audit import AUDIT_TRAIL  # noqa: E402
+from backend.audit import read_trail  # noqa: E402
 from backend.team import run_ticket  # noqa: E402
 from scripts.reset_db import WORKING, reset  # noqa: E402
 
@@ -48,13 +48,13 @@ async def main() -> None:
     if args.reset_before:
         reset()
         print("Database reset before the run.")
-    audit_before = len(json.loads(AUDIT_TRAIL.read_text(encoding="utf-8"))) if AUDIT_TRAIL.exists() else 0
+    audit_before = len(read_trail())
 
     t0 = time.perf_counter()
     decision, deps = await run_ticket(args.ticket)
     seconds = round(time.perf_counter() - t0, 1)
 
-    entries = json.loads(AUDIT_TRAIL.read_text(encoding="utf-8"))
+    entries = read_trail()
     new = [e for e in entries if e.get("run_id") == deps.run_id]
     models = sorted({e["model"] for e in new if e.get("model")})
     tokens = {"input": 0, "cached_input": 0, "output": 0}

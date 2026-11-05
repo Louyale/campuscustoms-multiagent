@@ -113,3 +113,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Repeatable route test: `scripts/route_check.py`, 21 of 21 steps (harness Tables 24–25; `output/route_check.json`)
 - [x] Token savers: re-run guard, `POST /board/run`, `/events?run_id=`, one shared MCP connection (harness Table 23)
 - [x] Server stopped after testing, and the database reset to the original
+- [x] Board status always matches Boss's decision (status sync; route check step 19)
+- [x] Results laid out by the assignment's bullets (harness Table 26): all met

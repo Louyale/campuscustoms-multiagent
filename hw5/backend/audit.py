@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import os
 import threading
+import time
 from datetime import datetime, timezone
 from typing import Any
 
@@ -50,15 +51,34 @@ def short(value: Any, limit: int = MAX_TEXT) -> Any:
     return text if len(text) <= limit else text[:limit] + f"... [{len(text) - limit} more characters]"
 
 
+def _retry(action, tries: int = 40, wait: float = 0.05):
+    """Windows briefly locks a file while another process (the dashboard's /events, an editor) reads it.
+    Retry for up to about 2 seconds instead of failing the agent run."""
+    for attempt in range(tries):
+        try:
+            return action()
+        except (PermissionError, json.JSONDecodeError):
+            if attempt == tries - 1:
+                raise
+            time.sleep(wait)
+
+
+def read_trail() -> list:
+    """Read the whole audit trail safely, even while it's being appended to."""
+    if not AUDIT_TRAIL.exists():
+        return []
+    return _retry(lambda: json.loads(AUDIT_TRAIL.read_text(encoding="utf-8")))
+
+
 def append_entry(entry: dict) -> None:
     """Add one entry to the end of the audit trail. Never removes earlier entries."""
     with _lock:
         AUDIT_TRAIL.parent.mkdir(parents=True, exist_ok=True)
-        entries = json.loads(AUDIT_TRAIL.read_text(encoding="utf-8")) if AUDIT_TRAIL.exists() else []
+        entries = read_trail()
         entries.append(entry)
         tmp = AUDIT_TRAIL.with_suffix(".json.tmp")
         tmp.write_text(json.dumps(entries, indent=2, default=str), encoding="utf-8")
-        os.replace(tmp, AUDIT_TRAIL)
+        _retry(lambda: os.replace(tmp, AUDIT_TRAIL))
 
 
 def describe(node: Any) -> dict:

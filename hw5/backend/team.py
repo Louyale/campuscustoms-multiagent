@@ -204,6 +204,20 @@ async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:
                       "symbol": AGENT_SYMBOLS["boss"], "step_kind": "DecisionCheck",
                       "approvals_listed": len(deps.approval_check), "approvals_missing_from_board": missing,
                       "passed": not missing})
+        # Status sync: the board always shows the status Boss recommended, so a skipped final tool call
+        # can't leave it stale (and Boss saves that call). If an approval Boss listed is missing from the
+        # board, "waiting_approval" would be misleading, so the ticket is marked "blocked" instead.
+        wanted = result.output.recommended_status
+        if missing and wanted == "waiting_approval":
+            wanted = "blocked"
+        current = (await mcp_toolset.direct_call_tool("get_ticket", {"ticket_id": ticket_id}))
+        current = current if isinstance(current, dict) else json.loads(current)
+        before = current["ticket"]["status"]
+        if before != wanted:
+            await mcp_toolset.direct_call_tool("update_ticket_status", {"ticket_id": ticket_id, "status": wanted})
+        deps.status_sync = {"recommended": result.output.recommended_status, "set_to": wanted, "was": before}
+        append_entry({"time": now(), "run_id": deps.run_id, "ticket_id": ticket_id, "agent": "backend",
+                      "step_kind": "StatusSync", **deps.status_sync})
     return result.output, deps
 
 
