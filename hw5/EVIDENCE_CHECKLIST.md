@@ -99,3 +99,15 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Expected: the MCP tools we expect the run to use
 - [x] Not every specialist on every ticket (page Table 1)
 - [x] My review and approval of the three plans (all three approved)
+
+## Problem 7: Backend routes (7 points)
+- [x] `backend/main.py` uses FastAPI
+- [x] Route: the three tickets, each open or resolved (`GET /tickets`)
+- [x] Route: run the agent team on a ticket id (`POST /tickets/{id}/run`, `GET /runs/{id}`)
+- [x] Route: recent agent events, what each said and which tools it used (`GET /events`)
+- [x] Route: human approval pays and changes cash; agents only prepare (`POST /approvals/{id}/approve`)
+- [x] Route: the checking balance from `cash_accounts` (`GET /cash`)
+- [x] Route: reset the database to the original values (`POST /reset`)
+- [x] Starts with `uvicorn main:app --reload --port 8000` from `backend/`
+- [x] `output/harness.md` lists each route in one line (Table 22), with live test results (Table 23)
+- [x] Server stopped after testing, and the database reset to the original

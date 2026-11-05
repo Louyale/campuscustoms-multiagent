@@ -32,6 +32,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | My edits: Boss reports to the humans; Customer Service grammar and tone; Inventory low stock (below 5) and best sellers; Accounting balance sheet and income statement | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
 | 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | Boss: encourage_teammate; Accounting: balance sheet and income statement tools; Customer Service: spelling and grammar gate; Facilities: lease and building-request tools | `mcp_server/server.py` (24 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–18) |
 | 6 | Plan the three tickets | A double-click page with tabs for 101–103 plus Cash and Reflection; an Expected section (Boss's first call, every delegation, MCP tools) in ordered bullets I can edit; the right agents only; room for Actual | What "All the delegations, not Boss calls everyone" means | `output/desk_tickets.html`, `scripts/build_desk_tickets.py` |
+| 7 | Backend routes | FastAPI routes in `backend/main.py` to spec; every route in the harness in a numbered ledger; show me | (none needed) | `backend/main.py`, `requirements.txt`, `output/harness.md` (Tables 22–23) |
 
 ---
 
@@ -558,6 +559,34 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - **Desk art:** a drawing of a desk with tickets 101, 102 and 103 on it (plus a lamp) sits to the right of the title, in white and light Yale blue.
 - **Boss's name:** Boss now reads **Boss (Mr. D'Onofrio)** everywhere on the page.
 - **Screenshots:** every tab in `output/desk_tickets_screens/` was re-rendered and shown to me.
+
+---
+
+## Problem 7: Backend routes
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> now for problem 7, create the backend routes according to specifications, be sure to list each route in harness and what it does.  do this in a ledger with numbered points and show me
+
+**Follow-up prompt:** none needed.
+
+**Outcome:** each Problem 7 task is done. Table 15 lists them for the grader.
+
+**Table 15: Problem 7 Tasks**
+
+| Task | Panel | What was asked | Where it's done |
+|---|---|---|---|
+| P7-1 | A | `backend/main.py` with FastAPI routes | `backend/main.py` (FastAPI 0.162.0) |
+| P7-2 | A | Return the three tickets, each open or resolved | `GET /tickets` |
+| P7-3 | A | Take a ticket id and run the agent team | `POST /tickets/{ticket_id}/run`, plus `GET /runs/{run_id}` |
+| P7-4 | A | Return recent agent events (what each agent said, which tools it used) so the board can refresh | `GET /events?since=` |
+| P7-5 | A | Approve a payment or purchase after a human clicks approve; agents only prepare, and this route is what changes cash | `POST /approvals/{request_id}/approve` (plus `GET /approvals` and `POST .../reject`) |
+| P7-6 | A | Return the current checking balance from `cash_accounts` | `GET /cash` |
+| P7-7 | A | Reset the database to the original values | `POST /reset` |
+| P7-8 | B | Starts from `backend/` with `uvicorn main:app --reload --port 8000` | Confirmed: `main:app` loads from `backend/`; the server ran on port 8000 |
+| P7-9 | B | In `output/harness.md`, each route in one line (URL / what it does) | harness Table 22: Backend Route Ledger (numbered 1–10) |
+| P7-10 | (mine) | Show me | The ledger and the live test results (harness Table 23) |
+| P7-11 | (extra) | Test every route on the running server | 13 steps, including a real $2,400 human approval (checking $3,400 → $1,000), the refusals, and a reset back to the original |
 
 ---
 

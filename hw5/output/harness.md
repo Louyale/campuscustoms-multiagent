@@ -469,3 +469,58 @@ Campus Customs' agents touch real customers and real money. These are the guardr
 | Prompt caching | one cache key per agent | `openai_prompt_cache_key` in `settings_for()` (each agent's long prompt is reused) |
 | Structured output | one report type per agent | `NativeOutput(...)` keeps replies short and parseable |
 | Long tool results in the audit trail | Shortened to 800 characters | `MAX_TEXT` in `backend/audit.py` |
+
+## Problem 7: Backend routes
+
+The backend is `backend/main.py`, built with **FastAPI**. Start it from the `backend/` folder:
+
+```bash
+uvicorn main:app --reload --port 8000
+```
+
+It serves `http://localhost:8000`; the interactive docs are at `/docs`, and `/` lists every route. When it starts, it opens **one MCP connection** that every route and every agent shares. Shop facts come only from the MCP server, except for reset, which copies the original database file over the working copy.
+
+### Route ledger
+
+**Table 22: Backend Route Ledger**
+
+| # | URL | What it does |
+|---|---|---|
+| 1 | `GET /tickets` | Returns the three tickets, each marked **open** or **resolved**, with the board's detailed status (in_progress, waiting_approval, blocked) |
+| 2 | `POST /tickets/{ticket_id}/run` | Runs the agent team on one ticket. Returns a run id right away (202); `?wait=true` waits for Boss's decision. Refused (409) if the team is already working a ticket, and 404 for a ticket that doesn't exist |
+| 3 | `GET /runs/{run_id}` | A run's status (queued, running, done or failed), with Boss's decision, the assignments, and the check that every listed approval is really filed |
+| 4 | `GET /events?since=&ticket_id=&limit=` | Recent agent events from the audit trail, so the board can refresh: what each agent said, which tools it used, and human approvals and resets. `since` returns only what's new |
+| 5 | `GET /approvals` | The payment and purchase requests the agents prepared, waiting for a human |
+| 6 | `POST /approvals/{request_id}/approve` | **A human clicked approve.** This is the only route that changes cash. It calls the human-only `approve_and_pay` with the approval code from `.env`, records who approved, updates `payments`, `cash_accounts` and the invoice or lease, and refuses (409) if cash would go below zero or the request isn't pending |
+| 7 | `POST /approvals/{request_id}/reject` | A human clicked reject. No money moves |
+| 8 | `GET /cash` | The current **checking balance** from `cash_accounts`, with its as-of date, what's promised to pending requests, and what's still free |
+| 9 | `POST /reset` | Resets the database to the original values for a fresh run (copies `campus_customs.db` over `campus_customs_new.db`). Refused while a run is active. The reset is logged in the append-only audit trail |
+| 10 | `GET /` and `GET /health` | `/` lists every route; `/health` reports that the backend is up, the model (`gpt-6-luna`), and the MCP tool count (25) |
+
+### Every route tested on the running server
+
+**Table 23: Route Test Results**
+
+| Step | Call | Result |
+|---|---|---|
+| 1 | `POST /reset` | 200: the database matches the original (SHA-256 `23686a90…`); checking $3,400 |
+| 2 | `GET /health` | 200: `gpt-6-luna`, 25 MCP tools |
+| 3 | `GET /tickets` | 200: 101, 102 and 103 all **open** |
+| 4 | `GET /cash` | 200: checking **$3,400.00** as of 2026-08-31; $0 pending |
+| 5 | `POST /tickets/102/run` | 202: run queued. A second `POST /tickets/101/run` was refused (409: "already working a ticket"), and `/tickets/999/run` returned 404 |
+| 6 | `GET /runs/{id}` | done. Boss chose priority **urgent** and recommended approving the $2,400 rent; 4 urgent assignments, all done; the approval check found 1 of 1 filed |
+| 7 | `GET /approvals` | 200: 1 pending request (rent, Elm City Properties, $2,400) |
+| 8 | `POST /approvals/1/approve` with no name | **422**: refused, because an approver must be named |
+| 9 | `POST /approvals/1/approve` as "Boss (Mr. D'Onofrio)" | 200: **paid**, checking **$3,400 → $1,000**, and lease 1's next_due moved to 2026-10-02 |
+| 10 | `POST /approvals/1/approve` again | **409**: "Request 1 is not pending", so nothing is paid twice |
+| 11 | `GET /cash` | 200: checking **$1,000.00** |
+| 12 | `GET /events` | 200: agent steps, then "Boss (Mr. D'Onofrio) approved request 1: paid $2,400.00 to Elm City Properties; checking $3,400.00 to $1,000.00", then the reset |
+| 13 | `POST /reset` | 200: back to the original, with checking $3,400 and 0 pending |
+
+The test ran in the app's browser preview, against the real server on port 8000. Afterwards the server was stopped (port 8000 is free, and no uvicorn process is left), and the working database was reset to a byte-for-byte copy of the original.
+
+**Notes:**
+- **Approval is the human's click.** The approval code never leaves the backend: the agents can't see it, and the browser never sends it.
+- **A real business would add login and roles** to the approve and reject routes, so only named managers can click them. In this local, single-user setup, every approval records the approver's name in `payments.approved_by`.
+- **One ticket runs at a time.** The team shares cash, and one-at-a-time keeps token use in check (Table 21 limits).
+- **New packages:** `fastapi==0.162.0` and `uvicorn==0.54.0` are pinned in `requirements.txt`.

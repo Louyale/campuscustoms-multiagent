@@ -3,3 +3,5 @@ pydantic-ai-slim[openai,mcp]==2.65.0
 openai==3.42.1
 python-dotenv==1.2.4
 pyspellchecker==0.9.1
+fastapi==0.162.0
+uvicorn==0.54.0
