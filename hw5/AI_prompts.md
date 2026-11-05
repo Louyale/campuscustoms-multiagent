@@ -36,6 +36,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 8 | Agent dashboard | React + Vite + TypeScript board modeled on my desk; all 7 bullets checked off; front end talks to the back end; special-effects lists and options; confirm Problems 1–7 first | The desk vs. the dashboard; open it here to see every graphic | `frontend/`, `output/design.md`, `output/dashboard_screens/`, `backend/main.py` (resolved state, summary route), `output/harness.md` (Table 27) |
 
 | 9 | Resolve the tickets | Reset, then run all three tickets; fill each Actual section in bullets and keep Expected; itemize the Cash tab so the math is right; the resolved tickets JSON; a resolved board in Yale colors with the Yale logo, Campus Customs and "Resolved!" in a happy font; finish the harness; leave the text parts for my approval | I approve the payments as the human, but no real cash or email moves | `output/desk_tickets.html`, `output/resolved_tickets.json`, `output/resolved_board.html`, `output/audit_trail.json`, `output/harness.md` (Tables 0, 28–30), `scripts/build_resolved.py`, `scripts/build_resolved_board.py` |
+| 10 | Reflection | Each of the 5 bullets as a question with a proposed answer in my vibe (assertive, not too serious, fun jargon, "the dream team"), a separate approval for each, tied to this app and our data, with the ticket and Cash tabs as evidence on the same page; efficient, accurate, and the cash 100% right | (pending my review) | `output/desk_tickets.html` (Reflection tab, Tables 4–8), `scripts/reflection.py` |
 ---
 
 ## Problem 1: Vibe coder prompts
@@ -825,6 +826,27 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 - **Approved:** the Actual sections and the Cash tab are marked ☑ Approved by Boss (Mr. D'Onofrio).
 - **Problem 9 is closed.** It's committed locally, ready to push in Problem 10.
 - **The working database stays in its Problem 9 end state** as evidence: checking $160.00; 101 and 102 resolved; 103 blocked on the discount decision.
+
+## Problem 10: Reflection
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> now for problem 10, we are going to put the questions followed by our answers in my own vibe.  remember my vibe style - assertive but not too serious.  weave in some fun jargon.  we can refer to our team as the dream team sometimes.  i want each of the 5 bullets as a question with your proposed answer underneath so i can amend each response with separate approvals for each.  be sure to use this app, and our campus customs data for all analysis.  be sure to add the ticket and cash tabs and evidence on the same page as the Q&A to support our responses.  remember that it is super important to be efficient, accurate, not cost too many tokens or money, get the jib done correctly, have our corporate flavor, and most important to keep track of the cash with 100% accuracy.  write your responses and create the page in reflections and I'll approve each response.
+
+> big money here, let's do it.  take your time, i'm going for a quick run and then i'll review
+
+**Outcome (waiting for my approval of each answer):**
+
+- **The Reflection tab is filled in.** It has all 5 assignment bullets as questions (Q1–Q5), each with a proposed answer in my vibe and its own approval box.
+- **Evidence on the same page:**
+  - Each answer has chips that jump to the 101, 102, 103 and Cash tabs.
+  - A cash strip at the top reads: $3,400.00 → 101 −$840.00 → 102 −$2,400.00 → 103 $0.00 → $160.00, ✓ matches `cash_accounts`.
+- **The answers use only this app's run and the Campus Customs data:**
+  - run numbers from `output/resolved_tickets.json`
+  - stock, prices, vendors and the lease from the database
+  - every tool named is checked against `mcp_server/server.py`
+- **New tables:** Table 4: Agent Scorecard by Ticket; Table 5: Expected vs. Actual by Ticket; Table 6: One Agent or the Dream Team?; Table 7: New Problems the Team Can Solve With Today's Tools; Table 8: New Problems the Team Can't Solve Yet, and What It Would Take.
+- **No model calls or money were spent** writing it.
 
 ## Appendix: Setup prompts (before Problem 1)
 

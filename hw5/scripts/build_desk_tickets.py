@@ -1,7 +1,7 @@
 """Build output/desk_tickets.html: one self-contained page (double-click to open, no internet).
 
 Tabs: 101, 102, 103 (each with an Expected plan, and an empty Actual section to fill after the
-agents run), plus Cash and Reflection tabs, which say "coming later" for now.
+agents run), plus the Cash tab (Problem 9) and the Reflection tab (Problem 10, from scripts/reflection.py).
 
 Ticket facts at the top of each tab are read from the ORIGINAL database (read-only), so nothing is
 invented. The Expected plans are Lou's expectations, written in plain words in PLANS below; edit
@@ -16,6 +16,10 @@ import html
 import re
 import sqlite3
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import reflection  # noqa: E402  (the Problem 10 Reflection tab)
 
 PROJECT = Path(__file__).resolve().parent.parent
 DB = PROJECT / "data" / "campus_customs.db"
@@ -427,7 +431,7 @@ def main() -> None:
 {matrix()}
 {tabs}
 <section class="panel" id="tcash">{cash_tab(R)}</section>
-<section class="panel" id="trefl"><div class="later"><h2>Reflection</h2><p>Coming later: how the Actual runs compared with these Expected plans, and what we learned.</p></div></section>
+<section class="panel" id="trefl">{reflection.render(R)}</section>
 </main>
 <footer>One self-contained file: open it by double-clicking, with no internet needed. Ticket facts are read from data/campus_customs.db. Built by scripts/build_desk_tickets.py.</footer>
 </body></html>"""

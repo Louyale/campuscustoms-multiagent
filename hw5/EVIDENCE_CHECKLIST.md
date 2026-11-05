@@ -148,3 +148,10 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Duplicate-draft cause fixed (Boss's title rule; `save_customer_draft` revises in place); tool check 44 of 44; live scratch test: one draft
 - [x] Actual sections and Cash tab approved by Boss (Mr. D'Onofrio)
 - [x] **Problem 9 closed out**
+
+## Problem 10: Reflection
+
+- [x] Reflection tab in `output/desk_tickets.html`: all 5 bullets as questions, each with an answer
+- [x] Every answer tied to this app, the three tickets and the Campus Customs data, with links to the ticket and Cash tabs on the same page
+- [x] Cash strip: $3,400.00 − $840.00 − $2,400.00 = $160.00, matching `cash_accounts`
+- [ ] Boss approves Q1  - [ ] Q2  - [ ] Q3  - [ ] Q4  - [ ] Q5
