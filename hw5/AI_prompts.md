@@ -33,6 +33,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | Boss: encourage_teammate; Accounting: balance sheet and income statement tools; Customer Service: spelling and grammar gate; Facilities: lease and building-request tools | `mcp_server/server.py` (24 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–18) |
 | 6 | Plan the three tickets | A double-click page with tabs for 101–103 plus Cash and Reflection; an Expected section (Boss's first call, every delegation, MCP tools) in ordered bullets I can edit; the right agents only; room for Actual | What "All the delegations, not Boss calls everyone" means | `output/desk_tickets.html`, `scripts/build_desk_tickets.py` |
 | 7 | Backend routes | FastAPI routes in `backend/main.py` to spec; every route in the harness in a numbered ledger; show me | Clearer for the grader and more efficient for the agents (7 improvements) | `backend/main.py`, `scripts/route_check.py`, `output/route_check.json`, `requirements.txt`, `output/harness.md` (Tables 22–25) |
+| 8 | Agent dashboard | React + Vite + TypeScript board modeled on my desk; all 7 bullets checked off; front end talks to the back end; special-effects lists and options; confirm Problems 1–7 first | The desk vs. the dashboard; open it here to see every graphic | `frontend/`, `output/design.md`, `output/dashboard_screens/`, `backend/main.py` (resolved state, summary route), `output/harness.md` (Table 27) |
 
 ---
 
@@ -636,6 +637,58 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
   - a code search found no other model name
   - all five agents report `gpt-6-luna`
   - all 188 logged model calls were answered as `gpt-6-luna-global`, Portkey's name for it
+
+---
+
+## Problem 8: Agent dashboard
+
+**Prompt (my own words, with screenshots of Panels A and B and a photo of my desk at work):**
+
+> for problem 8, build the front end dashboard, and complete all bullet tasks.  keep track of all 7 points so we can list them and check them off as we did when we refined problem 7.  make the dashboard look good, make the desk and then give me options for improvement.  tell the front end to talk to the back end, and follow the instructions so we can pick tickets and watch agents.  make a list of all the special effects we made for the dashboard and desk (are they separate?).  confirm that problems 1-7 are all done, first.  this is problem 8.  use my desk at work as a model.  have multiple desk spaces and a comfortable chair.  we also want multiple computer terminals and a locked drawer for sensitive papers, include other options to start.  so we'll need all tasks done, two lists and a list of all options for the desk/dashboard.  do you understand all this?
+
+> Go!
+
+> tell me the difference between the desk and the dashboard and when you're finished building, be sure to open it here so i can see all graphics
+
+**What was lacking after the first:** I wanted to hear how the desk and the dashboard differ, and to see every graphic in the app.
+
+**Outcome:**
+
+- **Problems 1–7 confirmed done first:** every problem's checklist was fully ticked, the repo was clean, and the databases matched the original.
+- **The dashboard:** `frontend/` (React + Vite + TypeScript), designed as my office desk in Yale blue and white:
+  - the navy accent wall with the Yale Y, the window onto the diamond-cutout building, the framed diplomas, and the ceiling lights
+  - **Terminal 1** (the ticket inbox), **Terminal 2** (the team), and **Terminal 3** (a laptop with checking)
+  - the in-tray for approvals, the legal pad for summaries, and a **locked drawer** for sensitive papers
+  - my nameplate, the CC mug, the 2026 newsletter and the lamp
+  - **Boss's comfortable chair** (focus mode), and guest chairs
+- **All 7 bullets checked off** in harness Table 27, tested live:
+  - The team ran 102, the whole board, and 103.
+  - All three tickets were marked resolved as their runs finished.
+  - I approved $2,400 rent and $840 invoice 501: **checking $3,400 → $1,000 → $160**.
+- **Two lists and the options** are in `output/design.md`: desk effects (D1–D10), dashboard effects (B1–B15), and 15 options for improvement.
+- **The desk and the dashboard:** they're two layers of one screen. The desk is the scene that sets the feel; the dashboard is the working panels set into it.
+- **Found in testing and fixed:**
+  - Raw `{…}` report text showed in the feed.
+  - The APPROVED stamp vanished too quickly.
+  - Boss once left ticket 103 "in progress" after its run finished, so a finished run's status is now recorded as waiting on a human.
+- **Screenshots:** `output/dashboard_screens/`
+
+**Table 17: Problem 8 Tasks**
+
+| Task | What was asked | Where it's done |
+|---|---|---|
+| P8-1 | List all three tickets | Terminal 1 (`GET /tickets`) |
+| P8-2 | Pick one ticket and start the agent team on it | "Start the team on #…" (`POST /tickets/{id}/run`), plus "Run the whole board" |
+| P8-3 | Show each agent and what they're saying or doing during a run | Terminal 2: seats, bubbles, tool chips, live feed (`GET /events`) |
+| P8-4 | Mark a ticket resolved when the run finishes | ✔ Resolved pill and RESOLVED stamp |
+| P8-5 | A short summary of what each agent did | The legal pad (`GET /tickets/{id}/summary`) |
+| P8-6 | A human approves a pay or purchase | In-tray "Approve & pay" (`POST /approvals/{id}/approve`) |
+| P8-7 | The checking balance drops after an approved pay | Terminal 3 laptop (`GET /cash`): $3,400 → $1,000 → $160 |
+| P8-8 | Front end talks to `http://localhost:8000`; backend allows `http://localhost:5173` | `src/api.ts`, CORS in `backend/main.py` |
+| P8-9 | Start the board with `npm run dev` | `frontend/package.json` (Vite, port 5173) |
+| P8-10 | `output/design.md`: layout, how agents read differently, resolved tickets and cash, creative choices | `output/design.md` |
+| P8-11 | (mine) My desk as the model: multiple desk spaces, multiple terminals, a comfortable chair, a locked drawer | The office scene and the L-shaped desk |
+| P8-12 | (mine) Two lists (special effects) and the options | `output/design.md` Tables 3–5 |
 
 ---
 

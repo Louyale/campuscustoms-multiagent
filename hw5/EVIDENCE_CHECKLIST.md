@@ -115,3 +115,17 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Server stopped after testing, and the database reset to the original
 - [x] Board status always matches Boss's decision (status sync; route check step 19)
 - [x] Results laid out by the assignment's bullets (harness Table 26): all met
+
+## Problem 8: Agent dashboard (12 points)
+- [x] `frontend/` built with React + Vite + TypeScript, calling the Problem 7 routes
+- [x] Lists all three tickets
+- [x] Pick one ticket and start the agent team on it
+- [x] Shows each agent and what it's saying or doing while the ticket runs
+- [x] Marks a ticket resolved when the run finishes
+- [x] Shows a short summary of what each agent did on the ticket
+- [x] A human can approve a pay or purchase
+- [x] Shows the checking balance, which drops after an approved pay ($3,400 → $1,000 → $160)
+- [x] The front end talks to `http://localhost:8000`; the backend allows `http://localhost:5173`
+- [x] Starts with `npm run dev`; `npm run build` compiles cleanly
+- [x] `output/design.md`: layout, how agents read differently, resolved tickets and cash, creative choices
+- [x] Designed to look good: modeled on my office desk, in Yale blue and white (`output/dashboard_screens/`)

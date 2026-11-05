@@ -583,3 +583,35 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 - **One run at a time.** The team shares cash, and one-at-a-time keeps token use in check (Table 21 limits).
 - **The MCP connection now waits up to 60 seconds to start** (`init_timeout=60` in `backend/mcp_tools.py`). The first automated test showed the server can take about 11 seconds to start, longer than the default wait.
 - **New packages:** `fastapi==0.162.0` and `uvicorn==0.54.0` are pinned in `requirements.txt`.
+
+## Problem 8: Agent dashboard
+
+**What it is:** the dashboard is `frontend/`, built with **React + Vite + TypeScript**. It talks to the backend at `http://localhost:8000` (`VITE_API_URL`), and the backend allows the Vite origin `http://localhost:5173` (CORS).
+
+**How to start it:**
+1. Start the backend from `backend/`: `uvicorn main:app --reload --port 8000`
+2. Start the board from `frontend/`: `npm run dev`, then open `http://localhost:5173`
+
+**The look:** it's designed as **Boss's desk**, modeled on Mr. D'Onofrio's office at work, in Yale blue and white. The design choices are in `output/design.md`. Screenshots are in `output/dashboard_screens/`.
+
+**Table 27: Dashboard Requirements and Results**
+
+| # | The assignment's bullet | Where on the desk | Route(s) | Result |
+|---|---|---|---|---|
+| 1 | List all **three** tickets | Terminal 1: ticket inbox | `GET /tickets` | ✅ 101, 102 and 103, each with its type, requester, state and what's left |
+| 2 | Let you **pick one ticket** and start the agent team on it | Click a card, then **Start the team on #…** (plus **Run the whole board**) | `POST /tickets/{id}/run`, `POST /board/run` | ✅ Picked 102 and started the team; then ran the board, and later 103 |
+| 3 | Show each agent and what they're saying or doing while the ticket runs | Terminal 2: five seats with status lights, speech bubbles, tool chips, and a live feed | `GET /events?since=` (every 1.5 seconds) | ✅ Boss, Accounting and Facilities lit up working during 102; the feed showed each tool call and statement |
+| 4 | Mark a ticket **resolved** when the run finishes | A ✔ Resolved pill and a RESOLVED stamp on the card | `GET /runs/{id}`, `GET /tickets` | ✅ All three tickets were marked resolved the moment their runs finished |
+| 5 | Show a short **summary of what each agent did** on that ticket | The legal pad | `GET /tickets/{id}/summary` (new) | ✅ Each agent's final word, the tools it used, its model steps, and its thank-you |
+| 6 | Let a human **approve** a pay or purchase when asked | The in-tray: **Approve & pay**, stamped and signed "Boss (Mr. D'Onofrio)" | `POST /approvals/{id}/approve` | ✅ Approved the $2,400 rent and the $840 invoice |
+| 7 | Show the checking balance; it should **drop after an approved pay** | Terminal 3: the laptop | `GET /cash` | ✅ **$3,400.00 → $1,000.00 → $160.00**, counting down after each approval |
+| B1 | The front end talks to `http://localhost:8000`; the backend allows `http://localhost:5173` | `src/api.ts`, `frontend/.env.example`; CORS in `backend/main.py` | (all) | ✅ Live: the status light reads "Backend live · gpt-6-luna" |
+| B2 | Start the board with `npm run dev` | `frontend/package.json` | (none) | ✅ Vite on port 5173; `npm run build` also compiles cleanly (type-checked) |
+| B3 | `output/design.md`: the look (layout, how agents read differently, how resolved tickets and cash show up) and why, with the creative choices | `output/design.md` | (none) | ✅ Includes the office mapping, the special effects (desk and dashboard), and 15 options for improvement |
+
+**Backend changes made for the dashboard:**
+- **The resolved state.** `GET /tickets` now marks a ticket `resolved` the moment the team's run on it finishes, and adds a plain-words `resolution` line, such as "waiting on your approval (1)" or "complete".
+- **Auto-resolve.** Approving a ticket's last pending request marks the ticket `resolved` in the database.
+- **The summary route.** The new `GET /tickets/{id}/summary` gives the legal pad its per-agent summary.
+- **Run end.** When a run ends, a recommended `open` or `in_progress` is recorded as `waiting_approval`, because the team's part is done. This came from the live test, where Boss once left ticket 103 "in progress".
+

@@ -79,7 +79,9 @@ class TicketOut(BaseModel):
     qty: Optional[int] = None
     lease_id: Optional[int] = None
     invoice_id: Optional[int] = None
-    state: Literal["open", "resolved"] = Field(description="What the assignment asks for: open or resolved")
+    state: Literal["open", "resolved"] = Field(
+        description="open = the team hasn't finished it; resolved = the team's run on it has finished")
+    resolution: str = Field(description="Plain words: what's left, e.g. 'waiting on your approval (1)' or 'complete'")
     status: str = Field(description="The board's detailed status: open, in_progress, waiting_approval, blocked, resolved")
     pending_requests: int = Field(description="Payment requests on this ticket waiting for a human")
     notes: Optional[str] = None
@@ -158,6 +160,9 @@ class Rejection(BaseModel):
 
 # ----------------------------------------------------------------------------- 1. tickets
 
+TEAM_FINISHED = {"waiting_approval", "blocked", "resolved"}
+
+
 @app.get("/tickets", response_model=TicketsOut, summary="The three tickets, each open or resolved")
 async def list_tickets():
     """Every ticket on the board, with **state** (open or resolved), the detailed status, and how many
@@ -167,12 +172,27 @@ async def list_tickets():
     waiting: dict[int, int] = {}
     for r in pending["requests"]:
         waiting[r["ticket_id"]] = waiting.get(r["ticket_id"], 0) + 1
-    tickets = [TicketOut(
-        id=t["id"], type=t["type"], requester=t["requester"], subject=t["subject"], sku=t["sku"], size=t["size"],
-        qty=t["qty"], lease_id=t["lease_id"], invoice_id=t["invoice_id"],
-        state="resolved" if t["status"] == "resolved" else "open", status=t["status"],
-        pending_requests=waiting.get(t["id"], 0), notes=t["notes"], created_at=t["created_at"],
-    ) for t in board["tickets"]]
+    tickets = []
+    for t in board["tickets"]:
+        n = waiting.get(t["id"], 0)
+        finished = t["status"] in TEAM_FINISHED  # the team's run on this ticket has finished
+        if t["status"] == "resolved":
+            resolution = "complete"
+        elif n:
+            resolution = f"waiting on your approval ({n})"
+        elif t["status"] == "blocked":
+            resolution = "needs a human decision"
+        elif t["status"] == "waiting_approval":
+            resolution = "waiting on a human decision"
+        elif t["status"] == "in_progress":
+            resolution = "the team is working on it"
+        else:
+            resolution = "not started"
+        tickets.append(TicketOut(
+            id=t["id"], type=t["type"], requester=t["requester"], subject=t["subject"], sku=t["sku"], size=t["size"],
+            qty=t["qty"], lease_id=t["lease_id"], invoice_id=t["invoice_id"],
+            state="resolved" if finished else "open", resolution=resolution, status=t["status"],
+            pending_requests=n, notes=t["notes"], created_at=t["created_at"]))
     return TicketsOut(today=board["today"], count=len(tickets), tickets=tickets)
 
 
@@ -343,6 +363,49 @@ async def recent_events(since: int = 0, limit: int = 50, ticket_id: int | None =
     return EventsOut(next_since=len(entries), events=events[-limit:])
 
 
+ROLE = {"boss": "Boss (Mr. D'Onofrio)", "inventory": "Inventory", "accounting": "Accounting",
+        "facilities": "Facilities", "customer_service": "Customer Service"}
+
+
+@app.get("/tickets/{ticket_id}/summary", summary="A short summary of what each agent did on a ticket")
+async def ticket_summary(ticket_id: int):
+    """From the audit trail, for the latest team run on this ticket: each agent's job, the tools it used,
+    how many model steps it took, and its final word. Dashboard: the legal-pad summary."""
+    entries = read_trail()
+    runs = [e["run_id"] for e in entries if e.get("ticket_id") == ticket_id and e.get("run_id") and e.get("step_kind") == "DecisionCheck"]
+    if not runs:
+        return {"ticket_id": ticket_id, "run_id": None, "agents": [], "message": "The team hasn't run this ticket yet."}
+    rid = runs[-1]
+    mine = [e for e in entries if e.get("run_id") == rid]
+    agents: dict[str, dict] = {}
+    for e in mine:
+        a = e.get("agent")
+        if a not in ROLE:
+            continue
+        rec = agents.setdefault(a, {"agent": a, "name": ROLE[a], "symbol": e.get("symbol"), "model_steps": 0,
+                                    "tools": {}, "did": None, "thanked": None})
+        if e.get("step_kind") == "CallToolsNode":
+            rec["model_steps"] += 1
+            for c in e.get("tool_calls") or []:
+                rec["tools"][c["tool"]] = rec["tools"].get(c["tool"], 0) + 1
+        if e.get("step_kind") == "End":
+            out = e.get("output") or {}
+            rec["did"] = (out.get("summary") or out.get("recommendation") or out.get("note")
+                          or (f"Drafted \"{out.get('subject')}\" to {out.get('to')}" if out.get("subject") else None))
+        if e.get("step_kind") == "AssignmentDone":
+            to = e.get("thanks_to")
+            if to in agents or to in ROLE:
+                agents.setdefault(to, {"agent": to, "name": ROLE[to], "symbol": None, "model_steps": 0, "tools": {}, "did": None, "thanked": None})
+                agents[to]["thanked"] = (e.get("assignment") or {}).get("thanks")
+    order = ["boss", "inventory", "accounting", "facilities", "customer_service"]
+    out = [agents[k] for k in order if k in agents]
+    for r in out:
+        r["tools"] = [{"tool": k, "times": v} for k, v in r["tools"].items()]
+    sync = next((e for e in reversed(mine) if e.get("step_kind") == "StatusSync"), {})
+    return {"ticket_id": ticket_id, "run_id": rid, "board_status": sync.get("set_to"), "agents": out,
+            "agents_not_called": [ROLE[k] for k in order if k not in agents]}
+
+
 # ----------------------------------------------------------------------------- 4. human approval
 
 @app.get("/approvals", summary="Requests waiting for a human")
@@ -366,6 +429,13 @@ async def approve(request_id: int, body: Approval):
                   "request_id": request_id, "approved_by": body.approved_by.strip(), "result": result})
     if not result.get("paid"):
         raise HTTPException(409, result.get("message", "Not paid"))
+    allreq = await mcp("list_payment_requests")
+    ticket_id = next((r["ticket_id"] for r in allreq["requests"] if r["id"] == request_id), None)
+    if ticket_id is not None and not any(r["ticket_id"] == ticket_id and r["status"] == "pending" for r in allreq["requests"]):
+        await mcp("update_ticket_status", ticket_id=ticket_id, status="resolved")
+        result["ticket_resolved"] = ticket_id
+        append_entry({"time": now(), "run_id": None, "ticket_id": ticket_id, "agent": "human", "step_kind": "TicketResolved",
+                      "why": f"its last pending request ({request_id}) was approved"})
     return result
 
 
@@ -418,6 +488,7 @@ ROUTES = [
     "POST /tickets/{ticket_id}/run: run the agent team on one ticket (?wait=true waits; ?force=true re-runs a ticket waiting on you)",
     "POST /board/run: run every open ticket, most urgent first",
     "GET  /runs/{run_id}: a run's status and Boss's decision",
+    "GET  /tickets/{ticket_id}/summary: a short summary of what each agent did on the ticket",
     "GET  /events?since=&ticket_id=&run_id=&limit=: recent agent events (what each agent said, tools used)",
     "GET  /approvals: payment and purchase requests waiting for a human",
     "POST /approvals/{request_id}/approve: a human approves; this pays and changes cash",

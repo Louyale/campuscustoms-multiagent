@@ -208,6 +208,9 @@ async def run_ticket(ticket_id: int) -> tuple[TicketDecision, TeamDeps]:
         # can't leave it stale (and Boss saves that call). If an approval Boss listed is missing from the
         # board, "waiting_approval" would be misleading, so the ticket is marked "blocked" instead.
         wanted = result.output.recommended_status
+        if wanted in ("open", "in_progress"):
+            # The run has finished, so the team's work is done: whatever is left is a human's call.
+            wanted = "waiting_approval"
         if missing and wanted == "waiting_approval":
             wanted = "blocked"
         current = (await mcp_toolset.direct_call_tool("get_ticket", {"ticket_id": ticket_id}))

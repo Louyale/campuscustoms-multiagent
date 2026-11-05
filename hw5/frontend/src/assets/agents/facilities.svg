@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Facilities: in Yale gear, a Yale-blue hoodie and cap">
+  <title>Facilities: in Yale gear, a Yale-blue hoodie and cap</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c)">
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
+    <path d="M44,80 C48,90 72,90 76,80" stroke="#00264d" stroke-width="3" fill="none"/>
+    <path d="M56,86 L55,98 M64,86 L65,98" stroke="#ffffff" stroke-width="1.5"/>
+    <polygon points="50,100 55,100 60,107 65,100 70,100 62,111 62,118 58,118 58,111" fill="#ffffff"/>
+    <rect x="54" y="60" width="12" height="18" fill="#f1c8a5"/>
+    <circle cx="60" cy="47" r="17" fill="#f1c8a5"/>
+    
+    <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
+    <path d="M54,55 Q60,59 66,55" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M42,42 C42,26 78,26 78,42 Z" fill="#00356b"/><path d="M40,42 L86,42 C86,46 80,47 74,46 L40,46 Z" fill="#00356b"/><text x="60" y="40" font-family="Georgia, serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Y</text>
+  </g>
+</svg>
