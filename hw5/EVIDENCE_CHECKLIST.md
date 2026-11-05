@@ -133,3 +133,15 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] The larger office with my touches (door plaque, Yale SOM at night, shades, family and mountain pictures, couch, round table, Keurig, hardwood floor and chair mat, IN box, Yale coasters, "That was Easy" button)
 - [x] Full route check rerun after the Problem 8 backend additions: 21 of 21 (`output/route_check.json`)
 - [x] **Problem 8 closed out**
+
+## Problem 9: Resolve the tickets
+
+- [x] Working database reset first; starting checking $3,400.00
+- [x] All three tickets run on the board: 101 resolved, 102 resolved, 103 blocked (waiting on a human discount decision; resolved on the board)
+- [x] Both payments approved by the human (Boss, Mr. D'Onofrio): $840 invoice 501, $2,400 rent. No real money or email
+- [x] `output/desk_tickets.html`: Actual sections filled in (agents, delegations, MCP tools), Expected kept
+- [x] Cash tab itemized: $3,400.00 − $840.00 − $2,400.00 = $160.00, matching `cash_accounts`
+- [x] `output/resolved_tickets.json` (`scripts/build_resolved.py`, from the database and the audit trail)
+- [x] `output/resolved_board.html`: a board screenshot per ticket (`output/resolved_board_screens/`)
+- [x] Real runs appended to `output/audit_trail.json`
+- [x] `output/harness.md` finished: Table 0 map, plus Problem 9 Tables 28–30

@@ -56,7 +56,7 @@ export default function App() {
   const [model, setModel] = useState("");
   const [today, setToday] = useState("");
   const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [selected, setSelected] = useState<number>(101);
+  const [selected, setSelected] = useState<number>(() => Number(new URLSearchParams(location.search).get("ticket")) || 101);  // ?ticket=102 picks a ticket
   const [cash, setCash] = useState<Cash | null>(null);
   const [requests, setRequests] = useState<PayRequest[]>([]);
   const [calendar, setCalendar] = useState<CalItem[]>([]);

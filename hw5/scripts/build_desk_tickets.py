@@ -151,6 +151,140 @@ def desk_art(today: str) -> str:
     )
 
 
+# ----------------------------------------------------------------------------- the Actual run (Problem 9)
+# The facts come from output/resolved_tickets.json (built by scripts/build_resolved.py from the database and the
+# audit trail). The comparison lines below are Lou's review of Expected vs. Actual, in plain words.
+RESOLVED = PROJECT / "output" / "resolved_tickets.json"
+COMPARE = {
+    101: {
+        "matched": [
+            "Boss called Inventory first, as planned.",
+            "Inventory found size S at 0, with Bulldog Print Co blocked by invoice 501, as expected.",
+            "Accounting filed invoice 501 ($840) for human approval, as planned.",
+            "Customer Service drafted the reply, and Facilities wasn't called.",
+        ],
+        "different": [
+            "Accounting also filed the $2,400 rent request, correctly under ticket 102, planning the shared cash for both urgent bills.",
+            "Boss sent Customer Service a second hand-off to revise the draft: it dropped \"Professor\", because the database doesn't record a title. Both drafts were saved on the board; neither was sent.",
+            "Boss didn't call get_ticket or rank_open_tickets: the backend now hands Boss both up front (the Problem 5 efficiency change).",
+        ],
+        "after": "Boss (Mr. D'Onofrio) approved the $840. The ticket is complete, and Bulldog Print Co is unblocked, so the $8 restock order for one tee can be filed next.",
+    },
+    102: {
+        "matched": [
+            "Boss called Facilities first, as planned.",
+            "Facilities confirmed lease 1 from the record: $2,400 to Elm City Properties, due 2026-09-02.",
+            "Inventory wasn't called, as planned.",
+            "The $2,400 rent waited for a human, and was paid once approved.",
+        ],
+        "different": [
+            "Accounting wasn't needed on this run: the rent request was already filed during ticket 101, and the request tool refuses duplicates.",
+            "Boss called Customer Service for an acknowledgment to the landlord, which the plan had skipped. The draft stays on the board.",
+            "Facilities used get_rent_due only, not get_lease.",
+        ],
+        "after": "Boss (Mr. D'Onofrio) approved the $2,400. The ticket is complete, and lease 1's next due date moved to 2026-10-02.",
+    },
+    103: {
+        "matched": [
+            "Boss called Inventory first, as planned, and gave the ticket normal priority.",
+            "Accounting checked the margin: $36 a hoodie (62.07%) at the $58 list price; any price must stay above the $22 cost.",
+            "Customer Service drafted the reply, and no price or date was promised.",
+            "No payment was filed, and Facilities wasn't called.",
+        ],
+        "different": [
+            "Full connectivity in action: Accounting handed off to Inventory itself, then tried to ask Boss. That was refused by the loop guard, because Boss was already waiting on Accounting.",
+            "Inventory's answer to Accounting misread the shortfall as 4 short ($88). The real numbers are 20 requested, 8 on hand, 12 short, and $264 at cost. Boss's decision didn't rely on it.",
+            "The draft asks the club for its proposed price instead of offering 8 hoodies now.",
+        ],
+        "after": "The team finished; the discount is Boss's decision. The ticket is set to blocked: the 12-hoodie restock ($264 at cost) won't fit the $160 left.",
+    },
+}
+
+
+def load_resolved() -> dict | None:
+    import json
+    return json.loads(RESOLVED.read_text(encoding="utf-8")) if RESOLVED.exists() else None
+
+
+def actual_block(tid: int, R: dict | None) -> str:
+    if not R:
+        return """<p class="muted">To be filled in after the agents resolve this ticket.</p>"""
+    t = next(x for x in R["tickets"] if x["id"] == tid)
+    key = {v[1]: k for k, v in AGENTS.items()}
+    def agent_key(name):
+        return key.get(name, "boss")
+    first = t["boss_called_first"]
+    dl = "".join(
+        f'<li><span class="flow">{chip(agent_key(d["from"]))} <span class="arrow">→</span> {chip(agent_key(d["to"]))}</span>'
+        f' <span class="tagline">{html.escape(d.get("priority") or "")} · due {html.escape(d.get("due_by") or "")}{" · ⛔ refused by the loop guard" if d.get("refused") else ""}</span>'
+        f'<p>{html.escape((d.get("task") or "")[:220])}{"…" if len(d.get("task") or "") > 220 else ""}</p></li>' for d in t["delegations"])
+    ref = "".join(f'<li class="refused">⛔ {html.escape(r["by_agent"])}: {html.escape(r["reason"][9:160])}</li>' for r in t["refused_hand_offs"])
+    nc = "".join(f'<li>{chip(agent_key(n))} <span class="muted">not called</span></li>' for n in t["agents_not_called"])
+    tools = "".join(
+        f'<li>{chip(agent_key(a["agent"]))}<ul class="tools">' + "".join(f"<li><code>{html.escape(x['tool'])}{' ×' + str(x['times']) if x['times'] > 1 else ''}</code></li>" for x in a["tools"]) + "</ul></li>"
+        for a in t["agents"])
+    did = "".join(f"<li><b>{a['symbol']} {html.escape(a['agent'])}:</b> {html.escape(a['contributed'] or '')}</li>" for a in t["agents"])
+    pays = "".join(f"<li>✍️ <b>Approved by {html.escape(p['approved_by'])}:</b> {html.escape(p['kind'])} ${p['amount']:,.2f} to {html.escape(p['payee'])}; checking ${p['cash_before']:,.2f} → ${p['cash_after']:,.2f}</li>" for p in t["human_approvals"]) or "<li>No payment or purchase: nothing to approve</li>"
+    cmp_ = COMPARE[tid]
+    matched = "".join(f"<li>✅ {html.escape(x)}</li>" for x in cmp_["matched"])
+    different = "".join(f"<li>🔁 {html.escape(x)}</li>" for x in cmp_["different"])
+    drafts = "".join(f"<li>📝 “{html.escape(d['subject'])}” to {html.escape(d['to'])} (kept on the board, not sent)</li>" for d in t["drafts_on_board"])
+    return f"""
+      <ol class="plan">
+        <li><h4>Who Boss called first</h4><p class="lead">{chip('boss')} <span class="arrow">→</span> {chip(agent_key(first))}</p>
+          <p>Priority <b>{html.escape(t['priority'] or '')}</b>. Boss handed the first assignment to {html.escape(first or '')}.</p></li>
+        <li><h4>Every delegation that happened, in order</h4><ol class="deleg">{dl}</ol>
+          {f'<ul class="notcalled">{ref}</ul>' if ref else ''}<ul class="notcalled">{nc}</ul></li>
+        <li><h4>MCP tools the run used</h4><ul class="toolgroups">{tools}</ul></li>
+      </ol>
+      <div class="outcome">
+        <h4>What each agent did</h4><ul>{did}</ul>
+        <h4>Human approvals and drafts</h4><ul>{pays}{drafts}</ul>
+        <h4>Result</h4><ul><li><b>{html.escape(t['outcome'] or '')}</b></li>
+          <li>Final status: <b>{html.escape(t['final_status'])}</b> · cash change <b>{'−$' + format(-t['cash_change'], ',.2f') if t['cash_change'] else '$0.00'}</b> · {t['run']['model_calls']} model calls · ${t['run']['cost_usd']:.4f}</li>
+          <li>{html.escape(cmp_['after'])}</li></ul>
+        <h4>Compared with Expected</h4><ul class="cmp">{matched}{different}</ul>
+      </div>"""
+
+
+def cash_tab(R: dict | None) -> str:
+    if not R:
+        return '<div class="later"><h2>Cash</h2><p>Coming later.</p></div>'
+    c = R["cash"]
+    rows = "".join(
+        f"<tr><td>Ticket {x['ticket']}</td><td>{html.escape(x['why'])}</td><td class='num'>{'−$' + format(-x['change'], ',.2f') if x['change'] else '$0.00'}</td>"
+        f"<td class='num'>${run:,.2f}</td></tr>"
+        for x, run in zip(c["changes"], _running(c["starting_checking_balance"], [x["change"] for x in c["changes"]])))
+    pays = "".join(f"<tr><td>{p['id']}</td><td>{p['kind']}</td><td>{p['ref_id']}</td><td class='num'>${p['amount']:,.2f}</td><td>{html.escape(p['approved_by'])}</td><td>{p['paid_at']}</td></tr>" for p in R["payments_table"])
+    ok = "✅ matches" if c["matches_cash_accounts"] else "❌ does NOT match"
+    return f"""<div class="cashbox">
+  <h2>Cash: checking, itemized</h2>
+  <ul class="cash-bullets">
+    <li><b>Starting checking balance</b> (after the reset): <b>${c['starting_checking_balance']:,.2f}</b>, as of {R['shop_date']}</li>
+    <li><b>Ending checking balance:</b> <b>${c['ending_checking_balance_by_math']:,.2f}</b>, which {ok} <code>cash_accounts</code> in the working database (${c['ending_checking_balance_in_cash_accounts']:,.2f})</li>
+    <li><b>The math:</b> {html.escape(c['math'])}</li>
+    <li>Cash only went out, and only after a human approved each payment. No revenue is modeled, and no real money moved: this is the practice database.</li>
+  </ul>
+  <table class="summary cash-table"><caption>Table 2: Cash Change by Ticket</caption>
+    <tr><th>Ticket</th><th>What changed cash, and why</th><th>Change</th><th>Checking after</th></tr>
+    <tr><td>Start</td><td>After the database reset</td><td class='num'>(none)</td><td class='num'>${c['starting_checking_balance']:,.2f}</td></tr>
+    {rows}
+    <tr class="end"><td>End</td><td>Must equal <code>cash_accounts</code>: {ok}</td><td class='num'>−${c['starting_checking_balance'] - c['ending_checking_balance_by_math']:,.2f}</td><td class='num'><b>${c['ending_checking_balance_by_math']:,.2f}</b></td></tr>
+  </table>
+  <table class="summary cash-table"><caption>Table 3: The payments Table in the Working Database</caption>
+    <tr><th>id</th><th>kind</th><th>ref_id</th><th>amount</th><th>approved_by</th><th>paid_at (shop date)</th></tr>{pays}
+  </table>
+</div>"""
+
+
+def _running(start: float, changes: list[float]) -> list[float]:
+    out, v = [], start
+    for ch in changes:
+        v = round(v + ch, 2)
+        out.append(v)
+    return out
+
+
 def ticket_facts() -> dict[int, dict]:
     with sqlite3.connect(f"file:{DB.as_posix()}?mode=ro", uri=True) as c:
         c.row_factory = sqlite3.Row
@@ -172,7 +306,7 @@ def chip(key: str) -> str:
     return f'<span class="chip">{avatar(key, 26)}<span>{html.escape(name)}</span></span>'
 
 
-def ticket_tab(tid: int, facts: dict) -> str:
+def ticket_tab(tid: int, facts: dict, R: dict | None = None) -> str:
     p = PLANS[tid]
     first_key, first_why = p["first"]
     dl = "".join(
@@ -210,14 +344,8 @@ def ticket_tab(tid: int, facts: dict) -> str:
       <div class="outcome"><h4>Expected result</h4><ul>{outcome}</ul></div>
     </article>
     <article class="card actual">
-      <h3><span class="tag act">Actual</span> What the team really did</h3>
-      <p class="muted">To be filled in after the agents resolve this ticket, so it can be compared line by line with the plan.</p>
-      <ol class="plan blank">
-        <li><h4>Who Boss called first</h4><div class="slot">(after the run)</div></li>
-        <li><h4>Every delegation that happened</h4><div class="slot">(after the run)</div></li>
-        <li><h4>MCP tools the run used</h4><div class="slot">(after the run)</div></li>
-      </ol>
-      <div class="outcome"><h4>Actual result, and how it compares</h4><div class="slot">(after the run)</div></div>
+      <h3><span class="tag act">Actual</span> What the team really did (Problem 9 run)</h3>
+      {actual_block(tid, R)}
     </article>
   </div>
 </section>"""
@@ -241,7 +369,10 @@ main{padding:24px 36px 48px}.panel{display:none}
 .facts dt{color:var(--muted);font-size:12px}.facts dd{margin:0;font-weight:600;color:var(--yale)}
 .cols{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}@media(max-width:1000px){.cols{grid-template-columns:1fr}.facts{grid-template-columns:repeat(2,auto)}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,53,107,.06)}.card h3{margin:0 0 12px;font-size:17px;display:flex;gap:10px;align-items:center;color:var(--yale)}
-.tag{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}.tag.exp{background:var(--yale);color:#fff}.tag.act{border:1px dashed var(--muted);color:var(--muted)}
+.tag{font-size:12px;padding:3px 10px;border-radius:999px;font-weight:700;letter-spacing:.4px}.tag.exp{background:var(--yale);color:#fff}.tag.act{background:var(--yale2);color:#fff}
+.tagline{font-size:11.5px;color:var(--muted);margin-left:6px}.refused{color:#8a2a2a}.cmp li{margin:3px 0}
+.cashbox{max-width:980px}.cashbox h2{color:var(--yale);margin-top:0}.cash-bullets li{margin:6px 0}.num{text-align:right;font-variant-numeric:tabular-nums}
+.cash-table td:nth-child(2){text-align:left}.cash-table tr.end td{background:var(--tint);font-weight:700}
 .plan{padding-left:20px;margin:0}.plan>li{margin:0 0 18px}.plan>li::marker{color:var(--yale);font-weight:700}h4{margin:0 0 6px;font-size:15px;color:var(--yale)}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--tint);border:1px solid var(--line);border-radius:999px;padding:2px 10px 2px 3px;font-weight:600;font-size:13.5px;vertical-align:middle;color:var(--yale)}
 .av{display:block}.arrow{color:var(--yale2);font-weight:700;margin:0 4px}.lead{margin:2px 0 6px}
@@ -277,12 +408,13 @@ def matrix() -> str:
 def main() -> None:
     facts = ticket_facts()
     team = "".join(avatar(k, 36) for k in AGENTS)
-    tabs = "".join(ticket_tab(t, facts[t]) for t in (101, 102, 103))
+    R = load_resolved()
+    tabs = "".join(ticket_tab(t, facts[t], R) for t in (101, 102, 103))
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Campus Customs: Desk Tickets (Expected plans)</title><style>{CSS}</style></head>
 <body>
-<header>{YALE_Y}<div class="titles"><h1>Campus Customs</h1><div class="h1sub">Desk Tickets</div><p class="sub">Problem 6 plan, written before the agents resolve the tickets · shop date {facts[101]['today']}</p></div>
+<header>{YALE_Y}<div class="titles"><h1>Campus Customs</h1><div class="h1sub">Desk Tickets</div><p class="sub">Problem 6 plan (Expected) beside the Problem 9 run (Actual) · shop date {facts[101]['today']}</p></div>
 {desk_art(facts[101]['today'])}<div class="team" aria-label="The agent team">{team}</div></header>
 <input type="radio" name="tab" id="r101" checked><input type="radio" name="tab" id="r102"><input type="radio" name="tab" id="r103">
 <input type="radio" name="tab" id="rcash"><input type="radio" name="tab" id="rrefl">
@@ -292,7 +424,7 @@ def main() -> None:
 <div class="panel" id="t101" style="display:none"></div>
 {matrix()}
 {tabs}
-<section class="panel" id="tcash"><div class="later"><h2>Cash</h2><p>Coming later: cash before and after each approved payment, once the agents run and a human approves.</p></div></section>
+<section class="panel" id="tcash">{cash_tab(R)}</section>
 <section class="panel" id="trefl"><div class="later"><h2>Reflection</h2><p>Coming later: how the Actual runs compared with these Expected plans, and what we learned.</p></div></section>
 </main>
 <footer>One self-contained file: open it by double-clicking, with no internet needed. Ticket facts are read from data/campus_customs.db. Built by scripts/build_desk_tickets.py.</footer>

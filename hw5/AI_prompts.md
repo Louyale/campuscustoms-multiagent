@@ -35,6 +35,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 7 | Backend routes | FastAPI routes in `backend/main.py` to spec; every route in the harness in a numbered ledger; show me | Clearer for the grader and more efficient for the agents (7 improvements) | `backend/main.py`, `scripts/route_check.py`, `output/route_check.json`, `requirements.txt`, `output/harness.md` (Tables 22–25) |
 | 8 | Agent dashboard | React + Vite + TypeScript board modeled on my desk; all 7 bullets checked off; front end talks to the back end; special-effects lists and options; confirm Problems 1–7 first | The desk vs. the dashboard; open it here to see every graphic | `frontend/`, `output/design.md`, `output/dashboard_screens/`, `backend/main.py` (resolved state, summary route), `output/harness.md` (Table 27) |
 
+| 9 | Resolve the tickets | Reset, then run all three tickets; fill each Actual section in bullets and keep Expected; itemize the Cash tab so the math is right; the resolved tickets JSON; a resolved board in Yale colors with the Yale logo, Campus Customs and "Resolved!" in a happy font; finish the harness; leave the text parts for my approval | I approve the payments as the human, but no real cash or email moves | `output/desk_tickets.html`, `output/resolved_tickets.json`, `output/resolved_board.html`, `output/audit_trail.json`, `output/harness.md` (Tables 0, 28–30), `scripts/build_resolved.py`, `scripts/build_resolved_board.py` |
 ---
 
 ## Problem 1: Vibe coder prompts
@@ -730,6 +731,54 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - **Screenshots:** `output/dashboard_screens/office_day.png`, `office_night.png`, `office_narrow.png`.
 
 ---
+
+## Problem 9: Resolve the tickets
+
+**Prompt (my own words, with screenshots of Panels A and B):**
+
+> yo, good morning. let's wrap this up. follow the instructions to reset the working database. open the output section from problem 6 and fill in the actual section with all required information in a readable way that is clear, with bullet points- keep the expected section. on the cash tab, itemize the money and make certain the cash math is correct so we don't lose any points. save the output tickets with all information in bullets. create the resolved board in the Yale colors with a Yale logo on top and a Campus Customs also on top and a Title that says Resolved! in happy font. create the json and the harness. make sure you have all main parts to this and all sub parts and be sure to double read the problems. create the lists we need with the information and leave the parts with text for approval by me as you've been presenting it. let me know if any questions.
+
+**Follow-up prompt:**
+
+> yes, i'll approve the payments as the human, but we follow the rules that no actual cash or emails are transmitted
+
+Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticket 101) and **"Approve $2,400"** (rent, ticket 102).
+
+**What was lacking after the first:** every payment needs a human, so the run couldn't finish until I approved the two bills myself.
+
+**Outcome:**
+
+- **Reset first:** the working database matched the original again, with checking at **$3,400.00**.
+- **All three tickets were run on the React board:**
+  - **101** (urgent): Boss called Inventory first, then Accounting and Customer Service. Accounting filed invoice 501 ($840), and also the rent ($2,400) under ticket 102.
+  - **102** (urgent): Boss called Facilities first, then Customer Service. Accounting wasn't needed, because the rent was already filed.
+  - **103** (normal): Boss called Inventory, then Accounting. Accounting handed off to Inventory itself, and its attempt to ask Boss back was refused by the loop guard. Then Customer Service drafted a reply.
+- **I approved both payments as the human:** $840 to Bulldog Print Co and $2,400 to Elm City Properties. Only the practice database changed: no real money, and every message stayed a draft on the board.
+- **Cash:** $3,400.00 − $840.00 − $2,400.00 = **$160.00**, which matches `cash_accounts`.
+- **Final statuses:** 101 resolved, 102 resolved, and 103 blocked, waiting on a human discount decision. All three show resolved on the board, because the team's work is done.
+- **`output/desk_tickets.html`:** each ticket tab keeps Expected and now has its Actual section in bullets, with a "Compared with Expected" list. The Cash tab itemizes the money.
+- **`output/resolved_tickets.json`:** built from the database and the audit trail, with nothing typed by hand.
+- **`output/resolved_board.html`:** the Yale Y, Campus Customs and **"Resolved!"**, with a React board screenshot for each ticket built into the page.
+- **The audit trail:** the run's entries were added to `output/audit_trail.json`.
+- **The harness:** a map of where each part is covered (Table 0), and the Problem 9 section (Tables 28–30).
+- 🚩 **Found in the run:**
+  - On 103, Inventory misread the shortfall as 4 short; the real number is 12 short ($264).
+  - On 101, Customer Service saved two drafts, the second without "Professor".
+
+**Table 18: Problem 9 Tasks**
+
+| Task | What was asked | Where it's done |
+|---|---|---|
+| P9-1 | Reset the working database and note the starting checking balance | `scripts/reset_db.py`; $3,400.00 (harness Table 29) |
+| P9-2 | Run all three tickets on the board until each is resolved | The React board; audit run ids in `output/resolved_tickets.json` |
+| P9-3 | Fill each ticket tab's Actual section (agents, delegations, tools) and keep Expected | `output/desk_tickets.html`, tabs 101–103 |
+| P9-4 | Cash tab: starting balance, each ticket's change and why, the ending balance matching `cash_accounts` | `output/desk_tickets.html` Cash tab (Tables 2–3) |
+| P9-5 | Save the resolved tickets: id, final status, outcome, each agent's contribution, human approvals | `output/resolved_tickets.json` |
+| P9-6 | A double-click page with a board screenshot for each resolved ticket | `output/resolved_board.html` |
+| P9-7 | Append the real runs to the audit trail | `output/audit_trail.json` |
+| P9-8 | Finish the harness: tables, MCP tools, the five agents, API routes, the dashboard, safety rules | `output/harness.md` (Table 0 map; Tables 28–30) |
+| P9-9 | (mine) Yale colors, the Yale logo, Campus Customs, and "Resolved!" in a happy font | `output/resolved_board.html` header |
+| P9-10 | (mine) Approve the payments myself, with no real cash or email | Both approvals by Boss (Mr. D'Onofrio); drafts stay on the board |
 
 ## Appendix: Setup prompts (before Problem 1)
 

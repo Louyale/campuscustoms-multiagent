@@ -10,6 +10,24 @@ This file explains how the Campus Customs agent team is built and why. It starts
 - Nobody emails a real customer or calls a real vendor; drafts stay on the board.
 - The agents work only on `data/campus_customs_new.db`.
 
+## How this harness is organized
+
+The harness covers every part of the system, problem by problem. Use this map to find each part.
+
+**Table 0: Where Each Part of the System Is Documented**
+
+| Part | Where in this harness | Code |
+|---|---|---|
+| **The database tables** | Problem 2: Table 1 (database files), Table 2 (every table's fields and why it matters), Table 3 (how the tickets link); Problem 5: Table 13 (data tables each agent reads, and the 3 board tables the server creates) | `data/campus_customs.db`, `data/campus_customs_new.db` |
+| **The MCP tools** | Problem 3: Tables 5–6; Problem 4: Table 7 (tool test evidence); Problem 5: Table 11 (Agent Tools) and Table 12 (all 25 tools and their tables) | `mcp_server/server.py`, `mcp_server/README.md`, `.mcp.json` |
+| **The five agents** | Problem 5: Table 8 (the five agents), Table 9 (delegation guards), Table 10 (data types), Table 15 (priority rules) | `backend/agents/`, `backend/prompts/`, `backend/models.py`, `backend/team.py` |
+| **The API routes** | Problem 7: Table 22 (route ledger), Table 23 (token savers), Tables 24–26 (route tests and assignment bullets) | `backend/main.py`, `scripts/route_check.py` |
+| **The dashboard** | Problem 8: Table 27 (requirements and results), plus `output/design.md` | `frontend/` |
+| **Safety rules** | The Safety section: Table 20 (guardrails) and Table 21 (token limits) | Throughout; summarized there |
+| **Cost** | Problem 5: Tables 16–19 (test runs, cost per ticket, cost vs. work, the owner's summary) | `scripts/cost_report.py` |
+| **The full run** | Problem 9: Table 28 (each ticket), Table 29 (cash, itemized), Table 30 (MCP tools each agent used), then Expected vs. Actual; the Problem 6 plan is in `output/desk_tickets.html` | `output/resolved_tickets.json`, `output/desk_tickets.html`, `output/resolved_board.html` |
+| **The audit trail** | Problem 5: Table 14 (entry fields); Problem 9 (entries added by the full run) | `backend/audit.py`, `output/audit_trail.json` |
+
 ## Problem 2: Study the Campus Customs database
 
 ### The two database files
@@ -620,4 +638,64 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 - All 15 options in `output/design.md` were built and tested live.
 - The office grew to include: the door plaque "Campus Customs · Business Office · Boola Boola", the Yale SOM at night picture, rolled-up shades, family and mountain pictures, a couch, a round table, a Keurig, hardwood floors with a chair mat, a physical IN box, ceramic Yale coasters, and a red "That was Easy" button.
 - Two new backend routes: `GET /calendar` (due dates through MCP) and `POST /drawer/unlock` (checks `DESK_PIN` in `.env`). `/events` now carries token counts, for the desk calculator.
+
+## Problem 9: Resolve the tickets
+
+**The full run, in order:**
+1. The working database was **reset** first (`scripts/reset_db.py`), and the starting checking balance was noted: **$3,400.00**.
+2. All three tickets were run **on the React board**, at `http://localhost:5173`: 101, then 102 (with "Run again anyway", because its rent had already been filed during 101), then 103.
+3. **Boss (Mr. D'Onofrio), the human, approved both payments** at the desk, with a pen signature.
+
+**What changed hands:** no real money or email moved. Payments update only the practice database, and Customer Service's messages stayed as drafts on the board.
+
+**Where it's recorded:** the run appended **182 entries** to `output/audit_trail.json`. The results are in `output/resolved_tickets.json`, built by `scripts/build_resolved.py` from the database and the audit trail, with nothing hand-typed.
+
+**Table 28: The Full Run, Ticket by Ticket**
+
+| Ticket | Priority | Boss called first | Delegations, in order | Agents who worked | Human approvals | Final status | Model calls · cost |
+|---|---|---|---|---|---|---|---|
+| **101** Bulldog tee | urgent | Inventory | Boss→Inventory → Boss→Accounting → Boss→Customer Service → Boss→Customer Service | Boss, Inventory, Accounting, Customer Service | invoice $840 approved by Boss (Mr. D'Onofrio) | **resolved** | 25 · $0.0050 |
+| **102** Rent due | urgent | Facilities | Boss→Facilities → Boss→Customer Service | Boss, Facilities, Customer Service | rent $2,400 approved by Boss (Mr. D'Onofrio) | **resolved** | 14 · $0.0019 |
+| **103** Bulk hoodie discount | normal | Inventory | Boss→Inventory → Boss→Accounting → Accounting→Inventory → (Accounting→Boss, ⛔ refused by the loop guard) → Boss→Customer Service | Boss, Inventory, Accounting, Customer Service | none needed | **blocked** | 22 · $0.0035 |
+
+All three model-call counts together: 61 calls, about $0.0105 for the whole board, on `gpt-6-luna`.
+
+**Table 29: Cash, Itemized**
+
+| Step | What changed checking, and why | Change |
+|---|---|---|
+| Start | After the database reset (as of 2026-08-31) | **$3,400.00** |
+| Ticket 101 | invoice $840.00 to Bulldog Print Co (request 1, approved by Boss (Mr. D'Onofrio)) | −$840.00 |
+| Ticket 102 | rent $2,400.00 to Elm City Properties (request 2, approved by Boss (Mr. D'Onofrio)) | −$2,400.00 |
+| Ticket 103 | no payment or purchase | $0.00 |
+| **End** | $3,400.00 - $840.00 - $2,400.00 = $160.00 | **$160.00** |
+
+**Check:** the ending balance by the math, **$160.00**, **matches** `cash_accounts` in the working database (**$160.00**). The `payments` table has two rows, both `approved_by` "Boss (Mr. D'Onofrio)".
+
+**Table 30: MCP Tools Each Agent Used in the Full Run**
+
+| Ticket | Tools by agent |
+|---|---|
+| **101** | 🕴️ Boss: `update_ticket_status`, `check_stock`, `get_open_invoices`, `get_cash_balance`, `ask_teammate` ×4, `check_in_on_assignments` ×2<br>📦 Inventory: `check_stock`, `list_vendors`, `get_open_invoices`<br>🧮 Accounting: `get_cash_balance`, `get_open_invoices`, `check_stock`, `list_payment_requests`, `request_payment` ×2<br>👕 Customer Service: `get_ticket` ×2, `list_drafts`, `check_spelling_grammar` ×3, `save_customer_draft` ×2 |
+| **102** | 🕴️ Boss: `get_rent_due`, `get_cash_balance`, `update_ticket_status`, `ask_teammate` ×2, `check_in_on_assignments` ×2<br>🧢 Facilities: `get_rent_due`<br>👕 Customer Service: `get_ticket`, `check_spelling_grammar`, `save_customer_draft` |
+| **103** | 🕴️ Boss: `update_ticket_status`, `check_stock`, `ask_teammate` ×3, `check_in_on_assignments`<br>📦 Inventory: `list_vendors` ×2, `check_stock` ×2, `get_open_invoices` ×2<br>🧮 Accounting: `get_cash_balance`, `get_open_invoices`, `list_payment_requests`, `check_stock`, `ask_teammate` ×2<br>👕 Customer Service: `get_ticket`, `check_spelling_grammar`, `save_customer_draft` |
+
+### Expected (Problem 6) vs. Actual (Problem 9)
+
+The ticket tabs of `output/desk_tickets.html` show Expected and Actual side by side, with a "Compared with Expected" list for each ticket. In short:
+- **Boss called the planned agent first on all three tickets** (Inventory, Facilities, Inventory), and Facilities was correctly left out of 101 and 103.
+- **Ticket 101** went as planned. In addition, Accounting filed the rent ($2,400) under ticket 102 while planning the shared cash.
+- **Ticket 102** didn't need Accounting, because the rent was already filed. Boss added a Customer Service acknowledgment.
+- **Ticket 103** showed full connectivity: Accounting handed off to Inventory itself, and its attempt to ask Boss back was refused by the loop guard.
+
+🚩 **Honest findings from the run:**
+- **A shortfall misread.** In ticket 103, Inventory's answer to Accounting's follow-up misread the shortfall as "4 short ($88)". The real numbers are 20 requested, 8 on hand, 12 short, $264 at cost. Boss's decision (ask the club for its proposed price, promise nothing) didn't rely on it.
+- **A duplicate draft.** In ticket 101, Customer Service saved its draft twice: once "Dear Professor Zaman," then, after Boss asked for a revision, "Dear Tauhid Zaman," because Boss treated the title as unverified data. Both drafts are on the board, and neither was sent.
+- **Ticket 103 is `blocked` in the database.** The team's work is done, so the board shows it resolved, but the discount is a human decision, and the 12-hoodie restock ($264) won't fit the $160 left.
+
+**The files:**
+- `output/desk_tickets.html`: Actual sections, and the Cash tab
+- `output/resolved_tickets.json`
+- `output/resolved_board.html`: "Resolved!", with a React board screenshot for each ticket, built into the page
+- `output/resolved_board_screens/`
 
