@@ -1,22 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Sales and Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin">
-  <title>Intern Squad · Sales &amp; Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Sales and Receivables: a full-time Yale SOM MBA student in her late twenties, in a Patagonia-style quarter-zip fleece">
+  <title>Intern Squad · Sales &amp; Receivables: a full-time Yale SOM MBA student in her late twenties, in a Patagonia-style quarter-zip fleece</title>
   <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c)">
-    <g fill="#1d1410">
-      <circle cx="60" cy="42" r="22"/><circle cx="41" cy="40" r="9"/><circle cx="79" cy="40" r="9"/>
-      <circle cx="49" cy="24" r="10"/><circle cx="71" cy="24" r="10"/><circle cx="60" cy="20" r="10"/>
-    </g>
-    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
-    <polygon points="51,77 60,98 69,77" fill="#ffffff"/>
-    <path d="M51,77 L57,104 M69,77 L63,104" stroke="#00264d" stroke-width="3" fill="none"/>
-    <circle cx="78" cy="96" r="6" fill="#ffffff"/><text x="78" y="98" font-family="Arial, sans-serif" font-size="4.6" font-weight="700" fill="#00356b" text-anchor="middle">SOM</text>
-    <rect x="54" y="60" width="12" height="18" fill="#7a4a2e"/>
-    <circle cx="60" cy="47" r="17" fill="#7a4a2e"/>
-    <path d="M43,45 C43,30 77,30 77,45 C72,36 48,36 43,45 Z" fill="#1d1410"/>
-    <circle cx="54" cy="48" r="1.8" fill="#111"/><circle cx="66" cy="48" r="1.8" fill="#111"/>
-    <path d="M51,44 Q54,42 57,44 M63,44 Q66,42 69,44" stroke="#1d1410" stroke-width="1.2" fill="none"/>
-    <path d="M54,55 Q60,60 66,55" stroke="#4a2418" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <circle cx="43.5" cy="53" r="1.8" fill="#f5d76e"/><circle cx="76.5" cy="53" r="1.8" fill="#f5d76e"/>
+    <path d="M39,46 C37,24 83,24 81,46 L83,74 C77,79 70,76 69,68 L51,68 C50,76 43,79 37,74 Z" fill="#1d1410"/>
+    <path d="M20,120 C20,89 37,77 60,77 C83,77 100,89 100,120 Z" fill="#00356b"/>
+    <path d="M47,74 L60,80 L73,74 L74,83 L60,89 L46,83 Z" fill="#0a2a52"/>
+    <path d="M60,80 L60,101" stroke="#cfe0f5" stroke-width="1.6"/>
+    <rect x="58" y="95" width="4" height="6" rx="1" fill="#cfe0f5"/>
+    <path d="M36,98 C40,104 44,108 48,110" stroke="#0a2a52" stroke-width="1.5" fill="none"/>
+    <rect x="70" y="92" width="14" height="8" rx="1.2" fill="#ffffff"/>
+    <path d="M71.5,98.5 L74.5,94.5 L76.5,96.5 L79,93.5 L82.5,98.5" stroke="#286dc0" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+    <rect x="54" y="61" width="12" height="16" fill="#7a4a2e"/>
+    <ellipse cx="60" cy="46" rx="15" ry="17.5" fill="#7a4a2e"/>
+    <path d="M44,45 C43,30 56,25 69,29 C76,32 78,38 76.5,45 C73,36 63,33 53,37 C48,39 46,42 44,45 Z" fill="#1d1410"/>
+    <path d="M50.5,42.5 Q54,40.8 57.5,42.3 M62.5,42.3 Q66,40.8 69.5,42.5" stroke="#1d1410" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="54" cy="47" rx="2.1" ry="1.5" fill="#111"/><ellipse cx="66" cy="47" rx="2.1" ry="1.5" fill="#111"/>
+    <path d="M58.5,52 Q60,53.4 61.5,52" stroke="#5a3220" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <path d="M55,56.5 Q60,59.5 65,56.5" stroke="#4a2418" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <circle cx="45" cy="52.5" r="2.4" fill="none" stroke="#f5d76e" stroke-width="1.1"/><circle cx="75" cy="52.5" r="2.4" fill="none" stroke="#f5d76e" stroke-width="1.1"/>
   </g>
 </svg>

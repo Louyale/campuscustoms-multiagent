@@ -1,12 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Pricing and Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee">
-  <title>Intern Squad · Pricing &amp; Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Pricing and Quotes: a Yale engineering undergrad with glasses, a pencil and a tee with Euler's identity, e^(iπ) + 1 = 0">
+  <title>Intern Squad · Pricing &amp; Quotes: a Yale engineering undergrad with glasses, a pencil and a tee with Euler's identity, e^(iπ) + 1 = 0</title>
   <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c)">
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#286dc0"/>
     <path d="M48,78 C52,86 68,86 72,78" stroke="#00356b" stroke-width="3" fill="none"/>
-    <circle cx="60" cy="102" r="7" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="3 2.5"/>
-    <circle cx="60" cy="102" r="4.5" fill="#ffffff"/><circle cx="60" cy="102" r="1.8" fill="#286dc0"/>
+    <text x="60" y="104" font-family="Georgia, 'Times New Roman', serif" font-size="11.5" font-style="italic" fill="#ffffff" text-anchor="middle">e<tspan dy="-4.5" font-size="7.5">iπ</tspan><tspan dy="4.5" font-style="normal"> + 1 = 0</tspan></text>
     <rect x="54" y="60" width="12" height="18" fill="#b97a4f"/>
     <circle cx="60" cy="47" r="17" fill="#b97a4f"/>
     <path d="M42,47 C37,27 48,19 61,20 C75,21 83,31 78,47 C76,38 70,34 60,34 C51,34 45,38 42,47 Z" fill="#111111"/><path d="M52,22 C56,17 64,17 68,21 C63,20 57,21 52,22 Z" fill="#111111"/>

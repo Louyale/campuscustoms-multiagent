@@ -870,6 +870,17 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
   - The duty is in Q5 and in `backend/prompts/customer_service.md`.
   - The five agents still build.
 
+**Follow-up prompt:**
+
+> let's change the avatars - the lacrosse player should have her hair tied back in braids.  The engineering student should have a cool tee shirt that has a math equation on it that is low key smart.  The yale SOM student should be in a quarter zip by patagonia and look like  alate 20 year old - that one was way off to start
+
+**Outcome:** the three intern avatars were redrawn:
+- **The lacrosse player:** her hair is now tied back in two braids, with the headband, the #26 jersey and her stick.
+- **The engineering undergrad:** his tee shows Euler's identity, *e*^(iπ) + 1 = 0, which is low-key smart.
+- **The SOM MBA student:** redrawn to look late 20s, with shoulder-length hair and gold hoops, in a navy Patagonia-style quarter zip with a small mountain patch. The patch is a nod to the brand, not a copy of the real logo.
+
+The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**

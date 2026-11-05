@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Receiving clerk: a Yale lacrosse player in a white number 26 jersey and headband, with her stick">
-  <title>Intern Squad · Receiving clerk: a Yale lacrosse player in a white #26 jersey and headband, with her stick</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Receiving clerk: a Yale lacrosse player with her hair tied back in two braids, a white number 26 jersey and headband, and her stick">
+  <title>Intern Squad · Receiving clerk: a Yale lacrosse player with her hair tied back in two braids, a white #26 jersey and headband, and her stick</title>
   <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
   <clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath>
   <g clip-path="url(#c)">
@@ -8,7 +8,6 @@
       <ellipse cx="0" cy="0" rx="7" ry="11" fill="#ffffff" fill-opacity=".6" stroke="#00356b" stroke-width="2.6"/>
       <path d="M-5,-5 L5,-5 M-6,0 L6,0 M-5,5 L5,5 M0,-10 L0,10" stroke="#9cb4d6" stroke-width="1"/>
     </g>
-    <path d="M74,36 C92,40 95,62 85,74 C86,60 82,49 72,44 Z" fill="#8a3b1e"/>
     <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#ffffff" stroke="#00356b" stroke-width="2.5"/>
     <path d="M50,77 L60,88 L70,77" stroke="#00356b" stroke-width="3.5" fill="none"/>
     <text x="60" y="110" font-family="Arial, sans-serif" font-size="17" font-weight="900" fill="#00356b" text-anchor="middle">26</text>
@@ -16,6 +15,7 @@
     <circle cx="60" cy="47" r="17" fill="#f0c39a"/>
     <path d="M43,45 C42,28 78,28 77,45 C73,36 47,36 43,45 Z" fill="#8a3b1e"/>
     <path d="M43,40 C50,33 70,33 77,40 L77,44 C70,37 50,37 43,44 Z" fill="#00356b"/>
+    <ellipse cx="45.0" cy="58.0" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="44.1" cy="63.2" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="43.2" cy="68.4" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="42.3" cy="73.6" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="41.4" cy="78.8" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="40.5" cy="84.0" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><circle cx="39.6" cy="88.2" r="2" fill="#00356b"/><ellipse cx="75.0" cy="58.0" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="75.9" cy="63.2" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="76.8" cy="68.4" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="77.7" cy="73.6" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="78.6" cy="78.8" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><ellipse cx="79.5" cy="84.0" rx="3.7" ry="3.3" fill="#8a3b1e" stroke="#5e2612" stroke-width=".9"/><circle cx="80.4" cy="88.2" r="2" fill="#00356b"/>
     <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
     <circle cx="50" cy="55" r=".7" fill="#c47a52"/><circle cx="52" cy="56.5" r=".7" fill="#c47a52"/><circle cx="70" cy="55" r=".7" fill="#c47a52"/><circle cx="68" cy="56.5" r=".7" fill="#c47a52"/>
     <path d="M53,57 Q60,62 67,57" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
