@@ -168,4 +168,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Repo name approved: `Louyale/campuscustoms-multiagent`
 - [x] Both databases committed under `data/`; the real `.env` is not pushed
 - [x] `output/github_url.txt` holds the URL; the README has the expected file layout
-- [ ] Push, then check the repo on GitHub, and submit the URL
+- [x] Pushed to https://github.com/Louyale/campuscustoms-multiagent (public); a fresh clone passes 31/31, the tool check 44/44, the backend health check and the dashboard build
+- [ ] Lou submits the URL on Canvas

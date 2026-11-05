@@ -991,6 +991,12 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
   - start the React board (`npm run dev`)
   - reset the database before a full three-ticket run
 - **`scripts/check_submission.py` passes every check before the push.**
+- **Verified from GitHub after the push.** A fresh clone of the public repo has:
+  - 102 files, and no `.env`
+  - both databases byte-identical to mine
+  - `check_submission.py` at 31 of 31, and the MCP tool check at 44 of 44 (no model calls)
+  - the backend starting with the assignment's command, reporting gpt-6-luna with 25 tools and all three tickets resolved
+  - the dashboard installing and building cleanly
 
 **Table 19: Problem 11 Tasks**
 
