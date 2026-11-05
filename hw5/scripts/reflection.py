@@ -8,8 +8,13 @@ Edit the answers here, flip APPROVED when Boss signs off, and rerun scripts/buil
 
 from __future__ import annotations
 
+import re
+from pathlib import Path
+
+AVATARS = Path(__file__).resolve().parent.parent / "assets" / "agents"
+
 # Flip to True as Boss (Mr. D'Onofrio) approves each answer.
-APPROVED = {1: False, 2: False, 3: False, 4: False, 5: False}
+APPROVED = {1: True, 2: True, 3: True, 4: True, 5: True}
 APPROVED_ON = "2026-11-05"
 
 CSS = """
@@ -24,6 +29,9 @@ CSS = """
 .qa table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}.qa caption{text-align:left;font-weight:800;color:var(--yale);padding:4px 0}
 .qa th{background:var(--yale);color:#fff;text-align:left;padding:7px 9px;vertical-align:top}.qa td{border-bottom:1px solid var(--line);padding:7px 9px;vertical-align:top}
 .qa td.n{white-space:nowrap;text-align:right}
+.squad{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 6px}.squad .who{display:flex;gap:10px;align-items:center;background:var(--tint);border:1px solid #b9cde8;border-radius:14px;padding:8px 14px 8px 8px}
+.squad .who b{color:var(--yale)}.squad .who small{display:block;color:var(--muted)}
+.agentcell{display:flex;gap:10px;align-items:flex-start}.agentcell svg{flex:none}
 .grade{display:inline-block;background:var(--yale);color:#fff;font-weight:900;border-radius:8px;padding:2px 9px}
 .ev{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 4px;font-size:13px;color:var(--muted)}
 .ev label{cursor:pointer;background:var(--tint);color:var(--yale);border:1px solid #b9cde8;border-radius:999px;padding:3px 11px;font-weight:700}
@@ -31,6 +39,13 @@ CSS = """
 .approve{margin-top:12px;border:2px dashed #9cb4d6;border-radius:10px;padding:8px 12px;color:var(--muted);font-weight:700;display:inline-block}
 .approve.yes{border:2px solid var(--yale);color:var(--yale);background:var(--tint)}
 """
+
+def face(key: str, size: int = 64) -> str:
+    """An agent avatar from assets/agents/, with its clip id made unique on the page."""
+    svg = (AVATARS / f"{key}.svg").read_text(encoding="utf-8")
+    svg = re.sub(r'id="c"', f'id="c-{key}-{size}"', svg).replace("url(#c)", f"url(#c-{key}-{size})")
+    return svg.replace("<svg ", f'<svg width="{size}" height="{size}" class="intern-face" ', 1)
+
 
 TAB = {"101": "r101", "102": "r102", "103": "r103", "Cash": "rcash"}
 
@@ -131,14 +146,20 @@ def render(R: dict | None) -> str:
 </table>
 <ul><li><b>The big idea:</b> the same playbook as our three tickets (look it up, plan the cash, file for a human, draft but never send) scales to new problems with zero new code. That's low-hanging fruit.</li></ul>{evidence("Cash", "101", "102", note="the $160 ending balance and lease 1's new due date come from the Problem 9 run")}"""
 
-    q5 = f"""<p>Here's where the dream team hits the wall. By design, our tools can only spend money, read the books, and draft messages.</p>
+    q5 = f"""<p>Here's where the dream team hits the wall. By design, our tools can only spend money, read the books, and draft messages. To break through, I'd call up the <b>Intern Squad</b>: three Yale students joining our five-agent dream team, each owning a new set of tools.</p>
+<div class="squad">
+  <div class="who">{face("intern_mba", 52)}<div><b>Sales &amp; Receivables</b><small>full-time Yale SOM MBA student</small></div></div>
+  <div class="who">{face("intern_engineer", 52)}<div><b>Pricing &amp; Quotes</b><small>Yale engineering undergrad</small></div></div>
+  <div class="who">{face("intern_lacrosse", 52)}<div><b>Receiving clerk</b><small>Yale lacrosse player</small></div></div>
+</div>
 <table><caption>Table 8: New Problems the Team Can't Solve Yet, and What It Would Take</caption>
-<tr><th>New problem</th><th>Why today's team can't</th><th>New tools (and tables)</th><th>New or expanded agent</th></tr>
-<tr><td><b>1. Getting cash IN</b> to cover October's rent</td><td>We're ${shortfall:,.2f} short for 2026-10-02, and our rule is "cash only goes out." No tool records a sale, a deposit, or the Yale AI Club paying for hoodies.</td><td><code>record_sale</code>, <code>record_deposit</code> (human-approved), <code>list_receivables</code> and <code>refund_payment</code> (human-only). New <code>sales</code> and <code>receivables</code> tables; the balance sheet and income statement read them.</td><td><b>Sales &amp; Receivables:</b> owns revenue and customer invoices (drafted, never sent). Accounting reconciles every deposit against checking.</td></tr>
-<tr><td><b>2. Receiving the restock</b> when Bulldog Print Co delivers</td><td>No tool changes stock, on purpose. So even after the tee arrives, inventory says 0 forever, and nothing tracks an order from placed to delivered.</td><td>A <code>purchase_orders</code> table (ordered → shipped → received), <code>track_delivery</code> (for example with QuickShip CT), and <code>receive_shipment(po_id, qty_counted)</code>, which adds stock only after a human signs off on the count.</td><td><b>Receiving clerk</b> (or Inventory, with new powers): matches each box to its PO and logs every count in the audit trail.</td></tr>
-<tr><td><b>3. Making the discount call</b> that left 103 blocked</td><td>There's no pricing policy anywhere in the data, so the team can only recommend, never quote. And the 12-hoodie restock ($264 at cost) doesn't fit the ${end:,.2f} left.</td><td>A <code>discount_policy</code> table (a floor price per SKU that never goes under cost, plus volume tiers set by the owner), <code>create_quote</code>, and <code>approve_quote</code> (human-only above a set discount). Deposits from problem 1 fund the restock.</td><td><b>Pricing &amp; Quotes:</b> writes quotes inside the policy. Customer Service drafts from the approved quote, and Accounting checks the margin.</td></tr>
+<tr><th>New problem</th><th>Why today's team can't</th><th>New tools (and tables)</th><th>New agent: the Intern Squad</th></tr>
+<tr><td><b>1. Getting cash IN</b> to cover October's rent</td><td>We're ${shortfall:,.2f} short for 2026-10-02, and our rule is "cash only goes out." No tool records a sale, a deposit, or the Yale AI Club paying for hoodies.</td><td><b><code>find_outstanding_receivables(min_days_overdue)</code></b>: the intern's go-to command. It looks specifically for customer invoices still unpaid, and lists who owes us, how much, for what, and how many days overdue, oldest first. Also <code>record_sale</code>, <code>record_deposit</code> (human-approved) and <code>refund_payment</code> (human-only). New <code>sales</code> and <code>receivables</code> tables; the balance sheet and income statement read them.</td><td><div class="agentcell">{face("intern_mba", 56)}<div><b>Sales &amp; Receivables</b>, our full-time SOM MBA intern. Owns revenue, customer invoices and receivables. She runs <code>find_outstanding_receivables</code> to spot every company that owes Campus Customs money. Then she follows up with 👕 Customer Service to chase it: Customer Service drafts the reminder, which stays on the board and is never sent. Accounting reconciles every deposit against checking.</div></div></td></tr>
+<tr><td><b>2. Receiving the restock</b> when Bulldog Print Co delivers</td><td>No tool changes stock, on purpose. So even after the tee arrives, inventory says 0 forever, and nothing tracks an order from placed to delivered.</td><td>A <code>purchase_orders</code> table (ordered → shipped → received), <code>track_delivery</code> (for example with QuickShip CT), and <code>receive_shipment(po_id, qty_counted)</code>, which adds stock only after a human signs off on the count.</td><td><div class="agentcell">{face("intern_lacrosse", 56)}<div><b>Receiving clerk</b>, our Yale lacrosse player intern, because nobody hustles boxes faster. Matches each box to its PO, counts it, and logs every count in the audit trail. A human signs off before stock goes up.</div></div></td></tr>
+<tr><td><b>3. Making the discount call</b> that left 103 blocked</td><td>There's no pricing policy anywhere in the data, so the team can only recommend, never quote. And the 12-hoodie restock ($264 at cost) doesn't fit the ${end:,.2f} left.</td><td>A <code>discount_policy</code> table (a floor price per SKU that never goes under cost, plus volume tiers set by the owner), <code>create_quote</code>, and <code>approve_quote</code> (human-only above a set discount). Deposits from problem 1 fund the restock.</td><td><div class="agentcell">{face("intern_engineer", 56)}<div><b>Pricing &amp; Quotes</b>, our engineering undergrad intern, who builds the discount model. Writes quotes inside the policy and never under cost. Customer Service drafts from the approved quote, and Accounting checks the margin.</div></div></td></tr>
 </table>
-<ul><li><b>Same guardrails, bigger playbook:</b> every new tool that moves money or stock gets a human gate and an audit entry, the same as our two approved payments today. Cash accuracy stays 100%, or we don't ship it.</li></ul>{evidence("103", "Cash", "101", note="103's blocked status and the $160 balance are the evidence")}"""
+<ul><li><b>👕 Customer Service gets a new job function: receivables follow-up.</b> It's a related duty that uses the skills Customer Service already has: accurate facts only, an assertive-but-friendly tone, and the spelling and grammar check before every save. When Sales &amp; Receivables flags a company from <code>find_outstanding_receivables</code>, Customer Service drafts a friendly but firm payment reminder, with the amount, what it's for and the due date, all from the books. Like every message, it stays a draft on the board and is never sent. (It's now in Customer Service's prompt, too.)</li>
+<li><b>Same guardrails, bigger playbook:</b> every new tool that moves money or stock gets a human gate and an audit entry, the same as our two approved payments today. Cash accuracy stays 100%, or we don't ship it.</li></ul>{evidence("103", "Cash", "101", note="103's blocked status and the $160 balance are the evidence")}"""
 
     return f"""<style>{CSS}</style><div class="refl">
 <h2>Reflection</h2>

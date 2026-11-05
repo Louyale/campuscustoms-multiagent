@@ -1833,6 +1833,9 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 .qa table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}.qa caption{text-align:left;font-weight:800;color:var(--yale);padding:4px 0}
 .qa th{background:var(--yale);color:#fff;text-align:left;padding:7px 9px;vertical-align:top}.qa td{border-bottom:1px solid var(--line);padding:7px 9px;vertical-align:top}
 .qa td.n{white-space:nowrap;text-align:right}
+.squad{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 6px}.squad .who{display:flex;gap:10px;align-items:center;background:var(--tint);border:1px solid #b9cde8;border-radius:14px;padding:8px 14px 8px 8px}
+.squad .who b{color:var(--yale)}.squad .who small{display:block;color:var(--muted)}
+.agentcell{display:flex;gap:10px;align-items:flex-start}.agentcell svg{flex:none}
 .grade{display:inline-block;background:var(--yale);color:#fff;font-weight:900;border-radius:8px;padding:2px 9px}
 .ev{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 4px;font-size:13px;color:var(--muted)}
 .ev label{cursor:pointer;background:var(--tint);color:var(--yale);border:1px solid #b9cde8;border-radius:999px;padding:3px 11px;font-weight:700}
@@ -1863,7 +1866,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
   <li><b>Customer Service's double draft</b> on 101. In fairness, that was a management problem, not a staff one.</li>
   </ul></li>
 <li><b>Why these grades:</b> money and safety count most. All three tickets got the money exactly right, with every payment behind a human signature and no real email sent. That's table stakes, and the team hit it every time. Points came off only for wasted motion and one bad number.</li>
-</ul><div class="ev">Evidence on this page: <label for="r101">Tab 101</label><label for="r102">Tab 102</label><label for="r103">Tab 103</label><label for="rcash">Cash tab</label> · each tab's Actual section lists the delegations, tools and approvals</div></div><div class="approve">☐ Waiting for Boss (Mr. D'Onofrio) to approve this answer</div></div>
+</ul><div class="ev">Evidence on this page: <label for="r101">Tab 101</label><label for="r102">Tab 102</label><label for="r103">Tab 103</label><label for="rcash">Cash tab</label> · each tab's Actual section lists the delegations, tools and approvals</div></div><div class="approve yes">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</div></div>
 <div class="qa" id="q2"><div class="q"><span class="qn">Q2</span><h3>For each ticket, how did Actual compare to the Expected plan you wrote earlier?</h3></div>
   <div class="answer"><p><b>Short version:</b> Boss made the planned first call on all three tickets, the agents I said would sit out sat out, and the cash landed exactly where my Problem 6 plan said it would. My plan for 102 forecast "$3,400 − $840 − $2,400 leaves $160". The Cash tab says <b>$160.00</b>, matching <code>cash_accounts</code>. No daylight.</p>
 <table><caption>Table 5: Expected vs. Actual by Ticket</caption>
@@ -1876,7 +1879,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 <li><b>101: the dream team beat the plan</b> by planning cash across tickets. My plan had only the $840 for 101; Accounting lined up the rent too, so both urgent bills were ready for one signing session. The miss was the extra Customer Service lap: two drafts where I expected one.</li>
 <li><b>102: Accounting was skipped, and that was smart.</b> The rent request was already filed during 101, and the request tool refuses duplicates. My plan said Customer Service could sit this one out; Boss asked for a landlord acknowledgment anyway. It's harmless, and it stayed a draft, but it's not something I asked for.</li>
 <li><b>103: the plan and the run agreed on the decision</b> (no promises; a human decides the discount) but took different roads. I expected a straight Boss-to-agents fan-out. Instead we saw real full connectivity: Accounting pulled Inventory in on its own, and the loop guard kept Accounting from bouncing the question back to Boss. The draft asked the club for its proposed price instead of offering the 8 hoodies on hand now, a more conservative play than my plan.</li>
-</ul><div class="ev">Evidence on this page: <label for="r101">Tab 101</label><label for="r102">Tab 102</label><label for="r103">Tab 103</label><label for="rcash">Cash tab</label> · each tab shows Expected and Actual side by side, with a "Compared with Expected" list</div></div><div class="approve">☐ Waiting for Boss (Mr. D'Onofrio) to approve this answer</div></div>
+</ul><div class="ev">Evidence on this page: <label for="r101">Tab 101</label><label for="r102">Tab 102</label><label for="r103">Tab 103</label><label for="rcash">Cash tab</label> · each tab shows Expected and Actual side by side, with a "Compared with Expected" list</div></div><div class="approve yes">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</div></div>
 <div class="qa" id="q3"><div class="q"><span class="qn">Q3</span><h3>What would have been simpler as one agent with tools — and why?</h3></div>
   <div class="answer"><p><b>Ticket 102, hands down, then 101.</b> Both are straight-line jobs: look it up, file it, draft it. There's nothing to argue about, so the hand-offs just relay facts from one desk to the next.</p>
 <table><caption>Table 6: One Agent or the Dream Team?</caption>
@@ -1894,7 +1897,7 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
   <li>With one all-powerful agent, one prompt injection in a landlord email could reach every tool in the shop.</li>
   </ul></li>
 <li><b>My rule of thumb:</b> one agent for lookup-and-file tickets, and the dream team when there's money, judgment, or a number that needs a second set of eyes.</li>
-</ul><div class="ev">Evidence on this page: <label for="r102">Tab 102</label><label for="r101">Tab 101</label><label for="r103">Tab 103</label> · the tool counts per agent are in each tab's Actual section</div></div><div class="approve">☐ Waiting for Boss (Mr. D'Onofrio) to approve this answer</div></div>
+</ul><div class="ev">Evidence on this page: <label for="r102">Tab 102</label><label for="r101">Tab 101</label><label for="r103">Tab 103</label> · the tool counts per agent are in each tab's Actual section</div></div><div class="approve yes">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</div></div>
 <div class="qa" id="q4"><div class="q"><span class="qn">Q4</span><h3>Describe three new problems Campus Customs might face that this agent team could solve with the tools you built.</h3></div>
   <div class="answer"><p>We already own the tools for these. When each one lands on the board as a ticket, the way our three did, it's just a matter of pointing the dream team at it. Every one keeps a human on every dollar, and checking in the black.</p>
 <table><caption>Table 7: New Problems the Team Can Solve With Today's Tools</caption>
@@ -1903,16 +1906,152 @@ footer{color:var(--muted);font-size:12.5px;padding:0 36px 30px}
 <tr><td><b>2. A shop repair</b>, for example a front door at the Chapel Street shop that sticks</td><td>Lease 1 is the Chapel Street shop, with Elm City Properties as the landlord. The <code>building_requests</code> table is empty and ready.</td><td>🧢 Facilities: <code>get_lease(1)</code>, <code>log_building_request</code>, then <code>update_building_request</code> as the landlord responds. 👕 Customer Service drafts the note to Elm City Properties, which stays on the board. 🕴️ Boss tracks it to done.</td><td>$0.00 unless a human approves a payment</td></tr>
 <tr><td><b>3. The October rent early warning</b></td><td>Lease 1's next rent, $2,400, is due 2026-10-02, and checking is $160.00. That's a <b>$2,240.00</b> gap, spotted a month out.</td><td>🕴️ Boss: <code>get_rent_due</code> and <code>rank_open_tickets</code>. 🧮 Accounting: <code>get_cash_balance</code>, <code>build_balance_sheet</code> and <code>build_income_statement</code>, for an owner-ready picture. The team flags it to the humans now, not on October 1.</td><td>No payment filed: it would break the no-negative-balance rule. We just get the warning early.</td></tr>
 </table>
-<ul><li><b>The big idea:</b> the same playbook as our three tickets (look it up, plan the cash, file for a human, draft but never send) scales to new problems with zero new code. That's low-hanging fruit.</li></ul><div class="ev">Evidence on this page: <label for="rcash">Cash tab</label><label for="r101">Tab 101</label><label for="r102">Tab 102</label> · the $160 ending balance and lease 1's new due date come from the Problem 9 run</div></div><div class="approve">☐ Waiting for Boss (Mr. D'Onofrio) to approve this answer</div></div>
+<ul><li><b>The big idea:</b> the same playbook as our three tickets (look it up, plan the cash, file for a human, draft but never send) scales to new problems with zero new code. That's low-hanging fruit.</li></ul><div class="ev">Evidence on this page: <label for="rcash">Cash tab</label><label for="r101">Tab 101</label><label for="r102">Tab 102</label> · the $160 ending balance and lease 1's new due date come from the Problem 9 run</div></div><div class="approve yes">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</div></div>
 <div class="qa" id="q5"><div class="q"><span class="qn">Q5</span><h3>Describe three new problems Campus Customs might face that this agent team could not solve with the tools you built, and explain the tools and agents you would need to solve them.</h3></div>
-  <div class="answer"><p>Here's where the dream team hits the wall. By design, our tools can only spend money, read the books, and draft messages.</p>
+  <div class="answer"><p>Here's where the dream team hits the wall. By design, our tools can only spend money, read the books, and draft messages. To break through, I'd call up the <b>Intern Squad</b>: three Yale students joining our five-agent dream team, each owning a new set of tools.</p>
+<div class="squad">
+  <div class="who"><svg width="52" height="52" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Sales and Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin">
+  <title>Intern Squad · Sales &amp; Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_mba-52"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_mba-52)">
+    <g fill="#1d1410">
+      <circle cx="60" cy="42" r="22"/><circle cx="41" cy="40" r="9"/><circle cx="79" cy="40" r="9"/>
+      <circle cx="49" cy="24" r="10"/><circle cx="71" cy="24" r="10"/><circle cx="60" cy="20" r="10"/>
+    </g>
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
+    <polygon points="51,77 60,98 69,77" fill="#ffffff"/>
+    <path d="M51,77 L57,104 M69,77 L63,104" stroke="#00264d" stroke-width="3" fill="none"/>
+    <circle cx="78" cy="96" r="6" fill="#ffffff"/><text x="78" y="98" font-family="Arial, sans-serif" font-size="4.6" font-weight="700" fill="#00356b" text-anchor="middle">SOM</text>
+    <rect x="54" y="60" width="12" height="18" fill="#7a4a2e"/>
+    <circle cx="60" cy="47" r="17" fill="#7a4a2e"/>
+    <path d="M43,45 C43,30 77,30 77,45 C72,36 48,36 43,45 Z" fill="#1d1410"/>
+    <circle cx="54" cy="48" r="1.8" fill="#111"/><circle cx="66" cy="48" r="1.8" fill="#111"/>
+    <path d="M51,44 Q54,42 57,44 M63,44 Q66,42 69,44" stroke="#1d1410" stroke-width="1.2" fill="none"/>
+    <path d="M54,55 Q60,60 66,55" stroke="#4a2418" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="43.5" cy="53" r="1.8" fill="#f5d76e"/><circle cx="76.5" cy="53" r="1.8" fill="#f5d76e"/>
+  </g>
+</svg>
+<div><b>Sales &amp; Receivables</b><small>full-time Yale SOM MBA student</small></div></div>
+  <div class="who"><svg width="52" height="52" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Pricing and Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee">
+  <title>Intern Squad · Pricing &amp; Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_engineer-52"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_engineer-52)">
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#286dc0"/>
+    <path d="M48,78 C52,86 68,86 72,78" stroke="#00356b" stroke-width="3" fill="none"/>
+    <circle cx="60" cy="102" r="7" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="3 2.5"/>
+    <circle cx="60" cy="102" r="4.5" fill="#ffffff"/><circle cx="60" cy="102" r="1.8" fill="#286dc0"/>
+    <rect x="54" y="60" width="12" height="18" fill="#b97a4f"/>
+    <circle cx="60" cy="47" r="17" fill="#b97a4f"/>
+    <path d="M42,47 C37,27 48,19 61,20 C75,21 83,31 78,47 C76,38 70,34 60,34 C51,34 45,38 42,47 Z" fill="#111111"/><path d="M52,22 C56,17 64,17 68,21 C63,20 57,21 52,22 Z" fill="#111111"/>
+    <circle cx="54" cy="48" r="5" fill="none" stroke="#1b1b1b" stroke-width="1.6"/>
+    <circle cx="66" cy="48" r="5" fill="none" stroke="#1b1b1b" stroke-width="1.6"/>
+    <path d="M59,48 L61,48 M49,47 L44,45 M71,47 L76,45" stroke="#1b1b1b" stroke-width="1.6"/>
+    <circle cx="54" cy="48" r="1.6" fill="#111"/><circle cx="66" cy="48" r="1.6" fill="#111"/>
+    <path d="M54,56 Q60,60 66,56" stroke="#5a2e1c" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M75,34 L83,46" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"/><path d="M83,46 L84.5,48.5" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
+<div><b>Pricing &amp; Quotes</b><small>Yale engineering undergrad</small></div></div>
+  <div class="who"><svg width="52" height="52" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Receiving clerk: a Yale lacrosse player in a white number 26 jersey and headband, with her stick">
+  <title>Intern Squad · Receiving clerk: a Yale lacrosse player in a white #26 jersey and headband, with her stick</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_lacrosse-52"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_lacrosse-52)">
+    <path d="M24,122 L90,28" stroke="#3a3a3a" stroke-width="3.2" stroke-linecap="round"/>
+    <g transform="translate(94,22) rotate(35)">
+      <ellipse cx="0" cy="0" rx="7" ry="11" fill="#ffffff" fill-opacity=".6" stroke="#00356b" stroke-width="2.6"/>
+      <path d="M-5,-5 L5,-5 M-6,0 L6,0 M-5,5 L5,5 M0,-10 L0,10" stroke="#9cb4d6" stroke-width="1"/>
+    </g>
+    <path d="M74,36 C92,40 95,62 85,74 C86,60 82,49 72,44 Z" fill="#8a3b1e"/>
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#ffffff" stroke="#00356b" stroke-width="2.5"/>
+    <path d="M50,77 L60,88 L70,77" stroke="#00356b" stroke-width="3.5" fill="none"/>
+    <text x="60" y="110" font-family="Arial, sans-serif" font-size="17" font-weight="900" fill="#00356b" text-anchor="middle">26</text>
+    <rect x="54" y="60" width="12" height="18" fill="#f0c39a"/>
+    <circle cx="60" cy="47" r="17" fill="#f0c39a"/>
+    <path d="M43,45 C42,28 78,28 77,45 C73,36 47,36 43,45 Z" fill="#8a3b1e"/>
+    <path d="M43,40 C50,33 70,33 77,40 L77,44 C70,37 50,37 43,44 Z" fill="#00356b"/>
+    <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
+    <circle cx="50" cy="55" r=".7" fill="#c47a52"/><circle cx="52" cy="56.5" r=".7" fill="#c47a52"/><circle cx="70" cy="55" r=".7" fill="#c47a52"/><circle cx="68" cy="56.5" r=".7" fill="#c47a52"/>
+    <path d="M53,57 Q60,62 67,57" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
+<div><b>Receiving clerk</b><small>Yale lacrosse player</small></div></div>
+</div>
 <table><caption>Table 8: New Problems the Team Can't Solve Yet, and What It Would Take</caption>
-<tr><th>New problem</th><th>Why today's team can't</th><th>New tools (and tables)</th><th>New or expanded agent</th></tr>
-<tr><td><b>1. Getting cash IN</b> to cover October's rent</td><td>We're $2,240.00 short for 2026-10-02, and our rule is "cash only goes out." No tool records a sale, a deposit, or the Yale AI Club paying for hoodies.</td><td><code>record_sale</code>, <code>record_deposit</code> (human-approved), <code>list_receivables</code> and <code>refund_payment</code> (human-only). New <code>sales</code> and <code>receivables</code> tables; the balance sheet and income statement read them.</td><td><b>Sales &amp; Receivables:</b> owns revenue and customer invoices (drafted, never sent). Accounting reconciles every deposit against checking.</td></tr>
-<tr><td><b>2. Receiving the restock</b> when Bulldog Print Co delivers</td><td>No tool changes stock, on purpose. So even after the tee arrives, inventory says 0 forever, and nothing tracks an order from placed to delivered.</td><td>A <code>purchase_orders</code> table (ordered → shipped → received), <code>track_delivery</code> (for example with QuickShip CT), and <code>receive_shipment(po_id, qty_counted)</code>, which adds stock only after a human signs off on the count.</td><td><b>Receiving clerk</b> (or Inventory, with new powers): matches each box to its PO and logs every count in the audit trail.</td></tr>
-<tr><td><b>3. Making the discount call</b> that left 103 blocked</td><td>There's no pricing policy anywhere in the data, so the team can only recommend, never quote. And the 12-hoodie restock ($264 at cost) doesn't fit the $160.00 left.</td><td>A <code>discount_policy</code> table (a floor price per SKU that never goes under cost, plus volume tiers set by the owner), <code>create_quote</code>, and <code>approve_quote</code> (human-only above a set discount). Deposits from problem 1 fund the restock.</td><td><b>Pricing &amp; Quotes:</b> writes quotes inside the policy. Customer Service drafts from the approved quote, and Accounting checks the margin.</td></tr>
+<tr><th>New problem</th><th>Why today's team can't</th><th>New tools (and tables)</th><th>New agent: the Intern Squad</th></tr>
+<tr><td><b>1. Getting cash IN</b> to cover October's rent</td><td>We're $2,240.00 short for 2026-10-02, and our rule is "cash only goes out." No tool records a sale, a deposit, or the Yale AI Club paying for hoodies.</td><td><b><code>find_outstanding_receivables(min_days_overdue)</code></b>: the intern's go-to command. It looks specifically for customer invoices still unpaid, and lists who owes us, how much, for what, and how many days overdue, oldest first. Also <code>record_sale</code>, <code>record_deposit</code> (human-approved) and <code>refund_payment</code> (human-only). New <code>sales</code> and <code>receivables</code> tables; the balance sheet and income statement read them.</td><td><div class="agentcell"><svg width="56" height="56" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Sales and Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin">
+  <title>Intern Squad · Sales &amp; Receivables: a full-time Yale SOM MBA student in a navy blazer with an SOM pin</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_mba-56"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_mba-56)">
+    <g fill="#1d1410">
+      <circle cx="60" cy="42" r="22"/><circle cx="41" cy="40" r="9"/><circle cx="79" cy="40" r="9"/>
+      <circle cx="49" cy="24" r="10"/><circle cx="71" cy="24" r="10"/><circle cx="60" cy="20" r="10"/>
+    </g>
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#00356b"/>
+    <polygon points="51,77 60,98 69,77" fill="#ffffff"/>
+    <path d="M51,77 L57,104 M69,77 L63,104" stroke="#00264d" stroke-width="3" fill="none"/>
+    <circle cx="78" cy="96" r="6" fill="#ffffff"/><text x="78" y="98" font-family="Arial, sans-serif" font-size="4.6" font-weight="700" fill="#00356b" text-anchor="middle">SOM</text>
+    <rect x="54" y="60" width="12" height="18" fill="#7a4a2e"/>
+    <circle cx="60" cy="47" r="17" fill="#7a4a2e"/>
+    <path d="M43,45 C43,30 77,30 77,45 C72,36 48,36 43,45 Z" fill="#1d1410"/>
+    <circle cx="54" cy="48" r="1.8" fill="#111"/><circle cx="66" cy="48" r="1.8" fill="#111"/>
+    <path d="M51,44 Q54,42 57,44 M63,44 Q66,42 69,44" stroke="#1d1410" stroke-width="1.2" fill="none"/>
+    <path d="M54,55 Q60,60 66,55" stroke="#4a2418" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="43.5" cy="53" r="1.8" fill="#f5d76e"/><circle cx="76.5" cy="53" r="1.8" fill="#f5d76e"/>
+  </g>
+</svg>
+<div><b>Sales &amp; Receivables</b>, our full-time SOM MBA intern. Owns revenue, customer invoices and receivables. She runs <code>find_outstanding_receivables</code> to spot every company that owes Campus Customs money. Then she follows up with 👕 Customer Service to chase it: Customer Service drafts the reminder, which stays on the board and is never sent. Accounting reconciles every deposit against checking.</div></div></td></tr>
+<tr><td><b>2. Receiving the restock</b> when Bulldog Print Co delivers</td><td>No tool changes stock, on purpose. So even after the tee arrives, inventory says 0 forever, and nothing tracks an order from placed to delivered.</td><td>A <code>purchase_orders</code> table (ordered → shipped → received), <code>track_delivery</code> (for example with QuickShip CT), and <code>receive_shipment(po_id, qty_counted)</code>, which adds stock only after a human signs off on the count.</td><td><div class="agentcell"><svg width="56" height="56" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Receiving clerk: a Yale lacrosse player in a white number 26 jersey and headband, with her stick">
+  <title>Intern Squad · Receiving clerk: a Yale lacrosse player in a white #26 jersey and headband, with her stick</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_lacrosse-56"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_lacrosse-56)">
+    <path d="M24,122 L90,28" stroke="#3a3a3a" stroke-width="3.2" stroke-linecap="round"/>
+    <g transform="translate(94,22) rotate(35)">
+      <ellipse cx="0" cy="0" rx="7" ry="11" fill="#ffffff" fill-opacity=".6" stroke="#00356b" stroke-width="2.6"/>
+      <path d="M-5,-5 L5,-5 M-6,0 L6,0 M-5,5 L5,5 M0,-10 L0,10" stroke="#9cb4d6" stroke-width="1"/>
+    </g>
+    <path d="M74,36 C92,40 95,62 85,74 C86,60 82,49 72,44 Z" fill="#8a3b1e"/>
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#ffffff" stroke="#00356b" stroke-width="2.5"/>
+    <path d="M50,77 L60,88 L70,77" stroke="#00356b" stroke-width="3.5" fill="none"/>
+    <text x="60" y="110" font-family="Arial, sans-serif" font-size="17" font-weight="900" fill="#00356b" text-anchor="middle">26</text>
+    <rect x="54" y="60" width="12" height="18" fill="#f0c39a"/>
+    <circle cx="60" cy="47" r="17" fill="#f0c39a"/>
+    <path d="M43,45 C42,28 78,28 77,45 C73,36 47,36 43,45 Z" fill="#8a3b1e"/>
+    <path d="M43,40 C50,33 70,33 77,40 L77,44 C70,37 50,37 43,44 Z" fill="#00356b"/>
+    <circle cx="54" cy="48" r="1.8" fill="#222"/><circle cx="66" cy="48" r="1.8" fill="#222"/>
+    <circle cx="50" cy="55" r=".7" fill="#c47a52"/><circle cx="52" cy="56.5" r=".7" fill="#c47a52"/><circle cx="70" cy="55" r=".7" fill="#c47a52"/><circle cx="68" cy="56.5" r=".7" fill="#c47a52"/>
+    <path d="M53,57 Q60,62 67,57" stroke="#8a4b3a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
+<div><b>Receiving clerk</b>, our Yale lacrosse player intern, because nobody hustles boxes faster. Matches each box to its PO, counts it, and logs every count in the audit trail. A human signs off before stock goes up.</div></div></td></tr>
+<tr><td><b>3. Making the discount call</b> that left 103 blocked</td><td>There's no pricing policy anywhere in the data, so the team can only recommend, never quote. And the 12-hoodie restock ($264 at cost) doesn't fit the $160.00 left.</td><td>A <code>discount_policy</code> table (a floor price per SKU that never goes under cost, plus volume tiers set by the owner), <code>create_quote</code>, and <code>approve_quote</code> (human-only above a set discount). Deposits from problem 1 fund the restock.</td><td><div class="agentcell"><svg width="56" height="56" class="intern-face" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Intern Squad, Pricing and Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee">
+  <title>Intern Squad · Pricing &amp; Quotes: a Yale engineering undergrad with glasses, a pencil and a gear tee</title>
+  <circle cx="60" cy="60" r="58" fill="#eaf1fb" stroke="#00356b" stroke-width="3"/>
+  <clipPath id="c-intern_engineer-56"><circle cx="60" cy="60" r="56"/></clipPath>
+  <g clip-path="url(#c-intern_engineer-56)">
+    <path d="M26,120 C26,90 40,76 60,76 C80,76 94,90 94,120 Z" fill="#286dc0"/>
+    <path d="M48,78 C52,86 68,86 72,78" stroke="#00356b" stroke-width="3" fill="none"/>
+    <circle cx="60" cy="102" r="7" fill="none" stroke="#ffffff" stroke-width="4" stroke-dasharray="3 2.5"/>
+    <circle cx="60" cy="102" r="4.5" fill="#ffffff"/><circle cx="60" cy="102" r="1.8" fill="#286dc0"/>
+    <rect x="54" y="60" width="12" height="18" fill="#b97a4f"/>
+    <circle cx="60" cy="47" r="17" fill="#b97a4f"/>
+    <path d="M42,47 C37,27 48,19 61,20 C75,21 83,31 78,47 C76,38 70,34 60,34 C51,34 45,38 42,47 Z" fill="#111111"/><path d="M52,22 C56,17 64,17 68,21 C63,20 57,21 52,22 Z" fill="#111111"/>
+    <circle cx="54" cy="48" r="5" fill="none" stroke="#1b1b1b" stroke-width="1.6"/>
+    <circle cx="66" cy="48" r="5" fill="none" stroke="#1b1b1b" stroke-width="1.6"/>
+    <path d="M59,48 L61,48 M49,47 L44,45 M71,47 L76,45" stroke="#1b1b1b" stroke-width="1.6"/>
+    <circle cx="54" cy="48" r="1.6" fill="#111"/><circle cx="66" cy="48" r="1.6" fill="#111"/>
+    <path d="M54,56 Q60,60 66,56" stroke="#5a2e1c" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <path d="M75,34 L83,46" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"/><path d="M83,46 L84.5,48.5" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
+<div><b>Pricing &amp; Quotes</b>, our engineering undergrad intern, who builds the discount model. Writes quotes inside the policy and never under cost. Customer Service drafts from the approved quote, and Accounting checks the margin.</div></div></td></tr>
 </table>
-<ul><li><b>Same guardrails, bigger playbook:</b> every new tool that moves money or stock gets a human gate and an audit entry, the same as our two approved payments today. Cash accuracy stays 100%, or we don't ship it.</li></ul><div class="ev">Evidence on this page: <label for="r103">Tab 103</label><label for="rcash">Cash tab</label><label for="r101">Tab 101</label> · 103's blocked status and the $160 balance are the evidence</div></div><div class="approve">☐ Waiting for Boss (Mr. D'Onofrio) to approve this answer</div></div>
+<ul><li><b>👕 Customer Service gets a new job function: receivables follow-up.</b> It's a related duty that uses the skills Customer Service already has: accurate facts only, an assertive-but-friendly tone, and the spelling and grammar check before every save. When Sales &amp; Receivables flags a company from <code>find_outstanding_receivables</code>, Customer Service drafts a friendly but firm payment reminder, with the amount, what it's for and the due date, all from the books. Like every message, it stays a draft on the board and is never sent. (It's now in Customer Service's prompt, too.)</li>
+<li><b>Same guardrails, bigger playbook:</b> every new tool that moves money or stock gets a human gate and an audit entry, the same as our two approved payments today. Cash accuracy stays 100%, or we don't ship it.</li></ul><div class="ev">Evidence on this page: <label for="r103">Tab 103</label><label for="rcash">Cash tab</label><label for="r101">Tab 101</label> · 103's blocked status and the $160 balance are the evidence</div></div><div class="approve yes">☑ Approved by Boss (Mr. D'Onofrio), 2026-11-05</div></div>
 </div></section>
 </main>
 <footer>One self-contained file: open it by double-clicking, with no internet needed. Ticket facts are read from data/campus_customs.db. Built by scripts/build_desk_tickets.py.</footer>

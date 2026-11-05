@@ -835,7 +835,7 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 
 > big money here, let's do it.  take your time, i'm going for a quick run and then i'll review
 
-**Outcome (waiting for my approval of each answer):**
+**Outcome:**
 
 - **The Reflection tab is filled in.** It has all 5 assignment bullets as questions (Q1–Q5), each with a proposed answer in my vibe and its own approval box.
 - **Evidence on the same page:**
@@ -847,6 +847,28 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
   - every tool named is checked against `mcp_server/server.py`
 - **New tables:** Table 4: Agent Scorecard by Ticket; Table 5: Expected vs. Actual by Ticket; Table 6: One Agent or the Dream Team?; Table 7: New Problems the Team Can Solve With Today's Tools; Table 8: New Problems the Team Can't Solve Yet, and What It Would Take.
 - **No model calls or money were spent** writing it.
+
+**Follow-up prompts:**
+
+> all approved but add to the accounts receivable agent that the agent follows up with customer service to follow up with companies that owe campus Customs money in receivables, and then add that as a job function to the existing customer service agent.  lastly, make avatars for our 3 new agents and call them the Intern Squad - we want to use Yale students for these roles - create a diverse group of 3 student interns - one should be a lacrosse player, one an engineering undergrad and one a full time SOM MBA student.  out the avatars in the Q5 Answer chart.
+
+> and the receivable agent needs to have a function command that it looks for these outstanding invoices specifically if it doesn't already.  specify the new customer service job function as a related duty with similar skills
+
+**What was lacking after the first:** I wanted the receivables agent to chase what's owed through Customer Service, with a command that finds those invoices, and our three new agents to have faces.
+
+**Outcome:**
+
+- **All five answers are approved**, and each shows ☑ Approved by Boss (Mr. D'Onofrio).
+- **The Intern Squad**, three Yale student interns with avatars in Yale blue and white, is in the Q5 strip and in Table 8:
+  - **Sales & Receivables:** a full-time Yale SOM MBA student
+  - **Pricing & Quotes:** a Yale engineering undergrad
+  - **Receiving clerk:** a Yale lacrosse player, #26
+- **The avatars** are `assets/agents/intern_mba.svg`, `intern_engineer.svg` and `intern_lacrosse.svg`, with all three together in `intern_squad.png`.
+- **Sales & Receivables has its own command,** **`find_outstanding_receivables(min_days_overdue)`**. It looks specifically for unpaid customer invoices: who owes us, how much, for what, and how many days overdue, oldest first. She then follows up with Customer Service to chase each one.
+- **Customer Service has a new job function,** receivables follow-up, as a related duty with the same skills: accurate facts, an assertive-but-friendly tone, and the spelling check.
+  - It drafts the payment reminders, which stay on the board and are never sent.
+  - The duty is in Q5 and in `backend/prompts/customer_service.md`.
+  - The five agents still build.
 
 ## Appendix: Setup prompts (before Problem 1)
 

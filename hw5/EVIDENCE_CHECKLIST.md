@@ -154,4 +154,6 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Reflection tab in `output/desk_tickets.html`: all 5 bullets as questions, each with an answer
 - [x] Every answer tied to this app, the three tickets and the Campus Customs data, with links to the ticket and Cash tabs on the same page
 - [x] Cash strip: $3,400.00 − $840.00 − $2,400.00 = $160.00, matching `cash_accounts`
-- [ ] Boss approves Q1  - [ ] Q2  - [ ] Q3  - [ ] Q4  - [ ] Q5
+- [x] All five answers (Q1–Q5) approved by Boss (Mr. D'Onofrio)
+- [x] The Intern Squad avatars (SOM MBA, engineering undergrad, lacrosse player) in Q5, Table 8 (`assets/agents/intern_*.svg`)
+- [x] Receivables: `find_outstanding_receivables` for Sales & Receivables; follow-up drafts added to Customer Service as a related duty (`backend/prompts/customer_service.md`)
