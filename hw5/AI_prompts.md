@@ -633,3 +633,9 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 
 - **Changed to "Professor Tauhid Zaman"** everywhere the vibe coder wrote the name: the Problem 6 plan table in this log, `mcp_server/README.md`, two lines in `output/harness.md`, the ticket 101 plan and header in `desk_tickets.html` (rebuilt), and the test drafts in `scripts/mcp_tool_check.py`. The test draft now opens "Dear Professor Zaman". The tool check was rerun, and 43 of 43 checks pass.
 - **Left exactly as recorded:** the database stores the requester as "Tauhid Zaman", so copies of database rows (`output/data_overview.md`) and recorded runs (`output/audit_trail.json`, the `test_run_102*.json` files, and the tool outputs in `output/mcp_tool_check.json`) keep that value. Hand-editing them would break "the output must match the database" and the append-only audit trail.
+
+**Follow-up (Reminder 2):**
+
+> yes, don't do anything to make anything stop matching, everything needs to work as before
+
+**Outcome:** added one courtesy rule to the Customer Service prompt: a draft for ticket 101's requester opens "Dear Professor Zaman,". The draft's `to_name` stays exactly as the database has it ("Tauhid Zaman"), so drafts still match the database. Everything was rechecked and works as before: 43 of 43 tool checks pass, the five agents build, the greeting passes the spelling check, and both databases are unchanged.
