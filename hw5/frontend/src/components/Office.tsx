@@ -211,7 +211,7 @@ export function OfficeRoom({ daylight, today, busy }: { daylight: Daylight; toda
         <g transform="translate(640,268)" aria-label="Round table with chairs">
           <ellipse cx="70" cy="22" rx="66" ry="16" fill="#8a6342" /><ellipse cx="70" cy="19" rx="66" ry="15" fill="#a4734a" />
           <rect x="64" y="34" width="12" height="40" fill="#6b4a30" /><ellipse cx="70" cy="76" rx="30" ry="6" fill="#6b4a30" />
-          <rect x="44" y="4" width="22" height="14" rx="2" fill="#fff" transform="rotate(-6 55 11)" /><rect x="80" y="8" width="16" height="10" rx="2" fill="#dbe8f6" />
+          <rect x="16" y="12" width="20" height="12" rx="2" fill="#fff" transform="rotate(-6 26 18)" /><rect x="104" y="13" width="15" height="9" rx="2" fill="#dbe8f6" />
           {[[-26, 0], [146, 0]].map(([x], i) => (
             <g key={i} transform={`translate(${x},6)`}><rect width="20" height="44" rx="4" fill="#e6edf6" stroke="#00356b" strokeWidth="2" /><rect x="-2" y="40" width="24" height="8" rx="3" fill="#00356b" /><rect x="2" y="48" width="4" height="22" fill="#00356b" /><rect x="14" y="48" width="4" height="22" fill="#00356b" /></g>
           ))}
@@ -227,7 +227,7 @@ export function OfficeRoom({ daylight, today, busy }: { daylight: Daylight; toda
           <text x="44" y="-4" textAnchor="middle" fontFamily="Segoe UI, Arial" fontSize="7" fill="#5b6474">Keurig</text>
           {[0, 1, 2].map((i) => <rect key={i} x={76 + i * 14} y="30" width="10" height="10" rx="2" fill={["#00356b", "#286dc0", "#9cc0ea"][i]} />)}
         </g>
-        <g transform="translate(1092,232)" aria-label="Plant">
+        <g transform="translate(686,227) scale(.8)" aria-label="Plant on the round table">
           <path d="M30,40 C10,20 14,0 26,6 M30,40 C30,10 40,-6 46,8 M30,40 C48,18 64,16 58,30 M30,40 C16,30 0,34 6,42" stroke="#2f7a4d" strokeWidth="6" fill="none" strokeLinecap="round" />
           <path d="M14,40 L46,40 L42,72 L18,72 Z" fill="#ffffff" stroke="#00356b" strokeWidth="2" />
           <text x="30" y="62" textAnchor="middle" fontFamily="Georgia, serif" fontWeight="700" fontSize="11" fill="#00356b">Y</text>
@@ -270,6 +270,8 @@ export function BossChair({ seated, onToggle }: { seated: boolean; onToggle: () 
   );
 }
 
+const possessive = (name: string) => (name.endsWith("s") ? `${name}' chair` : `${name}'s chair`);
+
 export function GuestChair({ who }: { who: string | null }) {
   return (
     <div className="guest" title={who ? `${who} is visiting about this ticket` : "Guest chair"}>
@@ -279,7 +281,7 @@ export function GuestChair({ who }: { who: string | null }) {
         <rect x="4" y="40" width="72" height="10" rx="4" fill="#7a5638" />
         <rect x="10" y="50" width="5" height="18" fill="#7a5638" /><rect x="65" y="50" width="5" height="18" fill="#7a5638" />
       </svg>
-      <span>{who ?? "Guest chair"}</span>
+      <span>{who ? possessive(who) : "Guest chair"}</span>
     </div>
   );
 }

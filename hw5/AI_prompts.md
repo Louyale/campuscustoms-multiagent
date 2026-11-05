@@ -822,3 +822,10 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 - **Cash after the board run:** $3,400, with $3,240 pending and $160 free.
 - **The database ends equal to the original.**
 - **Problem 8 is complete.**
+
+**Follow-up prompt (two touch-ups):**
+
+> done but move the plant onto the table, and have the professor's chair read as possessive
+
+**Outcome:** the plant now sits on the round table, with the papers moved to the table's edges, and the guest chair reads **"Professor Tauhid Zaman's chair"**. A name ending in "s" gets just an apostrophe ("Elm City Properties' chair"). The screenshots in `output/dashboard_screens/` were refreshed.
+

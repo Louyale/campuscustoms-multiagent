@@ -46,7 +46,7 @@ So the desk is the frame, and the dashboard is what you work with. Each dashboar
 | The desk drawer | **The locked drawer** for sensitive papers | Click the 🔒 to unlock it. Inside: the signatures you've made today, and the reset button for a fresh run |
 | The nameplate, the coffee mug, the 2026 newsletter | Nameplate "Boss · Mr. D'Onofrio", a "CC" mug with steam, a "2026" newsletter showing the shop date (2026-08-31), and a desk lamp | Personality. The lamp turns on while the team works |
 | The mesh desk chair | **Boss's chair** | Click to **sit down**: focus mode dims the room so the desk stands out |
-| Two striped guest chairs | Guest chairs | The picked ticket's requester "sits" in one, for example Professor Tauhid Zaman for ticket 101 |
+| Two striped guest chairs | Guest chairs | The picked ticket's requester "sits" in one, labeled possessively, for example "Professor Tauhid Zaman's chair" for ticket 101 |
 | The office, made larger | **The room** above the desk: the full office in one drawing | Sets the scene: you walk into Boss's office |
 | The office door | **An open door with a hanging plaque**: "Campus Customs · Business Office · Boola Boola" | The office has a name on the door |
 | The window | **Shades rolled up** over each pane; the view changes **day or night** with the real clock (or the Window button) | The office feels alive at any hour |
@@ -59,7 +59,7 @@ So the desk is the frame, and the dashboard is what you work with. Each dashboar
 | The in-box | **A physical IN box** holding the three paper work tickets, which you can click to pick | Tickets arrive like paper on a desk |
 | Coffee mugs | **Two mugs on ceramic Yale coasters** (we're bougie like that) | Protects the walnut |
 | A red button | **A red "That was Easy" button** on the desk | Press it after a good day: confetti and "That was easy!" |
-| Plant and mascot | A plant in a Yale pot, and **Handsome Dan** on a side table | Personality |
+| Plant and mascot | A plant in a Yale pot **on the round table**, and **Handsome Dan** on a side table | Personality |
 
 **Multiple desk spaces:** the desk is laid out like an L-shaped desk. The main surface holds the two monitors and the laptop. The return holds the in-tray, the legal pad, the desk things and the drawer. The chairs sit in front. On a narrower screen it reflows to two columns, then one, and every panel stays usable.
 
