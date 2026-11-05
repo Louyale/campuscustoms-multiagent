@@ -53,7 +53,7 @@ def main() -> None:
              "database back to the original; checking $3,400")
         step("health", "GET", "/health", c.get("/health"), 200, lambda b: b["model"] == "gpt-6-luna" and b["mcp_tools"] == 25,
              "gpt-6-luna; 25 MCP tools")
-        step("home", "GET", "/", c.get("/"), 200, lambda b: len(b["routes"]) == 12, "12 routes listed")
+        step("home", "GET", "/", c.get("/"), 200, lambda b: len(b["routes"]) == 14, "14 routes listed")
         step("tickets", "GET", "/tickets", c.get("/tickets"), 200,
              lambda b: [(t["id"], t["state"]) for t in b["tickets"]] == [(101, "open"), (102, "open"), (103, "open")],
              "101, 102, 103 all open")

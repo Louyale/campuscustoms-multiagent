@@ -615,3 +615,8 @@ Each Problem 7 bullet, in the assignment's own words, with the route that does i
 - **The summary route.** The new `GET /tickets/{id}/summary` gives the legal pad its per-agent summary.
 - **Run end.** When a run ends, a recommended `open` or `in_progress` is recorded as `waiting_approval`, because the team's part is done. This came from the live test, where Boss once left ticket 103 "in progress".
 
+**The larger office (Boss's follow-up):**
+- All 15 options in `output/design.md` were built and tested live.
+- The office grew to include: the door plaque "Campus Customs · Business Office · Boola Boola", the Yale SOM at night picture, rolled-up shades, family and mountain pictures, a couch, a round table, a Keurig, hardwood floors with a chair mat, a physical IN box, ceramic Yale coasters, and a red "That was Easy" button.
+- Two new backend routes: `GET /calendar` (due dates through MCP) and `POST /drawer/unlock` (checks `DESK_PIN` in `.env`). `/events` now carries token counts, for the desk calculator.
+

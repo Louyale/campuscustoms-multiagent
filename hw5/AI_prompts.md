@@ -690,6 +690,45 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 | P8-11 | (mine) My desk as the model: multiple desk spaces, multiple terminals, a comfortable chair, a locked drawer | The office scene and the L-shaped desk |
 | P8-12 | (mine) Two lists (special effects) and the options | `output/design.md` Tables 3–5 |
 
+**Follow-up prompts (the larger office):**
+
+> let's make all improvements and also add a large picture of yale som at night on the wall, and add a physical in box for the work tickets.  finally add a hanging plaque on the door that is open to the office that says Campus Customs Business Office - Boola Boola.  add nice hard wood floors with a plastic floor protector under the Boss's chair.  add coasters on the desk for coffee mugs because we are bougie like that - they should be ceramic with Yale on them.  last, add a Keurig maker on a table in the office and make the office larger with a round table and a couch.  add shades that are rolled up on the windows.  somewhere, there should be a family picture and a picture of a snow covered mountain.
+
+> ...keep the legal pad
+
+> add a red button that says "That was Easy" somewhere on the desk
+
+> here's the yale som picture
+
+(with my photo of the Evans Hall courtyard at night)
+
+**What was lacking after the first:** the desk had only the first set of features. I wanted all 15 options built, plus a larger office with my own touches.
+
+**Outcome:**
+
+- **All 15 options built and tested live** (`output/design.md`, Table 5). They include the walnut desk, the day and night window, the phone that rings, the wall calendar, the sign-with-your-pen approval, the real PIN lock, the replay, the hand-off map, the cost meter, the cash chart, sticky notes, sounds, layouts and the printable daily report.
+- **The larger office:**
+  - the open door with the **"Campus Customs · Business Office · Boola Boola"** plaque
+  - the **large Yale SOM at night picture**, drawn from my photo: blue-lit glass, round blue pods, string-lit trees, and the Y in lights
+  - **rolled-up shades** on the windows
+  - the **family picture** and the **snow-covered mountain**
+  - a **couch**, a **round table**, and a **Keurig on a side table**
+  - **hardwood floors**, with a **plastic floor protector** under my chair
+  - a **physical IN box** for the paper work tickets
+  - **ceramic Yale coasters** under the mugs
+  - the **red "That was Easy" button**
+- **The legal pad stays.**
+- **Tested live:**
+  - The phone rang when the rent request landed.
+  - The signature pad paid $2,400, and checking went $3,400 → $1,000.
+  - A wrong PIN was refused, and the right one opened the drawer.
+  - The hand-off map drew 3 arrows, and the replay had 28 steps.
+  - The calendar showed invoice 501 3 days overdue and rent in 2 days.
+  - The layout and day/night buttons switched.
+  - The Easy button said "That was easy!"
+- **Backend:** `GET /calendar`, `POST /drawer/unlock` (`DESK_PIN` in `.env`, never shown), and token counts in `/events`.
+- **Screenshots:** `output/dashboard_screens/office_day.png`, `office_night.png`, `office_narrow.png`.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)

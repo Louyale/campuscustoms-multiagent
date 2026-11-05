@@ -1,0 +1,145 @@
+/* Campus Customs · Boss's Desk, v2: the larger office (walnut desk, hardwood floor, the new desk things). */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 24px; background: linear-gradient(160deg, #00356b, #0a2a52); color: #fff; }
+.topbar .brand h1 { font-size: 30px; }
+.organizer { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chip-btn { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; }
+.chip-btn:hover { background: rgba(255,255,255,.22); }
+.chip-btn.on { background: #fff; color: var(--yale); }
+.topbar .status-light { margin-left: 6px; }
+
+.room { background: #e9eef5; line-height: 0; }
+.room-svg { width: 100%; height: auto; display: block; max-height: 440px; }
+.ceilpool.busy { animation: hum 2.4s ease-in-out infinite; }
+.keurig-on { animation: blink 1s steps(2) infinite; }
+.string-tree circle { animation: twinkle 2.6s ease-in-out infinite; }
+.string-tree:nth-child(odd) circle { animation-delay: 1.1s; }
+@keyframes twinkle { 50% { opacity: .45; } }
+
+/* hardwood floor under the desk */
+.floor { background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 1px, transparent 1px 160px),
+    repeating-linear-gradient(0deg, #9a6a43 0 22px, #a4734a 22px 23px, #8f5f3a 23px 46px, #7c5233 46px 47px);
+  padding: 8px 0 26px; }
+.floor .desk { margin-top: 18px; }
+.baseboard { background: #e3e8ef; margin: 0; padding: 10px 24px 18px; }
+
+/* the walnut desk top, with the Yale blue-and-white panels kept on top */
+.desk {
+  background-image: repeating-linear-gradient(100deg, rgba(255,255,255,.035) 0 2px, transparent 2px 16px), linear-gradient(180deg, #6b4428, #5a381f);
+  border: 1px solid #3f2715; border-bottom: 16px solid #3f2715; }
+.desk.layout-classic { grid-template-columns: 1.15fr 1.25fr .9fr; grid-template-rows: auto auto auto auto auto;
+  grid-template-areas: "inbox floor laptop" "inbox floor tray" "inboxspot pad things" "drawer pad things" "chairs chairs chairs"; }
+.desk.layout-wide { grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto auto;
+  grid-template-areas: "inbox inbox floor floor" "laptop tray pad pad" "inboxspot things things drawer" "chairs chairs chairs chairs"; }
+.floor-team { grid-area: floor; } .inbox-spot { grid-area: inboxspot; }
+@media (max-width: 1200px) { .desk.layout-classic, .desk.layout-wide { grid-template-columns: 1fr 1fr; grid-template-areas: "inbox floor" "laptop tray" "inboxspot pad" "things drawer" "chairs chairs"; } }
+@media (max-width: 760px) { .desk.layout-classic, .desk.layout-wide { grid-template-columns: 1fr; grid-template-areas: "inbox" "floor" "laptop" "tray" "inboxspot" "pad" "things" "drawer" "chairs"; } }
+.screen-sub { font-size: 12px; color: var(--muted); margin: -4px 0 8px; }
+.tabs { display: inline-flex; background: var(--tint); border-radius: 999px; padding: 2px; }
+.tabs button { border: 0; background: transparent; border-radius: 999px; padding: 4px 10px; font-size: 12px; color: var(--yale); font-weight: 600; }
+.tabs button.on { background: var(--yale); color: #fff; }
+
+/* sticky note on Terminal 1 */
+.sticky { position: absolute; right: -14px; top: 40px; width: 128px; transform: rotate(4deg); background: #fff7a8; box-shadow: 0 6px 12px rgba(0,0,0,.2); padding: 6px 8px 8px; z-index: 3; display: block; }
+.sticky span { font-size: 10.5px; font-weight: 700; color: #6b5a1e; }
+.sticky textarea { width: 100%; height: 62px; border: 0; background: transparent; resize: none; font: 12.5px "Segoe Print", cursive; color: #3a3210; outline: none; }
+@media (max-width: 760px) { .sticky { position: static; transform: none; width: auto; margin-top: 8px; } }
+
+/* the physical in-box with paper tickets, and the desk phone */
+.inbox-spot { display: flex; gap: 18px; align-items: flex-end; justify-content: center; flex-wrap: wrap; align-self: start; }
+.inbox-tray { position: relative; width: 210px; height: 150px; }
+.inbox-tray::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 52px; background: linear-gradient(#d7dee8, #b9c4d2); border-radius: 6px; box-shadow: 0 8px 14px rgba(0,0,0,.3); }
+.inbox-tray::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: 44px; height: 8px; background: #a9b5c4; border-radius: 3px; }
+.tray-label { position: absolute; z-index: 2; bottom: 14px; left: 50%; transform: translateX(-50%); font-weight: 900; letter-spacing: 4px; color: var(--yale); font-size: 14px; }
+.papers { position: absolute; inset: 0 14px 34px; }
+.paper { position: absolute; height: 104px; background: #fff; border: 1px solid #dfe5ee; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,.18);
+  text-align: left; padding: 8px 10px; transition: box-shadow .2s; }
+.paper { width: 62%; }
+.paper:nth-child(1) { bottom: 18px; left: 0; } .paper:nth-child(2) { bottom: 9px; left: 19%; } .paper:nth-child(3) { bottom: 0; left: 38%; }
+.paper-sub { font-size: 11px; }
+.paper:hover, .paper.picked { box-shadow: 0 0 0 3px rgba(40,109,192,.45), 0 6px 12px rgba(0,0,0,.25); z-index: 2; }
+.paper-num { display: block; font-weight: 800; color: var(--yale); }
+.paper-sub { display: block; font-size: 12px; color: var(--ink); }
+.paper-check { position: absolute; right: 8px; top: 6px; color: var(--ok); font-weight: 900; }
+.phone { position: relative; display: flex; flex-direction: column; align-items: center; color: #e8eef6; font-size: 11.5px; font-weight: 600; }
+.phone.ringing svg { animation: ring .12s linear infinite alternate; }
+@keyframes ring { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
+.ring-waves { position: absolute; top: -8px; left: 50%; width: 70px; height: 70px; margin-left: -35px; border-radius: 50%; border: 2px solid #9cc0ea; animation: waves 1s ease-out infinite; }
+@keyframes waves { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+
+/* desk things: calendar, calculator, nameplate, mugs on Yale coasters, the Easy button */
+.desk-things { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; padding: 0; }
+.things-row { grid-column: 1 / -1; display: flex; gap: 18px; align-items: flex-end; justify-content: center; flex-wrap: wrap; padding-top: 10px; }
+.calendar { background: #fff; border-radius: 6px; box-shadow: 0 6px 12px rgba(0,0,0,.25); padding: 16px 12px 10px; position: relative; font-size: 12px; }
+.cal-rings { position: absolute; top: -6px; left: 16px; right: 16px; display: flex; justify-content: space-between; }
+.cal-rings i { width: 8px; height: 14px; border-radius: 4px; background: #8a96a6; }
+.cal-head { background: var(--yale); color: #fff; font-weight: 700; text-align: center; margin: -16px -12px 8px; padding: 10px 0 6px; border-radius: 6px 6px 0 0; }
+.cal-today { display: flex; align-items: baseline; gap: 8px; } .cal-today b { font-size: 30px; color: var(--yale); line-height: 1; } .cal-today span { color: var(--muted); }
+.calendar ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.calendar li { display: flex; gap: 6px; align-items: baseline; padding: 3px 0; border-top: 1px dashed var(--line); }
+.calendar li b { color: var(--yale); } .calendar li em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.calendar li.overdue em { color: var(--bad); font-weight: 700; } .calendar li.soon em { color: var(--warn); font-weight: 700; }
+.calculator { background: #1f2937; color: #e5e7eb; border-radius: 10px; padding: 10px; box-shadow: 0 6px 12px rgba(0,0,0,.3); font-size: 11px; }
+.calc-screen { background: #c9e3c2; color: #1c3b17; font: 700 20px ui-monospace, Consolas, monospace; text-align: right; padding: 6px 8px; border-radius: 4px; }
+.calc-lines { display: grid; gap: 1px; margin: 6px 0; color: #cbd5e1; }
+.calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.calc-keys span { background: #374151; border-radius: 4px; text-align: center; padding: 3px 0; }
+.mugs { display: flex; gap: 14px; align-items: flex-end; }
+.mug-spot { position: relative; width: 74px; height: 80px; display: flex; justify-content: center; align-items: flex-end; }
+.coaster { position: absolute; bottom: 0; width: 74px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, #ffffff 0 55%, #e6edf6 56% 70%, #00356b 71%);
+  box-shadow: 0 3px 4px rgba(0,0,0,.35); display: grid; place-items: center; }
+.coaster span { font: 700 8px Georgia, serif; color: var(--yale); letter-spacing: 2px; transform: translateY(5px); }
+.mug-spot .mug { margin-bottom: 9px; }
+.mug.white { background: var(--yale); color: #fff; border-color: #00264d; }
+.mug.white::after { border-color: #00264d; }
+.easy-spot { position: relative; }
+.easy { width: 92px; height: 92px; border-radius: 50%; border: 0; background: radial-gradient(circle at 35% 30%, #ff6b6b, #d62828 55%, #9b1c1c); color: #fff;
+  box-shadow: 0 0 0 6px #c7ccd4, 0 7px 0 6px #7a1212, 0 12px 18px 6px rgba(0,0,0,.35); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform .08s, box-shadow .08s; }
+.easy span { font-size: 11px; font-weight: 600; } .easy b { font-size: 22px; font-weight: 900; letter-spacing: .5px; line-height: 1; }
+.easy:active { transform: translateY(5px); box-shadow: 0 0 0 6px #c7ccd4, 0 2px 0 6px #7a1212, 0 4px 8px 6px rgba(0,0,0,.35); }
+.confetti { position: absolute; left: 46px; top: 46px; pointer-events: none; }
+.confetti i { position: absolute; width: 8px; height: 12px; border-radius: 2px; animation: confetti 1.1s ease-out forwards; transform: rotate(var(--a)) translateY(0); }
+@keyframes confetti { to { transform: rotate(var(--a)) translateY(-90px) rotate(240deg); opacity: 0; } }
+.easy-toast { position: absolute; left: -60px; top: -96px; width: 120px; text-align: center; background: #fff; color: #d62828; font-weight: 900; border-radius: 10px; padding: 4px 6px; box-shadow: var(--shadow); animation: rise .3s ease-out, fadeout 1.8s .9s forwards; }
+@keyframes fadeout { to { opacity: 0; } }
+.desk-things .newsletter { transform: rotate(6deg); }
+
+/* the laptop's cash sparkline */
+.spark { margin-top: 6px; } .spark-empty { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+/* chairs on the hardwood: Boss's chair on a clear plastic floor protector */
+.chair-spot { position: relative; display: flex; justify-content: center; }
+.chair-mat { position: absolute; bottom: -8px; width: 190px; height: 70px; border-radius: 24px 24px 10px 10px; background: rgba(230, 240, 250, .38);
+  border: 1px solid rgba(255,255,255,.55); box-shadow: inset 0 0 12px rgba(255,255,255,.35), 0 2px 6px rgba(0,0,0,.2); }
+.chair { position: relative; z-index: 1; }
+.guest span, .chair span { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+
+/* hand-off map and replay */
+.handoff .edge { stroke-dasharray: 6 5; animation: dash 1.4s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -22; } }
+.replay input[type=range] { width: 100%; accent-color: var(--yale); }
+.replay-step { background: var(--tint); border-radius: 10px; padding: 10px; margin: 8px 0; min-height: 120px; }
+.replay-who { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; } .replay-who b { color: var(--yale); }
+.replay-buttons { display: flex; justify-content: space-between; }
+
+/* modals: the signature pad and the drawer keypad */
+.modal-back { position: fixed; inset: 0; background: rgba(0, 25, 50, .45); display: grid; place-items: center; z-index: 60; animation: rise .2s ease-out; }
+.modal { background: #fff; border-radius: 16px; padding: 20px 22px; width: min(600px, 92vw); box-shadow: var(--shadow); }
+.modal h3 { margin: 0 0 4px; color: var(--yale); }
+.sig-canvas { width: 100%; height: 150px; background: #fffef6; border: 1.5px dashed var(--yale3); border-radius: 10px; touch-action: none; cursor: crosshair; }
+.sig-line { border-top: 1.5px solid var(--ink); margin: 2px 6px 10px; padding-top: 2px; font-size: 12px; color: var(--muted); }
+.modal-buttons { display: flex; gap: 8px; justify-content: flex-end; }
+.keypad { width: 300px; text-align: center; }
+.pin-dots { display: flex; gap: 10px; justify-content: center; margin: 10px 0; } .pin-dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--yale); } .pin-dots i.on { background: var(--yale); }
+.pin-error { color: var(--bad); font-weight: 700; font-size: 12.5px; animation: jiggle .4s; }
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.keys button { padding: 12px 0; border-radius: 10px; border: 1px solid var(--line); background: var(--tint); font-weight: 800; font-size: 16px; color: var(--yale); }
+
+/* the printable daily report */
+.report { display: none; }
+@media print {
+  body * { visibility: hidden; }
+  .report, .report * { visibility: visible; }
+  .report { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 24px; color: #000; font: 12pt Georgia, serif; }
+  .report h1 { color: #00356b; } .report table { border-collapse: collapse; width: 100%; } .report td, .report th { border: 1px solid #999; padding: 4px 6px; text-align: left; }
+}

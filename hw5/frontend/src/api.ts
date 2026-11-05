@@ -23,6 +23,7 @@ export type AgentEvent = {
   id: number; time: string | null; run_id: string | null; ticket_id: number | null;
   agent: string | null; symbol: string | null; chain: string[] | null; kind: string | null;
   said: string | null; tools_used: { tool: string; arguments: any }[]; tool_results: string[];
+  tokens?: { input?: number; cached_input?: number; output?: number } | null; detail?: Record<string, any> | null;
 };
 export type EventsOut = { next_since: number; events: AgentEvent[] };
 
@@ -60,8 +61,10 @@ export const api = {
   runTicket: (id: number, force = false) => call<Run>("POST", `/tickets/${id}/run${force ? "?force=true" : ""}`),
   runBoard: () => call<Run>("POST", "/board/run"),
   run: (runId: string) => call<Run>("GET", `/runs/${runId}`),
-  events: (since: number, runId?: string) =>
-    call<EventsOut>("GET", `/events?since=${since}&limit=200${runId ? `&run_id=${runId}` : ""}`),
+  events: (since: number, runId?: string, limit = 200) =>
+    call<EventsOut>("GET", `/events?since=${since}&limit=${limit}${runId ? `&run_id=${runId}` : ""}`),
+  calendar: () => call<{ today: string; items: { date: string; what: string; kind: string; days: number; overdue: boolean }[] }>("GET", "/calendar"),
+  unlock: (pin: string) => call<{ unlocked: boolean }>("POST", "/drawer/unlock", { pin }),
   summary: (id: number) => call<Summary>("GET", `/tickets/${id}/summary`),
   approvals: () => call<{ requests: PayRequest[] }>("GET", "/approvals"),
   approve: (id: number, by: string) => call<Record<string, any>>("POST", `/approvals/${id}/approve`, { approved_by: by }),

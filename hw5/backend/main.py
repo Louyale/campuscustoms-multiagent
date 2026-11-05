@@ -22,6 +22,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import secrets
 import sys
 import uuid
 from contextlib import asynccontextmanager
@@ -125,6 +126,8 @@ class EventOut(BaseModel):
     said: Optional[str] = Field(None, description="What the agent (or human) said at this step")
     tools_used: list[dict[str, Any]] = Field(default=[], description="MCP and team tools called at this step, with arguments")
     tool_results: list[str] = Field(default=[], description="Tools whose results were fed back to the agent")
+    tokens: Optional[dict[str, Any]] = Field(None, description="Model tokens for this step: input, cached_input, output")
+    detail: Optional[dict[str, Any]] = Field(None, description="Extra facts for human steps and hand-offs (cash before/after, from/to)")
 
 
 class EventsOut(BaseModel):
@@ -336,6 +339,19 @@ def _said(e: dict) -> str | None:
     return None
 
 
+def _detail(e: dict) -> dict | None:
+    kind = e.get("step_kind")
+    if kind == "HumanApproval" and (e.get("result") or {}).get("paid"):
+        r = e["result"]
+        return {"amount": r.get("amount"), "payee": r.get("payee"), "cash_before": r.get("cash_before"), "cash_after": r.get("cash_after")}
+    if kind == "AssignmentDone":
+        a = e.get("assignment") or {}
+        return {"from": a.get("from_agent"), "to": a.get("to_agent"), "id": a.get("id"), "priority": a.get("priority"), "on_time": a.get("on_time")}
+    if kind == "DatabaseReset":
+        return {"reset": True}
+    return None
+
+
 @app.get("/events", response_model=EventsOut, summary="Recent agent events: what each agent said and which tools it used")
 async def recent_events(since: int = 0, limit: int = 50, ticket_id: int | None = None, run_id: str | None = None):
     """Read from the append-only audit trail, newest last. Filters:
@@ -359,7 +375,8 @@ async def recent_events(since: int = 0, limit: int = 50, ticket_id: int | None =
         events.append(EventOut(
             id=i, time=e.get("time"), run_id=e.get("run_id"), ticket_id=e.get("ticket_id"), agent=e.get("agent"),
             symbol=e.get("symbol"), chain=e.get("chain"), kind=e.get("step_kind"), said=said, tools_used=tools,
-            tool_results=[r.get("tool") for r in (e.get("tool_results_sent") or [])]))
+            tool_results=[r.get("tool") for r in (e.get("tool_results_sent") or [])],
+            tokens=e.get("tokens"), detail=_detail(e)))
     return EventsOut(next_since=len(entries), events=events[-limit:])
 
 
@@ -451,6 +468,37 @@ async def reject(request_id: int, body: Rejection):
     return result
 
 
+@app.get("/calendar", summary="Due dates for the wall calendar")
+async def calendar():
+    """Every date that matters, from the database through MCP: today (desk.date_today), rent due dates
+    (leases) and invoice due dates (invoices), each with how many days away it is. Dashboard: the wall calendar."""
+    leases = await mcp("list_leases")
+    invoices = await mcp("get_open_invoices")
+    items = [{"date": l["next_due"], "what": f"Rent ${l['monthly_rent']:,.0f} · {l['landlord']}", "kind": "rent",
+              "days": l["days_until_due"], "overdue": l["overdue"]} for l in leases["leases"]]
+    items += [{"date": i["due_date"], "what": f"Invoice {i['invoice_id']} ${i['amount']:,.0f} · {i['vendor_name']}", "kind": "invoice",
+               "days": -i["days_overdue"] if i["overdue"] else 0, "overdue": i["overdue"]} for i in invoices["open_invoices"]]
+    return {"today": leases["today"], "items": sorted(items, key=lambda x: x["date"])}
+
+
+class Pin(BaseModel):
+    pin: str = Field(min_length=1, max_length=32)
+
+
+@app.post("/drawer/unlock", summary="Check the drawer PIN")
+async def unlock_drawer(body: Pin):
+    """The locked drawer's real lock: the PIN is checked here, against DESK_PIN in .env, never in the browser.
+    Refuses with 403 on a wrong PIN. Dashboard: the drawer's keypad."""
+    expected = os.getenv("DESK_PIN")
+    if not expected:
+        raise HTTPException(500, "DESK_PIN is not set in .env")
+    ok = secrets.compare_digest(body.pin.strip(), expected)
+    append_entry({"time": now(), "run_id": None, "ticket_id": None, "agent": "human", "step_kind": "DrawerUnlock", "ok": ok})
+    if not ok:
+        raise HTTPException(403, "Wrong PIN. The drawer stays locked.")
+    return {"unlocked": True}
+
+
 # ----------------------------------------------------------------------------- 5. cash
 
 @app.get("/cash", response_model=CashOut, summary="The current checking balance from cash_accounts")
@@ -494,6 +542,8 @@ ROUTES = [
     "POST /approvals/{request_id}/approve: a human approves; this pays and changes cash",
     "POST /approvals/{request_id}/reject: a human rejects; no money moves",
     "GET  /cash: the current checking balance from cash_accounts",
+    "GET  /calendar: due dates for the wall calendar (rent, invoices, today)",
+    "POST /drawer/unlock: check the drawer PIN (DESK_PIN in .env)",
     "POST /reset: reset the database to the original values",
     "GET  /health: backend up, model, MCP tool count",
 ]

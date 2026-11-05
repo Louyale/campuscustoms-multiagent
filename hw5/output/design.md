@@ -47,6 +47,19 @@ So the desk is the frame, and the dashboard is what you work with. Each dashboar
 | The nameplate, the coffee mug, the 2026 newsletter | Nameplate "Boss · Mr. D'Onofrio", a "CC" mug with steam, a "2026" newsletter showing the shop date (2026-08-31), and a desk lamp | Personality. The lamp turns on while the team works |
 | The mesh desk chair | **Boss's chair** | Click to **sit down**: focus mode dims the room so the desk stands out |
 | Two striped guest chairs | Guest chairs | The picked ticket's requester "sits" in one, for example Professor Tauhid Zaman for ticket 101 |
+| The office, made larger | **The room** above the desk: the full office in one drawing | Sets the scene: you walk into Boss's office |
+| The office door | **An open door with a hanging plaque**: "Campus Customs · Business Office · Boola Boola" | The office has a name on the door |
+| The window | **Shades rolled up** over each pane; the view changes **day or night** with the real clock (or the Window button) | The office feels alive at any hour |
+| A big picture on the wall | **A large picture of Yale SOM at night**, drawn from Boss's photo of the Evans Hall courtyard: the blue-lit glass, the round blue classroom pods, the string-lit trees and the Y in lights on the lawn | The school, on the wall |
+| Family and travel pictures | **A family picture** and **a snow-covered mountain** in matching frames, beside the diplomas | Personal touches |
+| A sitting area | **A Yale-blue couch** with a Y pillow, and **a round table** with two chairs | Room for a meeting |
+| The coffee station | **A Keurig on a side table**, with CC coffee pods | Its light blinks while the team works |
+| The floor | **Warm hardwood floors** throughout, and **a clear plastic floor protector** under Boss's chair | Feels like a real office |
+| The desk | **A walnut desk top** (option 1), with the Yale blue-and-white panels kept on top | The real desk's warm wood |
+| The in-box | **A physical IN box** holding the three paper work tickets, which you can click to pick | Tickets arrive like paper on a desk |
+| Coffee mugs | **Two mugs on ceramic Yale coasters** (we're bougie like that) | Protects the walnut |
+| A red button | **A red "That was Easy" button** on the desk | Press it after a good day: confetti and "That was easy!" |
+| Plant and mascot | A plant in a Yale pot, and **Handsome Dan** on a side table | Personality |
 
 **Multiple desk spaces:** the desk is laid out like an L-shaped desk. The main surface holds the two monitors and the laptop. The return holds the in-tray, the legal pad, the desk things and the drawer. The chairs sit in front. On a narrower screen it reflows to two columns, then one, and every panel stays usable.
 
@@ -130,6 +143,12 @@ The desk and the dashboard have their own effects. The desk's set the mood, and 
 | D8 | The locked drawer: the padlock jiggles when you hover; unlocking slides the drawer open to its folders | Click the 🔒 |
 | D9 | The monitors and laptop "power on" with a brightness flicker | When the page loads |
 | D10 | The 2026 newsletter shows the shop's date | Always |
+| D11 | The window turns **day or night** with the clock, with city lights and stars at night; shades rolled up | Automatic, or the Window button |
+| D12 | **String lights twinkle** on the trees in the Yale SOM at night picture | Always |
+| D13 | The **Keurig's light blinks** while the team works | During a run |
+| D14 | **Ceiling light pools** glow on the wall and hum brighter during a run | Always, and brighter during a run |
+| D15 | The **red "That was Easy" button** presses down, bursts Yale-blue, white and red confetti, and says "That was easy!" (spoken aloud when sounds are on) | Press it |
+| D16 | Boss's chair sits on a **clear plastic floor protector** over the hardwood | Always |
 
 **Table 4: Dashboard Effects (the working panels)**
 
@@ -150,27 +169,42 @@ The desk and the dashboard have their own effects. The desk's set the mood, and 
 | B13 | The legal pad shows each agent's work, with handwritten thank-yous | After a run |
 | B14 | The backend status light: green when live, red when offline, with a how-to-start banner | Always |
 | B15 | All motion turns off for anyone who prefers reduced motion | System setting |
+| B16 | **The desk phone rings** (it shakes, with ring waves) when a new request lands in the signature tray | A request arrives |
+| B17 | **Sign with your pen**: a signature pad opens, and Sign & pay stays disabled until you've drawn your signature | Approving a payment |
+| B18 | **The drawer keypad**: PIN dots, and a shake and a "Wrong PIN" message on a mistake; the PIN is checked by the backend | Opening the drawer |
+| B19 | **The hand-off map**: animated dashed arrows between the agents' avatars, labeled A1, A2 and so on | Terminal 2 · Hand-off map |
+| B20 | **Run replay**: a slider steps through every action of the latest run | Terminal 2 · Replay |
+| B21 | **The cost calculator** counts tokens and dollars live during a run | Always |
+| B22 | **The cash history chart** on the laptop: $3,400 → $1,000 → $160 | After approvals |
+| B23 | **The wall calendar** marks overdue dates red and soon-due dates amber | Always |
+| B24 | **Sticky notes** on Terminal 1, one per ticket, kept in the browser | Type on the note |
+| B25 | **Gentle sounds** (off by default): a stamp thud, a phone ring, soft key clicks while agents work, and a chime for the Easy button | The Sounds button |
 
-## Options for improvement
+## Improvements: all 15 options built
 
-These are ideas for the desk and the dashboard, for Boss to pick from.
+Boss asked for every option, so all 15 are built and were tested live on the running app (the day and night screenshots are in `output/dashboard_screens/`).
 
-**Table 5: Options for the Desk and the Dashboard**
+**Table 5: The 15 Improvements, Built**
 
-| # | Option | Kind | What it adds |
+| # | Improvement | Where it is | How it was checked |
 |---|---|---|---|
-| 1 | **A walnut desk top**, like the real office desk | Desk look | A warm wood desk surface, with the Yale blue-and-white panels kept on top |
-| 2 | **Day and night through the window** | Desk look | The sky changes with the real time of day; after hours the city lights come on |
-| 3 | **A desk phone that rings** | Desk look and dashboard | Rings (visually) when a new request lands in your in-tray |
-| 4 | **A wall calendar** | Dashboard | Due dates at a glance: rent due 9/2, invoice 501 overdue since 8/28 |
-| 5 | **A sign-with-your-pen approval** | Dashboard | Draw your signature to approve, for a deliberate, human step |
-| 6 | **A real lock on the drawer** | Safety | A PIN or login checked by the backend, so only named managers can approve, as a real business would |
-| 7 | **Run replay** | Dashboard | A timeline you can scrub to replay a finished run step by step from the audit trail |
-| 8 | **The hand-off map** | Dashboard | Arrows between the agents' seats showing who asked whom (for example Facilities → Accounting) |
-| 9 | **A per-run cost meter** | Dashboard | Tokens and dollars per run (about $0.003 a ticket) on a small desk calculator |
-| 10 | **A cash history chart** | Dashboard | A sparkline of checking over the day: $3,400 → $1,000 → $160 |
-| 11 | **Sticky notes** | Desk look and dashboard | Boss's own notes stuck to the monitor frame, saved per ticket |
-| 12 | **Gentle sounds** (off by default) | Desk look | A stamp thud on approval and soft keyboard clicks while agents type |
-| 13 | **Customize the desk** | Desk look | Rearrange the terminals, and choose which panels sit on the main desk or the return |
-| 14 | **A printable daily report** | Dashboard | One page: tickets, decisions, approvals and cash, for the file in the drawer |
-| 15 | **More personal touches** | Desk look | A framed photo, a plant, or a Handsome Dan bulldog on the shelf |
+| 1 | Walnut desk top | The desk surface (`office.css`) | Visible in every screenshot |
+| 2 | Day and night through the window | The room's window; the **Window** button cycles auto, night and day; `?window=day` in the address | Cycled night → day → auto; the day and night screenshots |
+| 3 | A desk phone that rings | Beside the IN box | It rang when the rent request landed during the ticket 102 run |
+| 4 | A wall calendar with the due dates | The desk things; the new `GET /calendar` route (rent from `leases`, invoices from `invoices`, through MCP) | Showed invoice 501 **3 days overdue** and rent **in 2 days** |
+| 5 | Sign with your pen to approve | The signature pad, opened by **Sign & pay** | Sign & pay was disabled until signed; signing paid $2,400 (checking $3,400 → $1,000) |
+| 6 | A real lock on the drawer | The keypad; the new `POST /drawer/unlock`, which checks `DESK_PIN` in `.env` on the backend | Wrong PIN refused (403, "The drawer stays locked"); right PIN opened it (200) |
+| 7 | Run replay | Terminal 2 · Replay (`GET /events?run_id=`) | Stepped through the 28 steps of the 102 run |
+| 8 | The hand-off map | Terminal 2 · Hand-off map | Drew 3 hand-off arrows for the 102 run |
+| 9 | A per-run cost meter | The desk calculator; token counts are now in `/events` | Showed $0.0012 live mid-run and $0.0025 for the finished run, at the course gpt-6-luna prices |
+| 10 | A cash history chart | The laptop's sparkline (built from the audit trail's approvals) | Drew $3,400 → $1,000 → $160 |
+| 11 | Sticky notes | On Terminal 1, one per ticket, saved in the browser | Visible on Terminal 1 |
+| 12 | Gentle sounds, off by default | The **Sounds** button (Web Audio, no sound files) | Off by default; turns on and off |
+| 13 | Rearrange the terminals | The **Layout** button: classic or wide, remembered | Switched to wide and back |
+| 14 | A printable daily report | The **Daily report** button prints one page: tickets, cash, waiting signatures and due dates | The report section renders for print |
+| 15 | Personal touches | The family picture, the snow-covered mountain, the plant, Handsome Dan, the couch, the round table and the Keurig | Visible in the office |
+
+**Backend additions for these features:**
+- `GET /calendar`: due dates, through MCP.
+- `POST /drawer/unlock`: the PIN check against `DESK_PIN`, which is in `.env` only, never in the browser. `.env.example` has a placeholder.
+- Token counts and human-step details in `GET /events`, for the cost meter, the cash chart and the hand-off map.

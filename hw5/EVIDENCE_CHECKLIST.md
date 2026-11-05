@@ -129,3 +129,5 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Starts with `npm run dev`; `npm run build` compiles cleanly
 - [x] `output/design.md`: layout, how agents read differently, resolved tickets and cash, creative choices
 - [x] Designed to look good: modeled on my office desk, in Yale blue and white (`output/dashboard_screens/`)
+- [x] All 15 improvement options built and tested live (`output/design.md` Table 5)
+- [x] The larger office with my touches (door plaque, Yale SOM at night, shades, family and mountain pictures, couch, round table, Keurig, hardwood floor and chair mat, IN box, Yale coasters, "That was Easy" button)
