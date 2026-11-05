@@ -539,6 +539,12 @@ I approved Problem 5 as complete.
 - Screenshots of every tab are saved in `output/desk_tickets_screens/` (tabs 101, 102, 103, Cash, Reflection), along with the avatar sheet `assets/agents/all_agents.png`, and all were shown to me.
 - The vibe coder's notes now say Yale blue and white for every homework visual, overriding the workspace default.
 
+**Approval:**
+
+> Approve all three
+
+I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6 is complete.
+
 ---
 
 ## Appendix: Setup prompts (before Problem 1)
