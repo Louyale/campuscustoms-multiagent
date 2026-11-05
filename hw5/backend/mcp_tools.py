@@ -15,7 +15,7 @@ from backend.config import PROJECT_DIR
 MCP_SERVER = PROJECT_DIR / "mcp_server" / "server.py"
 
 # One stdio connection to the server, shared by every agent in a run.
-mcp_toolset = MCPToolset(MCP_SERVER)
+mcp_toolset = MCPToolset(MCP_SERVER, init_timeout=60)  # the server can take a few seconds to start on a cold machine
 
 # Which MCP tools each role may call (least privilege). New tools are added here as the server grows.
 TOOL_ACCESS: dict[str, set[str]] = {

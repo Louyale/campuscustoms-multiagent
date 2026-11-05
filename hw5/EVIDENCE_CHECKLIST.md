@@ -109,5 +109,7 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Route: the checking balance from `cash_accounts` (`GET /cash`)
 - [x] Route: reset the database to the original values (`POST /reset`)
 - [x] Starts with `uvicorn main:app --reload --port 8000` from `backend/`
-- [x] `output/harness.md` lists each route in one line (Table 22), with live test results (Table 23)
+- [x] `output/harness.md` lists each route in one line (Table 22), tied to the assignment bullets and dashboard panels
+- [x] Repeatable route test: `scripts/route_check.py`, 21 of 21 steps (harness Tables 24–25; `output/route_check.json`)
+- [x] Token savers: re-run guard, `POST /board/run`, `/events?run_id=`, one shared MCP connection (harness Table 23)
 - [x] Server stopped after testing, and the database reset to the original

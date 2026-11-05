@@ -32,7 +32,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 | 5a | Build the agent team (Panel A) | Five PydanticAI agents with full delegation; one prompt file per agent, in our own words with each agent's shop rules; clear roles; Portkey and gpt-6-luna only; show me each prompt to approve | My edits: Boss reports to the humans; Customer Service grammar and tone; Inventory low stock (below 5) and best sellers; Accounting balance sheet and income statement | `backend/agents/*.py`, `backend/prompts/*.md`, `backend/models.py`, `backend/team.py`, `backend/config.py`, `backend/mcp_tools.py`, `output/harness.md` (Tables 8–10) |
 | 5b | Grow the MCP tools (Panel B) | Add the tools the agents need; append to the audit trail at every loop step; an Agent Tools table with each agent's tools and tables; a Safety section; update the MCP README; a Lou approval area for each agent's tool list | Boss: encourage_teammate; Accounting: balance sheet and income statement tools; Customer Service: spelling and grammar gate; Facilities: lease and building-request tools | `mcp_server/server.py` (24 tools), `backend/audit.py`, `backend/team.py`, `backend/mcp_tools.py`, `backend/prompts/*.md`, `mcp_server/README.md`, `scripts/mcp_tool_check.py`, `output/mcp_tool_check.json`, `output/harness.md` (Tables 11–18) |
 | 6 | Plan the three tickets | A double-click page with tabs for 101–103 plus Cash and Reflection; an Expected section (Boss's first call, every delegation, MCP tools) in ordered bullets I can edit; the right agents only; room for Actual | What "All the delegations, not Boss calls everyone" means | `output/desk_tickets.html`, `scripts/build_desk_tickets.py` |
-| 7 | Backend routes | FastAPI routes in `backend/main.py` to spec; every route in the harness in a numbered ledger; show me | (none needed) | `backend/main.py`, `requirements.txt`, `output/harness.md` (Tables 22–23) |
+| 7 | Backend routes | FastAPI routes in `backend/main.py` to spec; every route in the harness in a numbered ledger; show me | Clearer for the grader and more efficient for the agents (7 improvements) | `backend/main.py`, `scripts/route_check.py`, `output/route_check.json`, `requirements.txt`, `output/harness.md` (Tables 22–25) |
 
 ---
 
@@ -587,6 +587,32 @@ I approved the Expected plans for tickets 101, 102 and 103 as written. Problem 6
 | P7-9 | B | In `output/harness.md`, each route in one line (URL / what it does) | harness Table 22: Backend Route Ledger (numbered 1–10) |
 | P7-10 | (mine) | Show me | The ledger and the live test results (harness Table 23) |
 | P7-11 | (extra) | Test every route on the running server | 13 steps, including a real $2,400 human approval (checking $3,400 → $1,000), the refusals, and a reset back to the original |
+
+**Follow-up prompt:**
+
+> can we improve this and make it clearer to the grader and more efficient for the agents?
+
+> Yes, all seven
+
+**What was lacking after the first:** the ledger didn't tie each route to the assignment's bullets, the route test was done by hand rather than as a script, and the backend could spend tokens re-running a ticket already waiting on a human.
+
+**Outcome (all seven improvements):**
+
+**Table 16: Problem 7 Improvements**
+
+| # | Improvement | What was done |
+|---|---|---|
+| 1 | Tie each route to the assignment | harness Table 22 has a column quoting the Panel A bullet each route satisfies |
+| 2 | A repeatable test with saved evidence | `scripts/route_check.py`: **21 of 21 steps passed**, including a real $2,400 approval and a whole-board run; `output/route_check.json`; harness Tables 24–25 |
+| 3 | Clearer `/docs` | Named response types (`TicketsOut`, `RunOut`, `EventsOut`, `CashOut`, `ResetOut`), a summary on every route, and an example approver |
+| 4 | Dashboard calling order | harness Table 22 says which dashboard panel calls each route |
+| 5 | Don't re-run a ticket waiting on a human | `POST /tickets/{id}/run` answers 409 "waiting for your approval" (step 9: no tokens spent); `?force=true` overrides |
+| 6 | Run the whole board in one call | New `POST /board/run`: ranked once, then 101 and 102 (urgent) before 103. It matched the Problem 6 plan: $3,240 pending, $160 free |
+| 7 | Filter events by run | `GET /events?run_id=` returns only that run's steps (step 15) |
+
+- **Also found and fixed:** the first automated test showed the MCP server can take about 11 seconds to start, so the connection now waits up to 60 (`init_timeout=60`).
+- **Token savers** are listed in harness Table 23.
+- 🚩 **Noted:** in the board run, Boss recommended `waiting_approval` for 102 but didn't make its final status update.
 
 ---
 
