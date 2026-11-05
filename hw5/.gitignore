@@ -1,0 +1,14 @@
+# secrets: never commit the real .env (only .env.example)
+.env
+.env.*
+!.env.example
+# local environments, caches and builds
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+# SQLite side files (both databases in data/ ARE committed, so graders can run the app)
+*.db-journal
+*.db-wal
+*.db-shm

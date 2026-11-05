@@ -37,6 +37,7 @@ Every AI call uses `gpt-6-luna` through `PORTKEY_API_KEY`. Every payment needs a
 
 | 9 | Resolve the tickets | Reset, then run all three tickets; fill each Actual section in bullets and keep Expected; itemize the Cash tab so the math is right; the resolved tickets JSON; a resolved board in Yale colors with the Yale logo, Campus Customs and "Resolved!" in a happy font; finish the harness; leave the text parts for my approval | I approve the payments as the human, but no real cash or email moves | `output/desk_tickets.html`, `output/resolved_tickets.json`, `output/resolved_board.html`, `output/audit_trail.json`, `output/harness.md` (Tables 0, 28–30), `scripts/build_resolved.py`, `scripts/build_resolved_board.py` |
 | 10 | Reflection | Each of the 5 bullets as a question with a proposed answer in my vibe (assertive, not too serious, fun jargon, "the dream team"), a separate approval for each, tied to this app and our data, with the ticket and Cash tabs as evidence on the same page; efficient, accurate, and the cash 100% right | The Intern Squad (3 Yale student avatars) in Q5; `find_outstanding_receivables`, and receivables follow-up as a related Customer Service duty | `output/desk_tickets.html` (Reflection tab, Tables 4–8), `scripts/reflection.py`, `assets/agents/intern_*.svg`, `backend/prompts/customer_service.md` |
+| 11 | Submit to GitHub | Make the tree exactly as shown, once; follow the rules for the database files; push to a public repo graders can clone; put the URL in the txt file; the hyphenated name is fine | (none needed) | https://github.com/Louyale/campuscustoms-multiagent, `output/github_url.txt`, `README.md` (the layout tree), `.gitignore`, both databases in `data/` |
 ---
 
 ## Problem 1: Vibe coder prompts
@@ -964,6 +965,43 @@ The Reflection tab, `intern_squad.png` and the tab screenshot are refreshed.
 - **Fix 5** is for the push: Problem 11 gets its own section here, with the file tree.
 - **The log otherwise stays as it is.** We're permitted to share the screenshots, because each task was typed in my own words, one problem at a time.
 - **Rechecked:** `check_submission.py` passes 28 of 28.
+
+## Problem 11: Submit to GitHub
+
+**Prompt (my own words, with screenshots of the problem):**
+
+> Okay, here we are to finish to HW5 and problem 11.  let's create the tree just as shown and add the tree.  don't duplicate as I had to add two shots to capture it all.  follow the rules for the database files.  push to github so graders can clone it.  also, put it in the txt file- tell me where this will go.  lastly, the name is fine as long as the - hyphen is okay, if so you can keep it and we'll use it.  give me the repo url so i can paste it to my canvas for my course graders to see there too.
+
+**Follow-up prompt:** none needed. The push prep and the final audit were done first; those prompts are logged at the end of Problem 10.
+
+**Outcome:**
+
+- **Pushed to a new public repo, https://github.com/Louyale/campuscustoms-multiagent.** The hyphen is fine on GitHub. Graders can clone it.
+- **The URL is in `output/github_url.txt`**, and goes on Canvas.
+- **The database files, by the rules:**
+  - both are committed under `data/`
+  - `campus_customs.db` is the untouched original
+  - `campus_customs_new.db` is the working copy, as the Problem 9 run left it: all three tickets resolved, two human-approved payments, and checking at $160.00, matching `resolved_tickets.json`
+- **The real `.env` is not pushed.** It's ignored by `hw5/.gitignore` (now in the layout) and by the root `.gitignore`. Only `.env.example`, with variable names, is shared.
+- **The file tree is in `README.md` once,** exactly in the assignment's layout. `scripts/make_tree.py` writes it, and stops if any listed file is missing from the repo.
+- **The README explains every step the assignment lists:**
+  - copy the original database to the working copy for a clean run (`python scripts/reset_db.py`)
+  - start the MCP server
+  - start the FastAPI backend (`cd backend`, `uvicorn main:app --reload --port 8000`)
+  - start the React board (`npm run dev`)
+  - reset the database before a full three-ticket run
+- **`scripts/check_submission.py` passes every check before the push.**
+
+**Table 19: Problem 11 Tasks**
+
+| Task | What was asked | Where it's done |
+|---|---|---|
+| P11-1 | Push to a public GitHub repo graders can clone | https://github.com/Louyale/campuscustoms-multiagent |
+| P11-2 | Put the repo URL in `output/github_url.txt` (and on Canvas) | `output/github_url.txt`; Canvas is mine to submit |
+| P11-3 | Don't push the real `.env` | `hw5/.gitignore`, root `.gitignore`; checked by `check_submission.py` |
+| P11-4 | Include both database files under `data/` | `data/campus_customs.db`, `data/campus_customs_new.db` |
+| P11-5 | The expected file layout | `README.md` "File layout" (one tree, exactly as shown) |
+| P11-6 | README: clean-run copy, start the MCP server, backend and board, reset before a full run | `README.md` "The two databases" and "Run it" |
 
 ## Appendix: Setup prompts (before Problem 1)
 

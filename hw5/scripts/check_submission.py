@@ -38,7 +38,7 @@ def main() -> int:
     files = shared()
     in_hw5 = [f[len("hw5/"):] for f in files if f.startswith("hw5/")]
 
-    required = ["README.md", "requirements.txt", ".env.example", ".mcp.json", "AI_prompts.md", "EVIDENCE_CHECKLIST.md",
+    required = ["README.md", "requirements.txt", ".env.example", ".gitignore", ".mcp.json", "output/github_url.txt", "data/campus_customs_new.db", "AI_prompts.md", "EVIDENCE_CHECKLIST.md",
                 "mcp_server/server.py", "mcp_server/README.md", "backend/main.py", "backend/team.py", "backend/audit.py",
                 "backend/config.py", "backend/models.py", "backend/mcp_tools.py", "frontend/package.json", "frontend/src/App.tsx",
                 "data/campus_customs.db", "output/harness.md", "output/design.md", "output/desk_tickets.html",
@@ -51,7 +51,9 @@ def main() -> int:
 
     # ignore rules and secrets
     check(not [f for f in files if Path(f).name == ".env"], "no .env file is shared")
-    check(not [f for f in files if f.endswith("campus_customs_new.db")], "the working database is not shared")
+    check("hw5/data/campus_customs.db" in files and "hw5/data/campus_customs_new.db" in files, "both databases are shared under data/ (the original and the working copy)")
+    url = text("output/github_url.txt").strip()
+    check(re.fullmatch(r"https://github\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+", url) is not None, f"output/github_url.txt holds the repo URL ({url})")
     check(not [f for f in files if "/.venv/" in f or f.startswith(".venv/") or "node_modules/" in f], "no .venv or node_modules is shared")
     secrets = {}
     env = PROJECT / ".env"
@@ -113,12 +115,19 @@ def main() -> int:
 
     # docs
     log = text("AI_prompts.md")
-    probs = [n for n in range(1, 11) if re.search(rf"^## Problem {n}: ", log, re.M)]
-    check(probs == list(range(1, 11)), f"AI_prompts.md has a section for Problems 1–10 (found {probs})")
+    probs = [n for n in range(1, 12) if re.search(rf"^## Problem {n}: ", log, re.M)]
+    check(probs == list(range(1, 12)), f"AI_prompts.md has a section for Problems 1–11 (found {probs})")
     nums = sorted({int(n) for n in re.findall(r"^\*\*Table (\d+):", text("output/harness.md"), re.M)})
     check(nums == list(range(0, 31)), f"harness tables are numbered 0–30 with no gaps (found {len(nums)})")
     readme = text("README.md")
-    check("<!-- tree:start -->\n```text\nhw5/" in readme, "README has setup steps and the file tree")
+    check("<!-- tree:start -->\n```text\nhw5/" in readme and "github_url.txt" in readme, "README has the setup steps and the expected file layout")
+    check(all(k in readme for k in ["scripts/reset_db.py", "mcp_server/server.py", "uvicorn main:app", "npm run dev", "Reset the database first"]),
+          "README explains: copy the original DB for a clean run, start the MCP server, the backend and the board, and reset before a full run")
+    import sqlite3
+    w = sqlite3.connect(f"file:{(PROJECT / 'data/campus_customs_new.db').as_posix()}?mode=ro", uri=True)
+    bal = w.execute("SELECT balance FROM cash_accounts WHERE name = 'checking'").fetchone()[0]
+    w.close()
+    check(round(bal, 2) == c["ending_checking_balance_in_cash_accounts"], f"the committed working database's checking (${bal:,.2f}) matches resolved_tickets.json")
 
     for ok, what in results:
         print(("PASS  " if ok else "FAIL  ") + what)

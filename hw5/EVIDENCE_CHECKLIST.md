@@ -160,10 +160,12 @@ This file lists the evidence each problem needs. Each problem's evidence is adde
 - [x] Intern Squad avatars redrawn and approved
 - [x] **Problem 10 closed out**
 
-## Problem 11: Push to GitHub (prep)
+## Problem 11: Submit to GitHub
 
 - [x] `hw5/README.md`: setup, run, checks, where each problem is, the file tree
 - [x] `scripts/check_submission.py`: 28 of 28
 - [x] Fresh-clone test: reset, 28/28, tool check 44/44, backend health, dashboard build
-- [ ] Boss picks the repo name and says go
+- [x] Repo name approved: `Louyale/campuscustoms-multiagent`
+- [x] Both databases committed under `data/`; the real `.env` is not pushed
+- [x] `output/github_url.txt` holds the URL; the README has the expected file layout
 - [ ] Push, then check the repo on GitHub, and submit the URL

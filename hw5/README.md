@@ -31,15 +31,29 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
 
 2. Copy `.env.example` to `.env`, and fill in `PORTKEY_API_KEY`, `HUMAN_APPROVAL_CODE` (used only by the dashboard's approval step) and `DESK_PIN` (the dashboard's locked drawer). Never commit `.env`.
 
-3. Make the working copy of the database. The original, `data/campus_customs.db`, is never changed. Every run works on `data/campus_customs_new.db`, which isn't in the repo:
+## The two databases
 
-   ```powershell
-   python scripts/reset_db.py
-   ```
+Both are in `data/`:
+- **`data/campus_customs.db`** is the original shop database. Nothing ever changes it.
+- **`data/campus_customs_new.db`** is the working copy that the MCP server and the backend use. It's committed as our Problem 9 run left it: all three tickets resolved, two human-approved payments, and checking at $160.00.
+
+**For a clean run, copy the original over the working copy** with this command:
+
+```powershell
+python scripts/reset_db.py
+```
+
+The dashboard's reset (`POST /reset`) does the same thing.
 
 ## Run it
 
-1. **The backend**, at http://localhost:8000. Its API docs are at `/docs`. This is the assignment's command, run from the `backend/` folder:
+1. **The MCP server.** The backend starts it for you, over stdio, the moment the backend starts. Every agent's shop data comes through it. To start it on its own (for example, for a vibe coder through `.mcp.json`):
+
+   ```powershell
+   python mcp_server/server.py
+   ```
+
+2. **The FastAPI backend**, at http://localhost:8000. Its API docs are at `/docs`. This is the assignment's command, run from the `backend/` folder:
 
    ```powershell
    cd backend
@@ -48,7 +62,7 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
 
    It works the same from `hw5/` with `uvicorn main:app --app-dir backend --port 8000`.
 
-2. **The dashboard**, at http://localhost:5173. Use a second terminal:
+3. **The React board**, at http://localhost:5173. Use a second terminal:
 
    ```powershell
    cd frontend
@@ -56,7 +70,11 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
    npm run dev
    ```
 
-3. **Pick a ticket** and press **Start the team**, or **Run the whole board**. Watch the agents at Terminal 2, then approve a payment from the in-tray and watch checking drop on Terminal 3.
+4. **A full three-ticket run:**
+   1. **Reset the database first:** `python scripts/reset_db.py`, or the board's reset.
+   2. Pick a ticket and press **Start the team**, or press **Run the whole board**.
+   3. Watch the agents at Terminal 2.
+   4. Approve each payment from the in-tray, and watch checking drop on Terminal 3.
 
 **One ticket from the command line:** `python scripts/run_ticket.py --ticket 102 --reset-before`
 
@@ -86,114 +104,57 @@ You need Python 3.12 and Node.js 20 or newer. Run these from this `hw5/` folder.
 | 8. Agent dashboard | `frontend/`, `output/design.md`, `output/dashboard_screens/`, harness Table 27 |
 | 9. Resolve the tickets | `output/desk_tickets.html` (Actual sections and Cash tab), `output/resolved_tickets.json`, `output/resolved_board.html`, `output/audit_trail.json`, harness Tables 28–30 |
 | 10. Reflection | `output/desk_tickets.html` (Reflection tab) |
+| 11. Submit to GitHub | https://github.com/Louyale/campuscustoms-multiagent, `output/github_url.txt`, this README (the file layout), both databases in `data/` |
 
 `output/harness.md` starts with **Table 0**, a map of where every part of the system is documented. The HTML pages in `output/` are self-contained: open them by double-clicking.
 
 **The cash, from the Problem 9 run:** $3,400.00 − $840.00 (invoice 501, ticket 101) − $2,400.00 (rent, ticket 102) = **$160.00**, matching `cash_accounts`. Both payments were approved by a human.
 
-## Files
+## File layout
+
+This is the assignment's expected layout. Every file in it is in this repo:
 
 <!-- tree:start -->
 ```text
 hw5/
-├── assets/
-│   └── agents/
-│       ├── accounting.svg
-│       ├── all_agents.png
-│       ├── all_agents.svg
-│       ├── boss.svg
-│       ├── customer_service.svg
-│       ├── facilities.svg
-│       ├── intern_engineer.svg
-│       ├── intern_lacrosse.svg
-│       ├── intern_mba.svg
-│       ├── intern_squad.png
-│       └── inventory.svg
-├── backend/
-│   ├── agents/
-│   │   ├── __init__.py
-│   │   ├── accounting.py
-│   │   ├── boss.py
-│   │   ├── customer_service.py
-│   │   ├── facilities.py
-│   │   └── inventory.py
-│   ├── prompts/
-│   │   ├── accounting.md
-│   │   ├── boss.md
-│   │   ├── customer_service.md
-│   │   ├── facilities.md
-│   │   └── inventory.md
-│   ├── __init__.py
-│   ├── audit.py
-│   ├── config.py
-│   ├── main.py
-│   ├── mcp_tools.py
-│   ├── models.py
-│   ├── prices.json
-│   └── team.py
-├── data/
-│   └── campus_customs.db
-├── frontend/
-│   ├── src/
-│   │   ├── assets/  (5 images)
-│   │   ├── components/
-│   │   │   ├── Desk.tsx
-│   │   │   └── Office.tsx
-│   │   ├── agents.ts
-│   │   ├── api.ts
-│   │   ├── App.tsx
-│   │   ├── main.tsx
-│   │   ├── office.css
-│   │   └── styles.css
-│   ├── .env.example
-│   ├── index.html
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
-├── mcp_server/
-│   ├── README.md
-│   └── server.py
-├── output/
-│   ├── dashboard_screens/  (3 screenshots)
-│   ├── desk_tickets_screens/  (5 screenshots)
-│   ├── resolved_board_screens/  (3 screenshots)
-│   ├── agent_prompts_review.md
-│   ├── audit_trail.json
-│   ├── data_overview.md
-│   ├── design.md
-│   ├── desk_tickets.html
-│   ├── harness.md
-│   ├── mcp_smoke.json
-│   ├── mcp_tool_check.json
-│   ├── resolved_board.html
-│   ├── resolved_tickets.json
-│   ├── route_check.json
-│   ├── test_run_102.json
-│   ├── test_run_102_run1.json
-│   ├── test_run_102_run2.json
-│   └── test_run_102_run3_regression.json
-├── scripts/
-│   ├── __init__.py
-│   ├── build_desk_tickets.py
-│   ├── build_resolved.py
-│   ├── build_resolved_board.py
-│   ├── check_submission.py
-│   ├── cost_report.py
-│   ├── human_decision.py
-│   ├── make_avatars.py
-│   ├── make_tree.py
-│   ├── mcp_smoke.py
-│   ├── mcp_tool_check.py
-│   ├── reflection.py
-│   ├── reset_db.py
-│   ├── route_check.py
-│   └── run_ticket.py
-├── .env.example
-├── .mcp.json
 ├── AI_prompts.md
-├── EVIDENCE_CHECKLIST.md
+├── requirements.txt
+├── .env.example
+├── .gitignore
+├── .mcp.json
 ├── README.md
-└── requirements.txt
+├── data/
+│   ├── campus_customs.db
+│   └── campus_customs_new.db
+├── mcp_server/
+│   ├── server.py
+│   └── README.md
+├── frontend/
+├── backend/
+│   ├── main.py
+│   ├── models.py
+│   └── prompts/
+│       ├── boss.md
+│       ├── inventory.md
+│       ├── accounting.md
+│       ├── facilities.md
+│       └── customer_service.md
+└── output/
+    ├── harness.md
+    ├── mcp_smoke.json
+    ├── desk_tickets.html
+    ├── design.md
+    ├── resolved_tickets.json
+    ├── resolved_board.html
+    ├── audit_trail.json
+    └── github_url.txt
 ```
 <!-- tree:end -->
+
+**Also in the repo, supporting the above:**
+- `backend/agents/` (one file per agent), `backend/team.py`, `backend/audit.py`, `backend/config.py`, `backend/mcp_tools.py`
+- `frontend/src/`
+- `scripts/`: reset, checks, builders and the human-decision tool
+- `assets/agents/`: the agent avatars
+- `output/`: the screenshots and the test records
+- `EVIDENCE_CHECKLIST.md`
