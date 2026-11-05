@@ -811,6 +811,12 @@ Then, at the approval questions, I picked **"Approve $840"** (invoice 501, ticke
 
 **Outcome:** the page was complete, but at **2.4 MB** it was too heavy to open, because it had three full-size PNG screenshots built in. The screenshots are now embedded as 1000 px JPEGs, so the page is **0.7 MB**. Nothing else on the page changed, and the screenshots are still sharp. The full-size PNGs stay in `output/resolved_board_screens/`.
 
+**Follow-up prompt:**
+
+> Yes, it opens
+
+**Outcome:** confirmed: `output/resolved_board.html` opens.
+
 ## Appendix: Setup prompts (before Problem 1)
 
 **Prompt 1:**
